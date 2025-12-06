@@ -105,7 +105,7 @@ This paper introduces \texttt{annuity-pricing} (v0.2.0), a production-ready Pyth
   \item \textbf{Product modules}: FIA, RILA (buffer/floor variants), GLWB with full payoff mechanics
   \item \textbf{Behavioral models}: Dynamic lapse, withdrawal rates, mortality (SOA 2012 IAM), integrated into path simulation
   \item \textbf{Regulatory prototypes}: VM-21 CTE$_{70}$ scenario generation, VM-22 reserve methodology (labeled as prototypes pending full NAIC scenario compliance)
-  \item \textbf{Open-source infrastructure}: 953 unit tests, CI/CD, PyPI distribution, Sphinx documentation, reproducible artifacts
+  \item \textbf{Open-source infrastructure}: 953 unit tests (4 skipped for PyFeng SciPy 1.12+ compatibility), CI/CD, PyPI distribution, Sphinx documentation, reproducible artifacts
 \end{itemize}
 
 \subsection{Scope and Limitations}
@@ -392,7 +392,7 @@ Figure~\ref{fig:bs_parity} compares our BS implementation against financepy for 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\textwidth]{figures/bs_financepy_parity.pdf}
-  \caption{Black-Scholes validation against financepy. All metrics (price, delta, gamma, vega, theta, rho) within 0.01\% relative error. Source: \texttt{scripts/figures/plot\_bs\_parity.py}.}
+  \caption{Black-Scholes validation against financepy. Price accurate to 0.11\%, Greeks within 0.25\% relative error (max: rho). Source: \texttt{scripts/figures/plot\_bs\_parity.py}.}
   \label{fig:bs_parity}
 \end{figure}
 
@@ -435,9 +435,9 @@ The library is specified via \texttt{pyproject.toml} (v0.2.0) with:
   \item Development: pytest, mypy, ruff for testing and linting
 \end{itemize}
 
-\subsection{Fixed Seeds}
+\subsection{Fixed Seeds and Execution Log}
 
-All figures and Monte Carlo simulations use deterministic seeds (e.g., \texttt{seed=1234}) to ensure reproducibility. Seed values are documented in each script header.
+All figures and Monte Carlo simulations use deterministic seeds (e.g., \texttt{seed=1234}) to ensure reproducibility. Seed values are documented in each script header. An execution log (\texttt{paper/artifacts/execution.log}) records figure generation timestamps and reproducer seed values for independent verification.
 
 \subsection{Zenodo DOI and Artifact Archive}
 
