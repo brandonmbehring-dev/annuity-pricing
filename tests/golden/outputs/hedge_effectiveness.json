@@ -1,0 +1,90 @@
+{
+  "_meta": {
+    "description": "Hedge effectiveness baseline values for IAS 39/ASC 815 compliance testing",
+    "standard": "IAS 39/ASC 815 requires hedge effectiveness between 80-125%",
+    "generated": "2025-12-09",
+    "market_environment": {
+      "risk_free_rate": 0.05,
+      "spot": 100.0,
+      "dividend_yield": 0.02,
+      "volatility": 0.20,
+      "option_budget_pct": 0.05
+    },
+    "n_paths": 50000,
+    "seed": 42,
+    "notes": [
+      "Effectiveness ratio = 1 - |hedged_pnl| / |unhedged_pnl|",
+      "Delta hedge uses finite difference estimation",
+      "Values are educational estimates - NOT for production use"
+    ]
+  },
+  "fia_delta_hedge": {
+    "description": "FIA delta hedge under 1% spot shock",
+    "product": {
+      "type": "FIA",
+      "cap_rate": 0.05,
+      "premium": 100000
+    },
+    "scenario": {
+      "spot_shock_pct": 1.0,
+      "vol_shock_pct": 0.0
+    },
+    "expected": {
+      "effectiveness_ratio": 0.99,
+      "notes": "Delta hedge is nearly perfect for small shocks due to finite difference construction"
+    },
+    "tolerance": 0.15
+  },
+  "rila_delta_hedge": {
+    "description": "RILA delta hedge under 1% spot shock",
+    "product": {
+      "type": "RILA",
+      "buffer_rate": 0.10,
+      "cap_rate": 0.15,
+      "premium": 100000
+    },
+    "scenario": {
+      "spot_shock_pct": 1.0,
+      "vol_shock_pct": 0.0
+    },
+    "expected": {
+      "effectiveness_ratio": 0.99,
+      "notes": "Delta hedge is nearly perfect for small shocks"
+    },
+    "tolerance": 0.15
+  },
+  "fia_vega_hedge": {
+    "description": "FIA vega hedge under 1% vol shock",
+    "product": {
+      "type": "FIA",
+      "cap_rate": 0.05,
+      "premium": 100000
+    },
+    "scenario": {
+      "spot_shock_pct": 0.0,
+      "vol_shock_pct": 1.0
+    },
+    "expected": {
+      "effectiveness_ratio": 0.99,
+      "notes": "Vega hedge is nearly perfect for small shocks"
+    },
+    "tolerance": 0.15
+  },
+  "combined_delta_vega": {
+    "description": "Combined delta+vega hedge under simultaneous shocks",
+    "product": {
+      "type": "FIA",
+      "cap_rate": 0.05,
+      "premium": 100000
+    },
+    "scenario": {
+      "spot_shock_pct": 1.0,
+      "vol_shock_pct": 1.0
+    },
+    "expected": {
+      "effectiveness_ratio": 0.95,
+      "notes": "Combined hedge less effective due to cross-gamma effects"
+    },
+    "tolerance": 0.20
+  }
+}
