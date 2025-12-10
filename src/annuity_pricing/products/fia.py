@@ -469,7 +469,11 @@ class FIAPricer(BasePricer):
             from annuity_pricing.options.payoffs.base import OptionType
 
             heston_vol = m.vol_model
-            assert isinstance(heston_vol, HestonVolatility), "Expected HestonVolatility"
+            if not isinstance(heston_vol, HestonVolatility):
+                raise TypeError(
+                    f"CRITICAL: Expected HestonVolatility for HESTON model, "
+                    f"got {type(heston_vol).__name__}"
+                )
 
             return heston_price(
                 spot=m.spot,
@@ -487,7 +491,11 @@ class FIAPricer(BasePricer):
             from annuity_pricing.options.pricing.sabr import sabr_price_call
 
             sabr_vol = m.vol_model
-            assert isinstance(sabr_vol, SABRVolatility), "Expected SABRVolatility"
+            if not isinstance(sabr_vol, SABRVolatility):
+                raise TypeError(
+                    f"CRITICAL: Expected SABRVolatility for SABR model, "
+                    f"got {type(sabr_vol).__name__}"
+                )
 
             return sabr_price_call(
                 spot=m.spot,

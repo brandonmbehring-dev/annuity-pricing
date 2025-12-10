@@ -15,6 +15,9 @@ See: docs/stress_testing/STRESS_TESTING_GUIDE.md
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple, Callable, Any
 from enum import Enum
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # =============================================================================
@@ -757,7 +760,7 @@ def quick_reverse_stress(
     )
 
     if verbose:
-        print(format_reverse_stress_table(report))
+        logger.info(format_reverse_stress_table(report))
 
     return report
 
@@ -800,11 +803,11 @@ def find_reserve_exhaustion_point(
 
     if verbose:
         if result.breached:
-            print(
+            logger.info(
                 f"Reserve exhaustion at {parameter}={result.breaking_point:.4f} "
                 f"({result.iterations} iterations)"
             )
         else:
-            print(f"Reserve not exhausted in range {search_range}")
+            logger.info(f"Reserve not exhausted in range {search_range}")
 
     return result

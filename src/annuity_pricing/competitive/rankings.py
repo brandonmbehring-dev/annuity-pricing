@@ -202,18 +202,18 @@ class RankingAnalyzer:
 
         # Build rankings
         rankings = []
-        for i, (company, row) in enumerate(company_stats.iterrows(), 1):
+        for i, row in enumerate(company_stats.itertuples(), 1):
             if top_n and i > top_n:
                 break
 
             rankings.append(
                 CompanyRanking(
-                    company=str(company),
+                    company=str(row.Index),
                     rank=i,
-                    best_rate=float(row["best_rate"]),
-                    avg_rate=float(row["avg_rate"]),
-                    product_count=int(row["product_count"]),
-                    duration_coverage=tuple(int(d) for d in row["duration_coverage"]),
+                    best_rate=float(row.best_rate),
+                    avg_rate=float(row.avg_rate),
+                    product_count=int(row.product_count),
+                    duration_coverage=tuple(int(d) for d in row.duration_coverage),
                 )
             )
 
@@ -269,17 +269,17 @@ class RankingAnalyzer:
 
         # Build rankings
         rankings = []
-        for i, (_, row) in enumerate(df.iterrows(), 1):
+        for i, row in enumerate(df.itertuples(), 1):
             if top_n and i > top_n:
                 break
 
             rankings.append(
                 ProductRanking(
-                    company=row.get(self.company_column, "Unknown"),
-                    product=row.get(self.product_column, "Unknown"),
+                    company=getattr(row, self.company_column, "Unknown"),
+                    product=getattr(row, self.product_column, "Unknown"),
                     rank=i,
-                    rate=float(row[self.rate_column]),
-                    duration=int(row.get(self.duration_column, 0)),
+                    rate=float(getattr(row, self.rate_column)),
+                    duration=int(getattr(row, self.duration_column, 0)),
                 )
             )
 
@@ -411,13 +411,13 @@ class RankingAnalyzer:
             duration_df = df[df[self.duration_column] == duration]
             top = duration_df.nlargest(3, self.rate_column)
 
-            for rank, (_, row) in enumerate(top.iterrows(), 1):
+            for rank, row in enumerate(top.itertuples(), 1):
                 leaders.append({
                     "duration": int(duration),
                     "rank": rank,
-                    "company": row.get(self.company_column, "Unknown"),
-                    "product": row.get(self.product_column, "Unknown"),
-                    "rate": float(row[self.rate_column]),
+                    "company": getattr(row, self.company_column, "Unknown"),
+                    "product": getattr(row, self.product_column, "Unknown"),
+                    "rate": float(getattr(row, self.rate_column)),
                 })
 
         return pd.DataFrame(leaders)

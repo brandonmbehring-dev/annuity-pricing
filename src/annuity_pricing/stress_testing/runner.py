@@ -16,8 +16,11 @@ See: docs/stress_testing/STRESS_TESTING_GUIDE.md
 from dataclasses import dataclass, field
 from typing import Callable, Dict, List, Optional, Protocol, Tuple, Any
 from enum import Enum
+import logging
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
+
+logger = logging.getLogger(__name__)
 
 from .historical import HistoricalCrisis, ALL_HISTORICAL_CRISES
 from .scenarios import (
@@ -344,8 +347,8 @@ class StressTestRunner:
                 ) from e
 
         if config.verbose:
-            print(f"Base reserve: ${base_reserve:,.0f}")
-            print(f"Running {len(scenarios)} scenarios...")
+            logger.info(f"Base reserve: ${base_reserve:,.0f}")
+            logger.info(f"Running {len(scenarios)} scenarios...")
 
         # Run scenarios
         metrics_list: List[StressMetrics] = []
@@ -359,7 +362,7 @@ class StressTestRunner:
             # Sequential execution
             for i, scenario in enumerate(scenarios):
                 if config.verbose:
-                    print(f"  [{i+1}/{len(scenarios)}] {scenario.display_name}")
+                    logger.info(f"  [{i+1}/{len(scenarios)}] {scenario.display_name}")
 
                 metrics = self._run_single_scenario(
                     scenario, base_reserve, config.max_reserve_increase
@@ -372,8 +375,8 @@ class StressTestRunner:
         execution_time = time.time() - start_time
 
         if config.verbose:
-            print(f"Completed in {execution_time:.2f}s")
-            print(f"Worst case: {summary.worst_scenario} ({summary.worst_reserve_delta_pct*100:+.1f}%)")
+            logger.info(f"Completed in {execution_time:.2f}s")
+            logger.info(f"Worst case: {summary.worst_scenario} ({summary.worst_reserve_delta_pct*100:+.1f}%)")
 
         return StressTestResult(
             summary=summary,
@@ -411,10 +414,10 @@ class StressTestRunner:
                     metrics = future.result()
                     metrics_list.append(metrics)
                     if config.verbose:
-                        print(f"  Completed: {scenario.display_name}")
+                        logger.info(f"  Completed: {scenario.display_name}")
                 except Exception as e:
                     if config.verbose:
-                        print(f"  FAILED: {scenario.display_name}: {e}")
+                        logger.warning(f"  FAILED: {scenario.display_name}: {e}")
                     # Create failed metrics
                     metrics_list.append(
                         create_stress_metrics(

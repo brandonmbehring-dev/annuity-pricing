@@ -456,7 +456,11 @@ class RILAPricer(BasePricer):
             from annuity_pricing.options.pricing.heston import heston_price
 
             heston_vol = m.vol_model
-            assert isinstance(heston_vol, HestonVolatility), "Expected HestonVolatility"
+            if not isinstance(heston_vol, HestonVolatility):
+                raise TypeError(
+                    f"CRITICAL: Expected HestonVolatility for HESTON model, "
+                    f"got {type(heston_vol).__name__}"
+                )
 
             return heston_price(
                 spot=m.spot,
@@ -473,7 +477,11 @@ class RILAPricer(BasePricer):
             from annuity_pricing.options.pricing.sabr import sabr_price_call
 
             sabr_vol = m.vol_model
-            assert isinstance(sabr_vol, SABRVolatility), "Expected SABRVolatility"
+            if not isinstance(sabr_vol, SABRVolatility):
+                raise TypeError(
+                    f"CRITICAL: Expected SABRVolatility for SABR model, "
+                    f"got {type(sabr_vol).__name__}"
+                )
 
             return sabr_price_call(
                 spot=m.spot,
@@ -522,7 +530,11 @@ class RILAPricer(BasePricer):
             from annuity_pricing.options.pricing.heston import heston_price
 
             heston_vol = m.vol_model
-            assert isinstance(heston_vol, HestonVolatility), "Expected HestonVolatility"
+            if not isinstance(heston_vol, HestonVolatility):
+                raise TypeError(
+                    f"CRITICAL: Expected HestonVolatility for HESTON model, "
+                    f"got {type(heston_vol).__name__}"
+                )
 
             return heston_price(
                 spot=m.spot,
@@ -539,7 +551,11 @@ class RILAPricer(BasePricer):
             from annuity_pricing.options.pricing.sabr import sabr_price_put
 
             sabr_vol = m.vol_model
-            assert isinstance(sabr_vol, SABRVolatility), "Expected SABRVolatility"
+            if not isinstance(sabr_vol, SABRVolatility):
+                raise TypeError(
+                    f"CRITICAL: Expected SABRVolatility for SABR model, "
+                    f"got {type(sabr_vol).__name__}"
+                )
 
             return sabr_price_put(
                 spot=m.spot,

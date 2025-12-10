@@ -15,6 +15,9 @@ See: docs/stress_testing/STRESS_TESTING_GUIDE.md
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple, Callable
 from enum import Enum
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # =============================================================================
@@ -644,7 +647,7 @@ def quick_sensitivity_analysis(
     )
 
     if verbose:
-        print(format_tornado_table(tornado))
+        logger.info(format_tornado_table(tornado))
 
     return tornado
 

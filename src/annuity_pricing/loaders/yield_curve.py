@@ -19,7 +19,10 @@ See: docs/CROSS_VALIDATION_MATRIX.md
 from dataclasses import dataclass
 from typing import Optional, List, Literal, Tuple
 from enum import Enum
+import logging
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 
 class InterpolationMethod(Enum):
@@ -395,8 +398,9 @@ class YieldCurveLoader:
                     rate = data.iloc[0, 0] / 100  # Convert from percentage
                     rates.append(rate)
                     valid_maturities.append(mat)
-            except Exception:
-                # Skip missing data points
+            except Exception as e:
+                # Log warning but continue - some maturities may be missing
+                logger.warning(f"FRED fetch failed for {series_id} ({mat}Y): {e}")
                 continue
 
         if len(rates) == 0:
