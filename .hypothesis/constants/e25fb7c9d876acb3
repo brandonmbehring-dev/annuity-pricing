@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/glwb/rollup.py
+# hypothesis_version: 6.148.7
+
+[0.0, 100, 'compound', 'difference', 'simple']

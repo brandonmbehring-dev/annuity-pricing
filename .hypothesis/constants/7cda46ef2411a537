@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/options/payoffs/__init__.py
+# hypothesis_version: 6.148.7
+
+['BasePayoff', 'BufferPayoff', 'CappedCallPayoff', 'CreditingMethod', 'FloorPayoff', 'IndexPath', 'MonthlyAveragePayoff', 'OptionType', 'ParticipationPayoff', 'PayoffResult', 'SpreadPayoff', 'StepRateBufferPayoff', 'TriggerPayoff', 'VanillaOption', 'calculate_moneyness', 'create_fia_payoff', 'create_rila_payoff', 'is_in_the_money']

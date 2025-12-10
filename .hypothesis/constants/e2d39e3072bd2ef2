@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/products/rila.py
+# hypothesis_version: 6.148.7
+
+[0.0, 0.02, 0.1, 1.0, 100.0, 252, 100000, 'Buffer', 'Compare', 'Floor', 'Losses Covered After', 'Losses Covered Up To', 'Losses Covered Up to', 'RILA', 'after', 'buffer', 'bufferModifier', 'bufferRate', 'buffer_rate', 'capRate', 'cap_rate', 'company_name', 'cos', 'current', 'discount_factor', 'error', 'expected_return', 'floor', 'indexUsed', 'index_used', 'is_buffer', 'max_loss', 'metric', 'premium', 'present_value', 'productGroup', 'product_name', 'protection_type', 'protection_value', 'term_years', 'up to', 'upside_value']

@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/regulatory/vm21.py
+# hypothesis_version: 6.148.7
+
+[-0.2, 0.0, 0.0001, 0.01, 0.04, 0.05, 0.07, 0.08, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0, 1.1, 100, 1000, 'age_plus_5', 'age_sensitivity', 'av_down_20pct', 'av_sensitivity', 'base_cte70', 'base_reserve', 'gwb_sensitivity', 'gwb_up_10pct', 'male']

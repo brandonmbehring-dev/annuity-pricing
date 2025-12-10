@@ -402,15 +402,25 @@ class TestCurveFromFRED:
 
     def test_from_fred_structure(self) -> None:
         """Test FRED loader returns correct structure."""
-        # This tests the function signature, actual API call may fail
+        import os
+        from datetime import date, timedelta
+
+        # Skip if no API key
+        if not os.environ.get("FRED_API_KEY"):
+            pytest.skip("FRED_API_KEY not set")
+
+        # Use a recent business day (5 days ago to avoid weekend/holiday issues)
+        as_of_date = (date.today() - timedelta(days=5)).strftime("%Y-%m-%d")
+
         try:
             loader = YieldCurveLoader()
-            curve = loader.from_fred()
+            curve = loader.from_fred(as_of_date=as_of_date)
             assert isinstance(curve, YieldCurve)
             assert len(curve.maturities) > 0
-        except (ImportError, ValueError, RuntimeError, Exception):
-            # Skip if pandas_datareader not installed or API issues
-            pytest.skip("FRED data not available")
+            assert len(curve.rates) == len(curve.maturities)
+        except (ImportError, RuntimeError) as e:
+            # Skip only for import or runtime errors, not ValueError
+            pytest.skip(f"FRED data not available: {e}")
 
 
 class TestCurveFromFixture:

@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/credit/guaranty_funds.py
+# hypothesis_version: 6.148.7
+
+[0.0, 0.8, 1.0, 100000, 250000, 300000, 410000, 500000, 668205, 1000000, 5000000, 'CA', 'DEFAULT', 'FL', 'MN', 'NC', 'NJ', 'NY', 'TX', 'WA', 'annuity_deferred', 'annuity_payout', 'annuity_ssa', 'group_annuity', 'health', 'life_cash_value', 'life_death_benefit']

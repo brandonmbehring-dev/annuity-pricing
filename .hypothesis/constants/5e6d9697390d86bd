@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/glwb/gwb_tracker.py
+# hypothesis_version: 6.148.7
+
+[0.0, 0.01, 0.05, 1.0, 'compound', 'gwb', 'none', 'simple']

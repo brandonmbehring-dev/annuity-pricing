@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/products/registry.py
+# hypothesis_version: 6.148.7
+
+[-0.1, 0.02, 0.03, 0.05, 0.2, 0.5, 100.0, 100000.0, 100000, 'FIA', 'MYGA', 'RILA', 'buffer_rate', 'cap_rate', 'company_name', 'discount_rate', 'dividend_yield', 'duration', 'error', 'expected_credit', 'expected_return', 'fair_cap', 'fair_participation', 'market_environment', 'max_loss', 'n_mc_paths', 'option_budget_pct', 'participation_rate', 'premium', 'present_value', 'product_group', 'product_name', 'protection_type', 'protection_value', 'risk_free_rate', 'seed', 'spot', 'spread_rate', 'supported_types', 'upside_value', 'volatility']

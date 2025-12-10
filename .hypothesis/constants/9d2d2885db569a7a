@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/config/settings.py
+# hypothesis_version: 6.148.7
+
+[0.0, 0.01, 0.03, 0.1, 0.15, 0.2, 0.875, 1.0, 2.0, 10.0, 252, 100000, 'DGS1', 'DGS10', 'DGS2', 'DGS30', 'DGS5', 'DTB3', 'SOFR', 'VIXCLS', '^GSPC', '^NDX', '^RUT', '^STOXX50E', 'data', 'raw', 'wink.parquet']

@@ -52,13 +52,16 @@ Actuarial pricing calculations for MYGA, FIA, and RILA annuity products using WI
 | `mgsv_mva.md` | NAIC requirements | Surrender value calcs |
 | `competitive_analysis.md` | Rate positioning | Company rankings |
 
-### Detailed Derivations (docs/appendix/derivations/)
+### Detailed Derivations (docs/knowledge/derivations/)
 
 | Document | Purpose | When to Use |
 |----------|---------|-------------|
-| `black_scholes.md` | Full BS derivation, d1/d2 | Understanding pricer internals |
+| `bs_greeks.md` | Greeks formulas and sensitivities | Understanding hedging |
 | `put_spread_buffer.md` | Buffer = long put ATM - short put OTM | RILA valuation |
 | `monte_carlo.md` | GBM paths, variance reduction | MC engine implementation |
+| `glwb_pde.md` | GLWB PDE formulation | GLWB pricing |
+
+> **Note**: Full BS derivation is in `docs/knowledge/domain/option_pricing.md`
 
 ### Bug Prevention (docs/episodes/bugs/)
 
@@ -178,7 +181,7 @@ python scripts/setup_check.py --verbose
 pip check
 
 # Test a single pricer
-python -c "from annuity_pricing.options.pricing.black_scholes import price_call; print(price_call(100, 100, 0.05, 0.2, 1))"
+python -c "from annuity_pricing.options.pricing.black_scholes import black_scholes_call; print(black_scholes_call(100, 100, 0.05, 0.02, 0.20, 1.0))"
 ```
 
 ### When to Check What
@@ -203,40 +206,80 @@ python -c "from annuity_pricing.options.pricing.black_scholes import price_call;
 
 ```
 src/annuity_pricing/
-├── config/
-│   ├── settings.py           # Frozen dataclass config
-│   └── market_params.py      # Market data parameters
-├── data/
-│   ├── loader.py             # WINK loader with checksum
-│   ├── cleaner.py            # Outlier handling
-│   ├── market_data.py        # FRED + Yahoo + Stooq loaders
-│   └── schemas.py            # Product dataclasses
-├── products/
-│   ├── base.py               # BasePricer abstract class
-│   ├── myga.py               # MYGA pricer
-│   ├── fia.py                # FIA pricer
-│   ├── rila.py               # RILA pricer
-│   └── registry.py           # Product type registry
+├── adapters/                 # External library integrations
+│   ├── base.py               # Adapter base class
+│   ├── financepy_adapter.py  # financepy BS validation
+│   ├── pyfeng_adapter.py     # pyfeng SABR/Heston
+│   └── quantlib_adapter.py   # QuantLib curves/bonds
+├── behavioral/               # Policyholder behavior models
+│   ├── calibration.py        # Model calibration routines
+│   ├── dynamic_lapse.py      # Dynamic lapse modeling
+│   ├── expenses.py           # Expense assumptions
+│   ├── soa_benchmarks.py     # SOA study benchmarks
+│   └── withdrawal.py         # Withdrawal patterns
 ├── competitive/
 │   ├── positioning.py        # Rate percentile analysis
-│   ├── spreads.py            # Spread over Treasury
-│   └── rankings.py           # Company/product rankings
-├── valuation/
-│   ├── myga_pv.py            # MYGA present value
-│   ├── fia_pv.py             # FIA embedded option value
-│   └── rila_pv.py            # RILA with buffer/floor
+│   ├── rankings.py           # Company/product rankings
+│   └── spreads.py            # Spread over Treasury
+├── config/
+│   └── settings.py           # Frozen dataclass config
+├── credit/                   # Credit risk modeling
+│   ├── cva.py                # Credit valuation adjustment
+│   ├── default_prob.py       # Default probability models
+│   └── guaranty_funds.py     # State guaranty fund coverage
+├── data/
+│   ├── cleaner.py            # Outlier handling
+│   ├── loader.py             # WINK loader with checksum
+│   ├── market_data.py        # FRED + Yahoo + Stooq loaders
+│   └── schemas.py            # Product dataclasses
+├── glwb/                     # GLWB/GMxB modeling
+│   ├── gwb_tracker.py        # GWB account tracking
+│   ├── path_sim.py           # Path simulation
+│   └── rollup.py             # Rollup benefit calculations
+├── loaders/                  # External data loaders
+│   ├── mortality.py          # SOA mortality tables
+│   └── yield_curve.py        # Yield curve data
 ├── options/
-│   ├── payoffs/              # Payoff definitions
-│   ├── pricing/              # BS, implied vol
-│   ├── simulation/           # GBM, Monte Carlo
-│   └── analysis/             # Empirical analysis
+│   ├── payoffs/
+│   │   ├── base.py           # BasePayoff abstract class
+│   │   ├── fia.py            # FIA crediting payoffs
+│   │   └── rila.py           # RILA buffer/floor payoffs
+│   ├── pricing/
+│   │   ├── black_scholes.py  # BS pricing and Greeks
+│   │   ├── heston.py         # Heston stochastic vol
+│   │   ├── heston_cos.py     # Heston COS method
+│   │   └── sabr.py           # SABR model
+│   └── simulation/
+│       ├── gbm.py            # GBM path generation
+│       ├── heston_paths.py   # Heston path generation
+│       └── monte_carlo.py    # Monte Carlo engine
+├── products/
+│   ├── base.py               # BasePricer abstract class
+│   ├── fia.py                # FIA pricer (includes valuation)
+│   ├── myga.py               # MYGA pricer
+│   ├── registry.py           # Product type registry
+│   └── rila.py               # RILA pricer (includes valuation)
 ├── rate_setting/
-│   ├── recommender.py        # Rate recommendations
+│   └── recommender.py        # Rate recommendations
+├── regulatory/               # NAIC regulatory calculations
+│   ├── scenarios.py          # Regulatory scenarios
+│   ├── vm21.py               # VM-21 (variable annuities)
+│   └── vm22.py               # VM-22 (fixed annuities)
+├── stress_testing/           # Stress testing framework
+│   ├── historical.py         # Historical crisis scenarios
+│   ├── metrics.py            # Stress metrics
+│   ├── reporting.py          # Report generation
+│   ├── reverse.py            # Reverse stress testing
+│   ├── runner.py             # Stress test runner
+│   ├── scenarios.py          # Scenario definitions
 │   └── sensitivity.py        # Sensitivity analysis
-└── validation/
-    ├── gates.py              # HALT/PASS validation
-    └── arbitrage.py          # No-arbitrage checks
+├── validation/
+│   └── gates.py              # HALT/PASS validation gates
+└── valuation/
+    └── myga_pv.py            # MYGA present value
 ```
+
+**Note**: FIA and RILA valuation logic is embedded in their respective pricers (`products/fia.py`, `products/rila.py`) rather than separate valuation modules.
 
 ---
 
@@ -381,9 +424,8 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 | File | Purpose |
 |------|---------|
-| `codex-pricing-resources-rila-fia-myga.md` | Master reference - data sources, libraries, workflow |
 | `wink-research-archive/data-dictionary/WINK_DATA_DICTIONARY.md` | All 62 columns documented |
-| `wink-research-archive/ANNUITY_PRODUCT_GUIDE.md` | Product mechanics explained |
+| `wink-research-archive/product-guides/ANNUITY_PRODUCT_GUIDE.md` | Product mechanics explained |
 
 ---
 

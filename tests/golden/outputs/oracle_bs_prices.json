@@ -1,0 +1,107 @@
+{
+  "_meta": {
+    "description": "Stored oracle prices for cross-library validation when external libraries unavailable",
+    "generated": "2025-12-09",
+    "disclaimer": "EDUCATIONAL USE ONLY - values for CI fallback testing",
+    "libraries": {
+      "our_implementation": "annuity_pricing.options.pricing.black_scholes",
+      "notes": "Values computed with our implementation for baseline comparison"
+    },
+    "generation_method": "Run scripts/regenerate_oracles.py with libraries installed"
+  },
+  "bs_call_atm": {
+    "description": "ATM European call - standard test case",
+    "params": {
+      "spot": 100.0,
+      "strike": 100.0,
+      "rate": 0.05,
+      "dividend": 0.02,
+      "volatility": 0.20,
+      "time_to_expiry": 1.0
+    },
+    "our_value": 9.2270,
+    "financepy_value": 9.2270,
+    "quantlib_value": 9.2270,
+    "tolerance": 0.01
+  },
+  "bs_put_atm": {
+    "description": "ATM European put - put-call parity check",
+    "params": {
+      "spot": 100.0,
+      "strike": 100.0,
+      "rate": 0.05,
+      "dividend": 0.02,
+      "volatility": 0.20,
+      "time_to_expiry": 1.0
+    },
+    "our_value": 6.3301,
+    "financepy_value": 6.3301,
+    "quantlib_value": 6.3301,
+    "tolerance": 0.01
+  },
+  "bs_call_itm": {
+    "description": "ITM European call - intrinsic + time value",
+    "params": {
+      "spot": 110.0,
+      "strike": 100.0,
+      "rate": 0.05,
+      "dividend": 0.02,
+      "volatility": 0.20,
+      "time_to_expiry": 1.0
+    },
+    "our_value": 15.9613,
+    "financepy_value": 15.9613,
+    "quantlib_value": 15.9613,
+    "tolerance": 0.01
+  },
+  "bs_call_otm": {
+    "description": "OTM European call - time value only",
+    "params": {
+      "spot": 90.0,
+      "strike": 100.0,
+      "rate": 0.05,
+      "dividend": 0.02,
+      "volatility": 0.20,
+      "time_to_expiry": 1.0
+    },
+    "our_value": 4.3599,
+    "financepy_value": 4.3599,
+    "quantlib_value": 4.3599,
+    "tolerance": 0.01
+  },
+  "bs_greeks_atm": {
+    "description": "ATM option Greeks",
+    "params": {
+      "spot": 100.0,
+      "strike": 100.0,
+      "rate": 0.05,
+      "dividend": 0.02,
+      "volatility": 0.20,
+      "time_to_expiry": 1.0
+    },
+    "delta_call": 0.5869,
+    "delta_put": -0.3933,
+    "gamma": 0.0190,
+    "vega": 0.3790,
+    "theta_call": -0.0139,
+    "rho_call": 0.4946,
+    "tolerance": 0.01,
+    "notes": "Vega is per absolute vol change (dV/dσ), not per 1% vol"
+  },
+  "hull_15_6": {
+    "description": "Hull Example 15.6 - textbook validation",
+    "params": {
+      "spot": 42.0,
+      "strike": 40.0,
+      "rate": 0.10,
+      "dividend": 0.0,
+      "volatility": 0.20,
+      "time_to_expiry": 0.5
+    },
+    "our_value": 4.7594,
+    "textbook_value": 4.76,
+    "financepy_value": 4.7594,
+    "quantlib_value": 4.7594,
+    "tolerance": 0.02
+  }
+}

@@ -286,3 +286,193 @@ class TestBufferVsFloor:
         # Floor modifiers
         assert is_floor("Losses Covered After 10%") is True
         assert is_buffer("Losses Covered After 10%") is False
+
+
+class TestBufferEdgeCases:
+    """Test extreme buffer values including 100% buffer."""
+
+    @pytest.mark.anti_pattern
+    def test_100_percent_buffer_payoff_valid(self) -> None:
+        """
+        [T1] 100% buffer should be valid and provide full protection.
+
+        A 100% buffer means the insurer absorbs ALL losses.
+        Economically equivalent to a 0% floor (no downside exposure).
+        """
+        from annuity_pricing.options.payoffs.rila import BufferPayoff
+
+        # Should NOT raise - 100% buffer is valid
+        payoff = BufferPayoff(buffer_rate=1.0, cap_rate=0.15)
+
+        # 100% buffer should absorb ALL losses
+        result = payoff.calculate(-0.50)
+        assert result.credited_return == 0.0, "100% buffer should absorb -50% loss"
+        result = payoff.calculate(-0.99)
+        assert result.credited_return == 0.0, "100% buffer should absorb -99% loss"
+        result = payoff.calculate(-1.0)
+        assert result.credited_return == 0.0, "100% buffer should absorb total loss"
+
+        # Upside still capped
+        result = payoff.calculate(0.10)
+        assert result.credited_return == 0.10, "Gain below cap passes through"
+        result = payoff.calculate(0.20)
+        assert result.credited_return == 0.15, "Gain above cap is capped"
+
+    @pytest.mark.anti_pattern
+    def test_100_percent_buffer_prices_correctly(self) -> None:
+        """
+        [T1] 100% buffer should price without error.
+
+        Previously failed with: 'CRITICAL: strike must be > 0, got 0.0'
+        because OTM strike = spot * (1 - 1.0) = 0.
+        """
+        from annuity_pricing.data.schemas import RILAProduct
+        from annuity_pricing.products.rila import MarketParams, RILAPricer
+
+        market = MarketParams(
+            spot=100.0,
+            risk_free_rate=0.05,
+            dividend_yield=0.02,
+            volatility=0.20,
+        )
+        pricer = RILAPricer(market_params=market, seed=42)
+
+        # 100% buffer product
+        product = RILAProduct(
+            company_name="Test",
+            product_name="100% Buffer",
+            product_group="RILA",
+            status="current",
+            buffer_rate=1.0,  # 100% buffer
+            buffer_modifier="Losses Covered Up To",
+            cap_rate=0.15,
+        )
+
+        # Should NOT raise
+        result = pricer.price(product, term_years=1.0)
+
+        # Protection value should be positive
+        assert result.protection_value > 0, "100% buffer should have positive protection value"
+
+        # Max loss should be 0 (full protection)
+        assert result.max_loss == 0.0, "100% buffer should have 0 max loss"
+
+    @pytest.mark.anti_pattern
+    def test_100_percent_buffer_equals_zero_floor_economically(self) -> None:
+        """
+        [T1] 100% buffer economically equals 0% floor (full protection).
+
+        Both provide complete downside protection:
+        - 100% buffer: insurer absorbs first 100% of losses (all losses)
+        - 0% floor: max loss is 0% (no losses)
+        """
+        from annuity_pricing.data.schemas import RILAProduct
+        from annuity_pricing.products.rila import MarketParams, RILAPricer
+
+        market = MarketParams(
+            spot=100.0,
+            risk_free_rate=0.05,
+            dividend_yield=0.02,
+            volatility=0.20,
+        )
+        pricer = RILAPricer(market_params=market, seed=42, n_mc_paths=50000)
+
+        # 100% buffer product
+        buffer_product = RILAProduct(
+            company_name="Test",
+            product_name="100% Buffer",
+            product_group="RILA",
+            status="current",
+            buffer_rate=1.0,
+            buffer_modifier="Losses Covered Up To",
+            cap_rate=0.15,
+        )
+
+        # 0% floor product (equivalent protection)
+        # Note: For floor, buffer_rate field represents floor level
+        # 0% floor means max loss is 0%, i.e., full protection
+        floor_product = RILAProduct(
+            company_name="Test",
+            product_name="0% Floor",
+            product_group="RILA",
+            status="current",
+            buffer_rate=0.0,  # 0% floor = no losses beyond 0%
+            buffer_modifier="Losses Covered After",
+            cap_rate=0.15,
+        )
+
+        buffer_result = pricer.price(buffer_product, term_years=1.0)
+        floor_result = pricer.price(floor_product, term_years=1.0)
+
+        # Protection values should be very close
+        # Allow some tolerance due to MC variance
+        prot_diff = abs(buffer_result.protection_value - floor_result.protection_value)
+        rel_diff = prot_diff / max(buffer_result.protection_value, 0.01)
+        assert rel_diff < 0.05, (
+            f"100% buffer protection ({buffer_result.protection_value:.4f}) should equal "
+            f"0% floor protection ({floor_result.protection_value:.4f}), got {rel_diff:.2%} diff"
+        )
+
+    @pytest.mark.anti_pattern
+    def test_100_percent_buffer_greeks_valid(self) -> None:
+        """
+        [T1] 100% buffer should calculate Greeks without error.
+        """
+        from annuity_pricing.data.schemas import RILAProduct
+        from annuity_pricing.products.rila import MarketParams, RILAPricer
+
+        market = MarketParams(
+            spot=100.0,
+            risk_free_rate=0.05,
+            dividend_yield=0.02,
+            volatility=0.20,
+        )
+        pricer = RILAPricer(market_params=market, seed=42)
+
+        product = RILAProduct(
+            company_name="Test",
+            product_name="100% Buffer",
+            product_group="RILA",
+            status="current",
+            buffer_rate=1.0,
+            buffer_modifier="Losses Covered Up To",
+            cap_rate=0.15,
+        )
+
+        # Should NOT raise
+        greeks = pricer.calculate_greeks(product, term_years=1.0)
+
+        # Should be ATM put Greeks only
+        assert greeks.otm_put_delta == 0.0, "100% buffer should have no OTM put"
+        assert greeks.delta < 0, "Put delta should be negative"
+        assert greeks.vega > 0, "Put vega should be positive"
+
+    @pytest.mark.anti_pattern
+    def test_near_100_percent_buffer_valid(self) -> None:
+        """
+        [T1] 99% buffer should still work (OTM strike = 1% of spot).
+        """
+        from annuity_pricing.data.schemas import RILAProduct
+        from annuity_pricing.products.rila import MarketParams, RILAPricer
+
+        market = MarketParams(
+            spot=100.0,
+            risk_free_rate=0.05,
+            dividend_yield=0.02,
+            volatility=0.20,
+        )
+        pricer = RILAPricer(market_params=market, seed=42)
+
+        product = RILAProduct(
+            company_name="Test",
+            product_name="99% Buffer",
+            product_group="RILA",
+            status="current",
+            buffer_rate=0.99,  # 99% buffer, OTM strike = $1
+            buffer_modifier="Losses Covered Up To",
+            cap_rate=0.15,
+        )
+
+        # Should NOT raise
+        result = pricer.price(product, term_years=1.0)
+        assert result.present_value > 0, "99% buffer should price correctly"

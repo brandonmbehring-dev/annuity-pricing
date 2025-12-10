@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/competitive/positioning.py
+# hypothesis_version: 6.148.7
+
+[25.0, 50.0, 75.0, 90.0, 95.0, 100, 10000, 'Above Median', 'Below Median', 'Bottom Quartile', 'Top 10%', 'Top Quartile', 'company', 'companyName', 'current', 'fixedRate', 'guaranteeDuration', 'is_target', 'productGroup', 'rank', 'rate', 'status', 'vs_target_bps']

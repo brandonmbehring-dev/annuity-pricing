@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/options/simulation/monte_carlo.py
+# hypothesis_version: 6.148.7
+
+[1e-10, 1.96, 252, 1000, 5000, 10000, 50000, 100000, 500000, 'HestonParams', 'absolute_error', 'analytical_price', 'call', 'convergence_rate', 'inf', 'mc_price', 'n_paths', 'relative_error', 'results', 'standard_error', 'within_ci']

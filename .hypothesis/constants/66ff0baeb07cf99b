@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/stress_testing/metrics.py
+# hypothesis_version: 6.148.7
+
+[0.05, 0.15, 0.3, 0.5, 1.0, 2.0, '=', 'FAIL', 'PASS', 'STRESS TEST SUMMARY', 'critical', 'high', 'low', 'medium']

@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/data/cleaner.py
+# hypothesis_version: 6.148.7
+
+[100, 'None', 'capRate', 'cap_rate_clipped', 'guaranteeDuration', 'mva', 'removal_pct', 'rows_after', 'rows_before', 'rows_removed', 'spreadRate', 'spread_rate_clipped']

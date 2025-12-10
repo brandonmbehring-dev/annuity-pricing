@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/valuation/myga_pv.py
+# hypothesis_version: 6.148.7
+
+[-0.01, -0.005, 0.0, 0.0001, 0.005, 0.01, 100]

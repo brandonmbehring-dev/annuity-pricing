@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/stress_testing/runner.py
+# hypothesis_version: 6.148.7
+
+[0.01, 0.1, 0.15, 0.16, 0.5, 0.8, 1.0, 10.0, 'StressedParameters', 'custom', 'execution', 'reserve', 'reserve_positive', 'reserve_within_limit', 'vm21', 'vm22']

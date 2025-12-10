@@ -1,6 +1,36 @@
 """
 VM-22 Calculator - Phase 9.
 
+[PROTOTYPE] EDUCATIONAL USE ONLY - NOT FOR PRODUCTION REGULATORY FILING
+===========================================================================
+This module provides a simplified implementation of NAIC VM-22 (PBR for
+fixed annuities) for educational purposes. Key limitations vs production:
+
+MISSING FOR COMPLIANCE:
+- NAIC-prescribed scenario generator (transition to GOES effective 2026)
+- Full asset-liability matching model
+- Prescribed lapse formulas with dynamic adjustments
+- Company experience studies and credibility weighting
+- Non-guaranteed element modeling
+- NAIC VM-G (corporate governance) requirements
+- VM-31 Actuarial Report requirements
+- Independent model validation
+
+VM-22 TIMELINE:
+- January 1, 2026: Voluntary adoption begins
+- January 1, 2029: Mandatory for all fixed annuities
+
+This implementation uses:
+- Custom Vasicek + GBM scenarios (NOT NAIC-prescribed)
+- Simplified deterministic/stochastic reserve methodology
+- Educational approximations for SET/SST
+
+For production regulatory filing, requires FSA/MAAA certification and
+NAIC-compliant scenario generators. Estimated gap: 6-12 months.
+
+See: docs/regulatory/AG43_COMPLIANCE_GAP.md
+===========================================================================
+
 Implements NAIC VM-22 for fixed annuity reserves (Principle-Based Reserving).
 
 Theory
@@ -125,6 +155,12 @@ class VM22Calculator:
     """
     VM-22 reserve calculator for fixed annuities.
 
+    [PROTOTYPE] EDUCATIONAL USE ONLY
+    --------------------------------
+    This calculator is for educational/research purposes only.
+    NOT suitable for regulatory filings. See module docstring for details.
+    VM-22 mandatory compliance begins January 1, 2029.
+
     [T1] VM-22 uses principle-based reserving:
     - Stochastic Exclusion Test determines reserve type
     - Deterministic Reserve for simple products
@@ -138,7 +174,10 @@ class VM22Calculator:
     >>> result.reserve > 0
     True
 
-    See: docs/knowledge/domain/vm21_vm22.md
+    See Also
+    --------
+    docs/regulatory/AG43_COMPLIANCE_GAP.md : Detailed compliance gap analysis
+    docs/knowledge/domain/vm21_vm22.md : Theory reference
     """
 
     def __init__(

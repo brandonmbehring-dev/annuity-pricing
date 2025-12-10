@@ -23,6 +23,12 @@ from annuity_pricing.options.simulation.monte_carlo import (
     convergence_analysis,
     price_vanilla_mc,
 )
+from annuity_pricing.options.simulation.heston_paths import (
+    HestonPathResult,
+    generate_heston_paths,
+    generate_heston_terminal_spots,
+    validate_heston_simulation,
+)
 
 __all__ = [
     # GBM
@@ -37,4 +43,9 @@ __all__ = [
     "MonteCarloEngine",
     "convergence_analysis",
     "price_vanilla_mc",
+    # Heston
+    "HestonPathResult",
+    "generate_heston_paths",
+    "generate_heston_terminal_spots",
+    "validate_heston_simulation",
 ]

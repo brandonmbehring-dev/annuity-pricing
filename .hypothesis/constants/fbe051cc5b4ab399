@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/rate_setting/recommender.py
+# hypothesis_version: 6.148.7
+
+[0.0, 0.005, 25.0, 50.0, 75.0, 90.0, 100, 10000, '. ', 'MYGA', 'comparable_count', 'current', 'error', 'fixedRate', 'guaranteeDuration', 'high', 'low', 'margin_bps', 'medium', 'percentile', 'productGroup', 'rate', 'spread_bps', 'status']

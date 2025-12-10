@@ -1,27 +1,83 @@
-# Execution Log - annuity-pricing Paper Artifacts
-# Generated: 2025-12-06
+============================= test session starts ==============================
+platform linux -- Python 3.13.7, pytest-9.0.1, pluggy-1.6.0
+rootdir: /home/brandon_behring/Claude/annuity-pricing
+configfile: pyproject.toml
+collected 1613 items
 
-## Environment
-Python: Python 3.13.7
-Platform: Linux 6.17.0-7-generic
-Package: annuity-pricing v0.2.0
+tests/anti_patterns/test_arbitrage_bounds.py .....................       [  1%]
+tests/anti_patterns/test_buffer_mechanics.py .........                   [  1%]
+tests/anti_patterns/test_buffer_vs_floor.py ......                       [  2%]
+tests/anti_patterns/test_floor_enforcement.py ......                     [  2%]
+tests/anti_patterns/test_put_call_parity.py ....................         [  3%]
+tests/anti_patterns/test_vectorized_consistency.py ..................... [  5%]
+..                                                                       [  5%]
+tests/integration/test_myga_pricing_pipeline.py .............            [  6%]
+tests/integration/test_product_registry.py ........................      [  7%]
+tests/integration/test_validation_gates.py ............................. [  9%]
+..........................                                               [ 10%]
+tests/integration/test_wink_pipeline.py .........                        [ 11%]
+tests/unit/test_adapters.py .........ssss..........                      [ 12%]
+tests/unit/test_behavioral_dynamic_lapse.py ....................         [ 14%]
+tests/unit/test_behavioral_expenses.py ............................      [ 15%]
+tests/unit/test_behavioral_withdrawal.py ......................          [ 17%]
+tests/unit/test_calibration.py ......................................... [ 19%]
+...                                                                      [ 20%]
+tests/unit/test_competitive_positioning.py ....................          [ 21%]
+tests/unit/test_competitive_rankings.py .......................          [ 22%]
+tests/unit/test_competitive_spreads.py ....................              [ 23%]
+tests/unit/test_credit.py .............................................. [ 26%]
+..........                                                               [ 27%]
+tests/unit/test_data_cleaner.py ........................                 [ 28%]
+tests/unit/test_data_loader.py ..................                        [ 30%]
+tests/unit/test_glwb_gwb_tracker.py ...................                  [ 31%]
+tests/unit/test_glwb_path_sim.py .........................               [ 32%]
+tests/unit/test_glwb_rollup.py ...........................               [ 34%]
+tests/unit/test_heston_cos.py ..................................         [ 36%]
+tests/unit/test_loaders_mortality.py ................................... [ 38%]
+..............                                                           [ 39%]
+tests/unit/test_loaders_yield_curve.py ................................. [ 41%]
+.s........                                                               [ 42%]
+tests/unit/test_myga_pricer.py .....................                     [ 43%]
+tests/unit/test_myga_valuation.py .....................................  [ 45%]
+tests/unit/test_option_payoffs_fia.py .................................. [ 47%]
+...........                                                              [ 48%]
+tests/unit/test_option_payoffs_rila.py ................................. [ 50%]
+........                                                                 [ 51%]
+tests/unit/test_products_fia.py ................................         [ 53%]
+tests/unit/test_products_rila.py ....................................... [ 55%]
+................                                                         [ 56%]
+tests/unit/test_rate_recommender.py ..........................           [ 58%]
+tests/unit/test_registry_validation.py .............                     [ 58%]
+tests/unit/test_regulatory_disclaimers.py ......................         [ 60%]
+tests/unit/test_regulatory_scenarios.py ................................ [ 62%]
+.........                                                                [ 62%]
+tests/unit/test_regulatory_vm21.py ............................          [ 64%]
+tests/unit/test_regulatory_vm22.py ...............................       [ 66%]
+tests/unit/test_simulation_gbm.py ......................                 [ 67%]
+tests/unit/test_simulation_monte_carlo.py ....................           [ 69%]
+tests/unit/test_soa_benchmarks.py ..................................     [ 71%]
+tests/unit/test_soa_dynamic_lapse.py ..........................          [ 72%]
+tests/unit/test_soa_withdrawal.py ...........................            [ 74%]
+tests/unit/test_stress_historical.py ................................... [ 76%]
+.......................                                                  [ 78%]
+tests/unit/test_stress_metrics.py ...................................... [ 80%]
+.....                                                                    [ 80%]
+tests/unit/test_stress_reporting.py .................................... [ 83%]
+.....                                                                    [ 83%]
+tests/unit/test_stress_reverse.py ...................................... [ 85%]
+..........                                                               [ 86%]
+tests/unit/test_stress_scenarios.py .................................... [ 88%]
+......                                                                   [ 88%]
+tests/unit/test_stress_sensitivity.py .................................. [ 91%]
+......                                                                   [ 91%]
+tests/validation/test_behavior_vs_soa.py ............................... [ 93%]
+.............                                                            [ 94%]
+tests/validation/test_bs_known_answers.py .................              [ 95%]
+tests/validation/test_credit_validation.py ...................           [ 96%]
+tests/validation/test_heston_cos_vs_quantlib.py .............            [ 97%]
+tests/validation/test_heston_vs_quantlib.py ........                     [ 97%]
+tests/validation/test_mc_convergence.py ................                 [ 98%]
+tests/validation/test_pv_discounting.py ............                     [ 99%]
+tests/validation/test_sabr_vs_quantlib.py ..........                     [100%]
 
-## Figure Generation
-  /home/brandon_behring/Claude/annuity-pricing/paper/figures/bs_financepy_parity.pdf: Dec 6 12:06
-  /home/brandon_behring/Claude/annuity-pricing/paper/figures/glwb_fee_surface.pdf: Dec 6 12:08
-  /home/brandon_behring/Claude/annuity-pricing/paper/figures/mc_convergence.pdf: Dec 6 12:05
-  /home/brandon_behring/Claude/annuity-pricing/paper/figures/payoff_buffer_floor_cap.pdf: Dec 6 12:08
-  /home/brandon_behring/Claude/annuity-pricing/paper/figures/vm21_cte70.pdf: Dec 6 12:08
-
-## Paper Compilation
-  main.pdf: Dec 6 12:23, 397890 bytes
-
-## Test Summary
-  953 tests collected, 4 skipped (pyfeng scipy 1.12+)
-
-## Reproducibility Seeds
-  plot_rila_fia_payoffs.py: N/A (deterministic payoff formulas)
-  plot_mc_convergence.py: seed=1234
-  plot_bs_parity.py: N/A (analytical formulas)
-  plot_glwb_fee_surface.py: seed=5678
-  plot_vm21_cte_sensitivity.py: seed=9999
+======================= 1608 passed, 5 skipped in 20.70s =======================

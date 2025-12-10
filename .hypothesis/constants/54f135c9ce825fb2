@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/products/myga.py
+# hypothesis_version: 6.148.7
+
+[100000.0, 100, 10000, 'MYGA', 'current', 'discount_rate', 'effective_yield', 'fixedRate', 'fixed_rate', 'guaranteeDuration', 'guarantee_duration', 'maturity_value', 'mgsv', 'modified_duration', 'principal', 'productGroup', 'status']

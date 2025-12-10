@@ -1,23 +1,75 @@
 # ROADMAP.md - Actuarial Pricing Progress
 
-**Last Updated**: 2025-12-06
+**Last Updated**: 2025-12-09
 
 ---
 
-## Current Status: Phase 10 Complete ✅
+## Current Status: All Phases Complete (Including Stress Testing) ✅
 
-All phases complete including extended roadmap (Phases 7-10).
+All implementation phases A-I complete:
+- Phases 0-10: Core pricing, behavioral, regulatory, loaders
+- Phase 11: Heston/SABR stochastic volatility
+- Phase 12: Stress Testing Framework (historical, sensitivity, reverse stress, reporting)
 
 ---
 
 ## Execution Order
 
 ```
-Phase 0 → Phase 1 → Phase 3 → Phase 2 → Phase 4 → Phase 5 → Phase 6 → Phase 7 → Phase 8 → Phase 9 → Phase 10
-   ✅        ✅        ✅        ✅        ✅        ✅        ✅        ✅        ✅        ✅        ✅
+Phase 0 → ... → Phase 10 → Phase 11 → Phase 12 (A-I)
+   ✅              ✅          ✅          ✅
 ```
 
-**Status**: All phases complete. Stream F (Code Quality Hardening) complete. 998 tests (4 skipped).
+**Status**: All phases complete. **1686 tests** (5 skipped).
+
+**Test Distribution**:
+- unit: 1288
+- integration: 101
+- anti_patterns: 99
+- validation: 198
+
+---
+
+## Phase 11: Stochastic Volatility Models ✅ (2025-12-08)
+
+| Module | Description | Validation |
+|--------|-------------|------------|
+| `options/pricing/heston.py` | Heston FFT + MC pricing | MC: <1% error vs QuantLib |
+| `options/pricing/sabr.py` | SABR Hagan (2002) | 0% error vs QuantLib |
+| `options/simulation/heston_paths.py` | Andersen QE scheme | Validated |
+
+**Key features**:
+- HestonParams with Feller condition check
+- Heston MC pricing (recommended: <1% error)
+- Heston FFT pricing (experimental: 20-50% bias)
+- SABRParams with backbone (beta) parameter
+- SABR implied volatility (Hagan approximation)
+- SABR calibration to market data
+
+**Validation tests**: `tests/validation/test_heston_vs_quantlib.py`, `tests/validation/test_sabr_vs_quantlib.py`
+
+---
+
+## Phase 12: Stress Testing Framework ✅ (2025-12-09)
+
+| Module | Description | Tests |
+|--------|-------------|-------|
+| `stress_testing/historical.py` | 7 calibrated historical crises (2000-2022) | 59 |
+| `stress_testing/scenarios.py` | StressScenario, ORSA scenarios | 44 |
+| `stress_testing/metrics.py` | StressMetrics, severity classification | 40 |
+| `stress_testing/sensitivity.py` | OAT parameter sweeps, TornadoData | 40 |
+| `stress_testing/reverse.py` | Bisection search for breaking points | 48 |
+| `stress_testing/reporting.py` | Markdown + JSON report generation | 41 |
+| `stress_testing/runner.py` | StressTestRunner wrapper pattern | — |
+
+**Key features**:
+- Historical crises: 2008 GFC, 2020 COVID, 2000 Dotcom, 2011 Euro Debt, 2015 China, 2018 Q4, 2022 Rates
+- ORSA scenarios: Moderate, Severe, Extreme adverse
+- Sensitivity analysis with tornado diagram data
+- Reverse stress testing (reserve exhaustion, RBC breach targets)
+- Dual-format reporting (Markdown + JSON)
+
+**Total stress testing tests**: 272
 
 ---
 
@@ -176,18 +228,19 @@ Phase 0 → Phase 1 → Phase 3 → Phase 2 → Phase 4 → Phase 5 → Phase 6 
 ## Test Summary
 
 ```
-tests/unit/                 773 tests - All modules (including adapters, behavioral, glwb, regulatory, loaders)
+tests/unit/                1288 tests - All modules (incl. stress_testing, behavioral, glwb, regulatory, loaders)
 tests/integration/          101 tests - End-to-end pricing pipeline + registry + gates
-tests/anti_patterns/         79 tests - Put-call parity, buffer/floor, no-arbitrage sweeps
-tests/validation/            45 tests - BS known-answer, MC convergence, PV discounting
+tests/anti_patterns/         99 tests - Put-call parity, buffer/floor, spread_rate HALT, no-arbitrage sweeps
+tests/validation/           198 tests - BS known-answer, MC convergence, Heston/SABR vs QuantLib, FIA/RILA oracles
 ─────────────────────────────────────
-Total:                      998 tests (4 skipped for pyfeng scipy 1.12+)
+Total:                     1686 tests (5 skipped)
 ```
 
-**Stream F Additions (2025-12-06):**
-- F.1-F.3: 24 new tests for term scaling, buffer validation, monthly averaging
-- F.4: 13 new tests for tightened validation gates
-- F.5: 8 new tests for FRED fixture loading
+**Recent Additions:**
+- Deep Skeptical Audit (2025-12-09): 73 new tests (FIA/RILA external oracles, spread HALT, Asian cap benchmarks)
+- Phase 12 (Stress Testing): 272 new tests
+- Phase H (SOA Behavior Calibration): 175 new tests
+- Phase F (Code Quality): 24 new tests
 
 ---
 
@@ -231,6 +284,16 @@ Total:                      998 tests (4 skipped for pyfeng scipy 1.12+)
 | `regulatory/vm22.py` | VM-22 fixed annuity PBR | ✅ |
 | `loaders/yield_curve.py` | Yield curve construction | ✅ |
 | `loaders/mortality.py` | SOA mortality tables | ✅ |
+| `stress_testing/historical.py` | Historical crisis definitions | ✅ |
+| `stress_testing/scenarios.py` | StressScenario, ORSA scenarios | ✅ |
+| `stress_testing/metrics.py` | StressMetrics, severity levels | ✅ |
+| `stress_testing/sensitivity.py` | OAT analysis, tornado diagrams | ✅ |
+| `stress_testing/reverse.py` | Reverse stress (bisection search) | ✅ |
+| `stress_testing/reporting.py` | Markdown + JSON reports | ✅ |
+| `stress_testing/runner.py` | StressTestRunner orchestration | ✅ |
+| `credit/cva.py` | CVA calculation | ✅ |
+| `credit/default_prob.py` | AM Best rating → PD mapping | ✅ |
+| `credit/guaranty_funds.py` | State guaranty fund coverage | ✅ |
 
 ---
 

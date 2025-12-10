@@ -135,3 +135,32 @@ markers = [
     "integration: End-to-end tests",
     "slow: Tests that take > 10 seconds",
 ]
+
+# =============================================================================
+# Coverage Configuration
+# =============================================================================
+# Overall: 75% minimum (aggregate floor)
+# Per-marker thresholds enforced in CI workflow
+# See: .github/workflows/ci.yml for per-marker coverage gates
+
+[tool.coverage.run]
+source = ["src/annuity_pricing"]
+branch = true
+omit = [
+    "*/tests/*",
+    "*/__pycache__/*",
+    "*/conftest.py",
+]
+
+[tool.coverage.report]
+# Fail if overall coverage drops below 75%
+fail_under = 75
+precision = 2
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+    "@abstractmethod",
+]

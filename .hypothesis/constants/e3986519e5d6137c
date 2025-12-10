@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/competitive/__init__.py
+# hypothesis_version: 6.148.7
+
+['CompanyRanking', 'DistributionStats', 'PositionResult', 'PositioningAnalyzer', 'ProductRanking', 'RankingAnalyzer', 'SpreadAnalyzer', 'SpreadDistribution', 'SpreadResult', 'build_treasury_curve']

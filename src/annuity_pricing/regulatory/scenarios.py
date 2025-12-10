@@ -1,6 +1,36 @@
 """
 Scenario Generation - Phase 9.
 
+[PROTOTYPE] EDUCATIONAL USE ONLY - NOT FOR NAIC REGULATORY FILING
+===========================================================================
+This module generates economic scenarios using standard academic models
+for educational purposes. It is NOT NAIC-compliant for regulatory filings.
+
+CRITICAL LIMITATION:
+This generator uses custom Vasicek + GBM models, NOT the NAIC-prescribed
+scenario generators required for VM-21/VM-22 compliance:
+
+- Current requirement: AAA Economic Scenario Generator (ESG)
+- Future requirement: GOES (Generator of Economic Scenarios)
+  Effective date: December 31, 2026
+
+NAIC-prescribed generators provide:
+- Stochastically generated scenarios meeting NAIC calibration criteria
+- Deterministic scenarios for DR/SSA calculations
+- Pre-packaged scenario files (available from naic.conning.com)
+- Regulatory acceptance for reserve calculations
+
+This implementation provides:
+- Vasicek interest rate model (mean-reverting)
+- GBM equity model (log-normal returns)
+- Cholesky correlation structure
+- Useful for: education, research, prototype testing
+
+NOT suitable for: regulatory filings, statutory reserves, ORSA
+
+See: docs/regulatory/AG43_COMPLIANCE_GAP.md
+===========================================================================
+
 Generates economic scenarios for VM-21/AG43 calculations:
 - Interest rate scenarios (Vasicek mean-reversion)
 - Equity return scenarios (GBM)
@@ -183,6 +213,12 @@ class ScenarioGenerator:
     """
     Economic scenario generator for VM-21/AG43.
 
+    [PROTOTYPE] NOT NAIC-COMPLIANT
+    ------------------------------
+    This generator uses academic Vasicek + GBM models, NOT the NAIC-prescribed
+    AAA ESG or GOES generators required for regulatory compliance.
+    Use for education and research only.
+
     Generates correlated interest rate and equity scenarios
     using Vasicek (rates) and GBM (equity) models.
 
@@ -193,7 +229,10 @@ class ScenarioGenerator:
     >>> scenarios.n_scenarios
     1000
 
-    See: docs/knowledge/domain/vm21_vm22.md
+    See Also
+    --------
+    docs/regulatory/AG43_COMPLIANCE_GAP.md : Compliance gap analysis
+    docs/knowledge/domain/vm21_vm22.md : Theory reference
     """
 
     def __init__(

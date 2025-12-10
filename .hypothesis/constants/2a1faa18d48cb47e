@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/products/__init__.py
+# hypothesis_version: 6.148.7
+
+['BasePricer', 'CompetitivePosition', 'FIAMarketParams', 'FIAPricer', 'FIAPricingResult', 'MYGAPricer', 'MarketEnvironment', 'PricingResult', 'ProductRegistry', 'RILAMarketParams', 'RILAPricer', 'RILAPricingResult', 'price_product']

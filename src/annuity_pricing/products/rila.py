@@ -19,7 +19,7 @@ from typing import Any, Optional
 
 import numpy as np
 import pandas as pd
-from scipy.optimize import brentq
+# brentq removed - using analytical breakeven values instead
 
 from annuity_pricing.data.schemas import RILAProduct
 from annuity_pricing.options.payoffs.rila import (
@@ -33,6 +33,12 @@ from annuity_pricing.options.pricing.black_scholes import (
     black_scholes_put,
     black_scholes_greeks,
     price_buffer_protection,
+)
+from annuity_pricing.options.volatility_models import (
+    VolatilityModel,
+    VolatilityModelType,
+    HestonVolatility,
+    SABRVolatility,
 )
 from annuity_pricing.options.simulation.gbm import GBMParams
 from annuity_pricing.options.simulation.monte_carlo import MonteCarloEngine
@@ -73,6 +79,13 @@ class MarketParams:
     """
     Market parameters for RILA pricing.
 
+    [T1] Hybrid architecture for volatility models:
+    - volatility: Required scalar field (backward compatible, default BS)
+    - vol_model: Optional override for stochastic volatility (Heston/SABR)
+
+    If vol_model is provided, pricing dispatcher uses that model.
+    Otherwise, falls back to Black-Scholes with scalar volatility.
+
     Attributes
     ----------
     spot : float
@@ -83,12 +96,17 @@ class MarketParams:
         Index dividend yield (annualized, decimal)
     volatility : float
         Index volatility (annualized, decimal)
+        Used for Black-Scholes or as fallback when vol_model not provided.
+    vol_model : VolatilityModel, optional
+        Stochastic volatility model override (Heston or SABR).
+        If provided, takes precedence over scalar volatility for option pricing.
     """
 
     spot: float
     risk_free_rate: float
     dividend_yield: float
     volatility: float
+    vol_model: Optional[VolatilityModel] = None
 
     def __post_init__(self) -> None:
         """Validate market params."""
@@ -96,6 +114,23 @@ class MarketParams:
             raise ValueError(f"CRITICAL: spot must be > 0, got {self.spot}")
         if self.volatility < 0:
             raise ValueError(f"CRITICAL: volatility must be >= 0, got {self.volatility}")
+
+    def uses_stochastic_vol(self) -> bool:
+        """Check if stochastic volatility model is configured."""
+        return self.vol_model is not None
+
+    def get_vol_model_type(self) -> VolatilityModelType:
+        """
+        Get the volatility model type.
+
+        Returns
+        -------
+        VolatilityModelType
+            BLACK_SCHOLES if no vol_model, otherwise the model's type.
+        """
+        if self.vol_model is None:
+            return VolatilityModelType.BLACK_SCHOLES
+        return self.vol_model.get_model_type()
 
 
 @dataclass(frozen=True)
@@ -386,6 +421,138 @@ class RILAPricer(BasePricer):
             total_products=len(distribution),
         )
 
+    def _price_call_option(
+        self,
+        strike: float,
+        term_years: float,
+    ) -> float:
+        """
+        Price a call option using the appropriate volatility model.
+
+        [T1] Dispatcher routes to Black-Scholes, Heston, or SABR based on
+        the vol_model configured in market_params.
+
+        Parameters
+        ----------
+        strike : float
+            Strike price
+        term_years : float
+            Time to expiry in years
+
+        Returns
+        -------
+        float
+            Call option price
+        """
+        m = self.market_params
+        model_type = m.get_vol_model_type()
+
+        if model_type == VolatilityModelType.BLACK_SCHOLES:
+            return black_scholes_call(
+                m.spot, strike, m.risk_free_rate, m.dividend_yield, m.volatility, term_years
+            )
+
+        elif model_type == VolatilityModelType.HESTON:
+            from annuity_pricing.options.pricing.heston import heston_price
+
+            heston_vol = m.vol_model
+            assert isinstance(heston_vol, HestonVolatility), "Expected HestonVolatility"
+
+            return heston_price(
+                spot=m.spot,
+                strike=strike,
+                rate=m.risk_free_rate,
+                dividend=m.dividend_yield,
+                time=term_years,
+                params=heston_vol.params,
+                option_type=OptionType.CALL,
+                method="cos",
+            )
+
+        elif model_type == VolatilityModelType.SABR:
+            from annuity_pricing.options.pricing.sabr import sabr_price_call
+
+            sabr_vol = m.vol_model
+            assert isinstance(sabr_vol, SABRVolatility), "Expected SABRVolatility"
+
+            return sabr_price_call(
+                spot=m.spot,
+                strike=strike,
+                rate=m.risk_free_rate,
+                dividend=m.dividend_yield,
+                time=term_years,
+                params=sabr_vol.params,
+            )
+
+        else:
+            raise ValueError(f"CRITICAL: Unknown volatility model type: {model_type}")
+
+    def _price_put_option(
+        self,
+        strike: float,
+        term_years: float,
+    ) -> float:
+        """
+        Price a put option using the appropriate volatility model.
+
+        [T1] Dispatcher routes to Black-Scholes, Heston, or SABR based on
+        the vol_model configured in market_params.
+
+        Parameters
+        ----------
+        strike : float
+            Strike price
+        term_years : float
+            Time to expiry in years
+
+        Returns
+        -------
+        float
+            Put option price
+        """
+        m = self.market_params
+        model_type = m.get_vol_model_type()
+
+        if model_type == VolatilityModelType.BLACK_SCHOLES:
+            return black_scholes_put(
+                m.spot, strike, m.risk_free_rate, m.dividend_yield, m.volatility, term_years
+            )
+
+        elif model_type == VolatilityModelType.HESTON:
+            from annuity_pricing.options.pricing.heston import heston_price
+
+            heston_vol = m.vol_model
+            assert isinstance(heston_vol, HestonVolatility), "Expected HestonVolatility"
+
+            return heston_price(
+                spot=m.spot,
+                strike=strike,
+                rate=m.risk_free_rate,
+                dividend=m.dividend_yield,
+                time=term_years,
+                params=heston_vol.params,
+                option_type=OptionType.PUT,
+                method="cos",
+            )
+
+        elif model_type == VolatilityModelType.SABR:
+            from annuity_pricing.options.pricing.sabr import sabr_price_put
+
+            sabr_vol = m.vol_model
+            assert isinstance(sabr_vol, SABRVolatility), "Expected SABRVolatility"
+
+            return sabr_price_put(
+                spot=m.spot,
+                strike=strike,
+                rate=m.risk_free_rate,
+                dividend=m.dividend_yield,
+                time=term_years,
+                params=sabr_vol.params,
+            )
+
+        else:
+            raise ValueError(f"CRITICAL: Unknown volatility model type: {model_type}")
+
     def _price_protection(
         self,
         is_buffer: bool,
@@ -395,6 +562,8 @@ class RILAPricer(BasePricer):
     ) -> float:
         """
         Price the downside protection component.
+
+        [T1] Uses pricing dispatcher for consistent volatility model handling.
 
         Parameters
         ----------
@@ -415,23 +584,25 @@ class RILAPricer(BasePricer):
         m = self.market_params
 
         if is_buffer:
-            # Buffer = Long ATM put - Short OTM put
-            # [T1] Put spread with strikes K1=S (ATM) and K2=S*(1-buffer)
-            atm_put = black_scholes_put(
-                m.spot, m.spot, m.risk_free_rate, m.dividend_yield, m.volatility, term_years
-            )
-            otm_strike = m.spot * (1 - buffer_rate)
-            otm_put = black_scholes_put(
-                m.spot, otm_strike, m.risk_free_rate, m.dividend_yield, m.volatility, term_years
-            )
-            protection = atm_put - otm_put
+            # [T1] 100% buffer edge case: economically equivalent to 0% floor (full protection)
+            # When buffer_rate >= 1.0, OTM strike would be 0, which is invalid for BS.
+            # A 100% buffer means insurer absorbs ALL losses = full ATM put protection.
+            # See: docs/knowledge/domain/buffer_floor.md
+            if buffer_rate >= 1.0 - 1e-10:
+                atm_put = self._price_put_option(m.spot, term_years)
+                protection = atm_put  # Full put protection, no short position
+            else:
+                # Buffer = Long ATM put - Short OTM put
+                # [T1] Put spread with strikes K1=S (ATM) and K2=S*(1-buffer)
+                atm_put = self._price_put_option(m.spot, term_years)
+                otm_strike = m.spot * (1 - buffer_rate)
+                otm_put = self._price_put_option(otm_strike, term_years)
+                protection = atm_put - otm_put
         else:
             # Floor = Long OTM put at floor strike
             # [T1] Put with strike K = S*(1 - floor_rate)
             floor_strike = m.spot * (1 - buffer_rate)
-            protection = black_scholes_put(
-                m.spot, floor_strike, m.risk_free_rate, m.dividend_yield, m.volatility, term_years
-            )
+            protection = self._price_put_option(floor_strike, term_years)
 
         return (protection / m.spot) * premium
 
@@ -443,6 +614,8 @@ class RILAPricer(BasePricer):
     ) -> float:
         """
         Price the capped upside component.
+
+        [T1] Uses pricing dispatcher for consistent volatility model handling.
 
         Parameters
         ----------
@@ -461,16 +634,12 @@ class RILAPricer(BasePricer):
         m = self.market_params
 
         # ATM call for full upside
-        atm_call = black_scholes_call(
-            m.spot, m.spot, m.risk_free_rate, m.dividend_yield, m.volatility, term_years
-        )
+        atm_call = self._price_call_option(m.spot, term_years)
 
         if cap_rate is not None and cap_rate > 0:
             # Capped call = ATM call - OTM call at cap
             cap_strike = m.spot * (1 + cap_rate)
-            otm_call = black_scholes_call(
-                m.spot, cap_strike, m.risk_free_rate, m.dividend_yield, m.volatility, term_years
-            )
+            otm_call = self._price_call_option(cap_strike, term_years)
             upside = atm_call - otm_call
         else:
             # Uncapped (or participation)
@@ -487,6 +656,9 @@ class RILAPricer(BasePricer):
     ) -> float:
         """
         Calculate expected return via Monte Carlo.
+
+        [T1] Uses GBM or Heston paths based on vol_model configuration.
+        Dispatches to appropriate MC method for path generation.
 
         Parameters
         ----------
@@ -511,17 +683,33 @@ class RILAPricer(BasePricer):
             # Floor rate is negative for FloorPayoff
             payoff = FloorPayoff(floor_rate=-buffer_rate, cap_rate=cap_rate)
 
-        # Set up GBM parameters
-        gbm_params = GBMParams(
-            spot=self.market_params.spot,
-            rate=self.market_params.risk_free_rate,
-            dividend=self.market_params.dividend_yield,
-            volatility=self.market_params.volatility,
-            time_to_expiry=term_years,
-        )
+        # Dispatch to appropriate MC method based on vol_model
+        model_type = self.market_params.get_vol_model_type()
 
-        # Price using MC engine
-        mc_result = self.mc_engine.price_with_payoff(gbm_params, payoff)
+        if model_type == VolatilityModelType.HESTON:
+            # Use Heston paths for MC simulation
+            heston_vol = self.market_params.vol_model
+            assert isinstance(heston_vol, HestonVolatility), "Expected HestonVolatility"
+
+            mc_result = self.mc_engine.price_with_payoff_heston(
+                spot=self.market_params.spot,
+                rate=self.market_params.risk_free_rate,
+                dividend=self.market_params.dividend_yield,
+                time_to_expiry=term_years,
+                heston_params=heston_vol.params,
+                payoff=payoff,
+                n_steps=252,  # Daily steps for RILA
+            )
+        else:
+            # Use GBM paths (default: BS or SABR falls back to GBM paths)
+            gbm_params = GBMParams(
+                spot=self.market_params.spot,
+                rate=self.market_params.risk_free_rate,
+                dividend=self.market_params.dividend_yield,
+                volatility=self.market_params.volatility,
+                time_to_expiry=term_years,
+            )
+            mc_result = self.mc_engine.price_with_payoff(gbm_params, payoff)
 
         # Convert back to return
         expected_return = mc_result.payoffs.mean() / self.market_params.spot
@@ -565,68 +753,36 @@ class RILAPricer(BasePricer):
 
         Examples
         --------
-        >>> pricer = RILAPricer()
+        >>> pricer = RILAPricer(market_params=MarketParams(spot=100, risk_free_rate=0.05, dividend_yield=0.02, volatility=0.20))
         >>> # 10% buffer: breakeven at -10% (first 10% absorbed)
         >>> pricer._calculate_breakeven(True, 0.10, 0.15)
         -0.1
-        >>> # 10% floor: breakeven at -10% (floor caps losses at -10%)
+        >>> # 10% floor: breakeven at 0% (any negative return = loss, floor only limits max loss)
         >>> pricer._calculate_breakeven(False, 0.10, 0.15)
-        -0.1
+        0.0
         """
+        # [FIX] Return analytical breakeven values instead of numerical solver
+        # The payoff function has a flat region where many points are technically
+        # "breakeven", but conceptually:
+        #
+        # Buffer: breakeven = -buffer_rate
+        #   At exactly -buffer_rate, the buffer fully absorbs the loss,
+        #   returning principal. This is the boundary of the loss region.
+        #
+        # Floor: breakeven = 0
+        #   Any negative index return results in a loss (floor only limits
+        #   maximum loss, doesn't prevent loss). Breakeven requires R >= 0.
+        #
+        # See: codex-audit-report.md Finding 4 (floor docstring fix)
 
-        def payoff_minus_principal(index_return: float) -> float:
-            """Payoff - 1.0 (positive = profit, negative = loss)."""
-            if is_buffer:
-                # Buffer payoff:
-                # - Gains: credited up to cap
-                # - Losses: buffer absorbs first buffer_rate%
-                if index_return >= 0:
-                    # Positive return, apply cap
-                    if cap_rate is not None:
-                        gain = min(index_return, cap_rate)
-                    else:
-                        gain = index_return
-                    return gain  # payoff - 1 = (1 + gain) - 1 = gain
-                else:
-                    # Negative return
-                    if index_return > -buffer_rate:
-                        # Within buffer - no loss
-                        return 0.0  # payoff - 1 = 1 - 1 = 0
-                    else:
-                        # Beyond buffer - client absorbs excess
-                        loss = index_return + buffer_rate  # e.g., -15% + 10% = -5%
-                        return loss  # payoff - 1 = (1 + loss) - 1 = loss
-            else:
-                # Floor payoff:
-                # - Gains: credited up to cap
-                # - Losses: floored at -floor_rate (floor_rate stored in buffer_rate param)
-                floor_rate = -buffer_rate  # Floor is negative, e.g., -0.10
-                if index_return >= 0:
-                    # Positive return, apply cap
-                    if cap_rate is not None:
-                        gain = min(index_return, cap_rate)
-                    else:
-                        gain = index_return
-                    return gain
-                else:
-                    # Negative return - floored
-                    effective_return = max(index_return, floor_rate)
-                    return effective_return  # payoff - 1 = (1 + effective) - 1
-
-        # For buffers: breakeven is exactly at -buffer_rate
-        # For floors: breakeven is exactly at -floor_rate
-        # But we solve it numerically to handle edge cases
-
-        try:
-            # Search for root in reasonable range
-            # Minimum return: -99% (can't lose more than invested)
-            # Maximum: search up to 100% return
-            breakeven = brentq(payoff_minus_principal, -0.99, 1.0, xtol=1e-10)
-            return float(breakeven)
-        except ValueError:
-            # No root found (payoff never equals principal in this range)
-            # This can happen with certain cap/floor combinations
-            return None
+        if is_buffer:
+            # Buffer absorbs first buffer_rate% of losses
+            # At exactly -buffer_rate, investor gets back principal
+            return -buffer_rate
+        else:
+            # Floor product: any negative return = loss
+            # Must have R >= 0 to break even
+            return 0.0
 
     def compare_buffer_vs_floor(
         self,
@@ -853,40 +1009,64 @@ class RILAPricer(BasePricer):
 
         # Calculate option Greeks
         if is_buffer:
-            # Buffer = Long ATM put - Short OTM put
-            atm_strike = spot  # ATM strike
-            otm_strike = spot * (1 - buffer_rate)  # OTM strike
+            # [T1] 100% buffer edge case: economically equivalent to 0% floor (full protection)
+            # When buffer_rate >= 1.0, OTM strike would be 0, which is invalid.
+            # A 100% buffer = ATM put only (full downside protection)
+            if buffer_rate >= 1.0 - 1e-10:
+                # ATM put Greeks only (no short position)
+                atm_greeks = black_scholes_greeks(
+                    spot=spot,
+                    strike=spot,
+                    rate=r,
+                    dividend=q,
+                    volatility=sigma,
+                    time_to_expiry=term_years,
+                    option_type=OptionType.PUT,
+                )
 
-            # ATM put Greeks (long position)
-            atm_greeks = black_scholes_greeks(
-                spot=spot,
-                strike=atm_strike,
-                rate=r,
-                dividend=q,
-                volatility=sigma,
-                time_to_expiry=term_years,
-                option_type=OptionType.PUT,
-            )
+                # Position Greeks = ATM put only
+                delta = atm_greeks.delta
+                gamma = atm_greeks.gamma
+                vega = atm_greeks.vega
+                theta = atm_greeks.theta
+                rho = atm_greeks.rho
+                atm_put_delta = atm_greeks.delta
+                otm_put_delta = 0.0  # No OTM put for 100% buffer
+            else:
+                # Buffer = Long ATM put - Short OTM put
+                atm_strike = spot  # ATM strike
+                otm_strike = spot * (1 - buffer_rate)  # OTM strike
 
-            # OTM put Greeks (short position)
-            otm_greeks = black_scholes_greeks(
-                spot=spot,
-                strike=otm_strike,
-                rate=r,
-                dividend=q,
-                volatility=sigma,
-                time_to_expiry=term_years,
-                option_type=OptionType.PUT,
-            )
+                # ATM put Greeks (long position)
+                atm_greeks = black_scholes_greeks(
+                    spot=spot,
+                    strike=atm_strike,
+                    rate=r,
+                    dividend=q,
+                    volatility=sigma,
+                    time_to_expiry=term_years,
+                    option_type=OptionType.PUT,
+                )
 
-            # Net position: Long ATM - Short OTM
-            delta = atm_greeks.delta - otm_greeks.delta
-            gamma = atm_greeks.gamma - otm_greeks.gamma
-            vega = atm_greeks.vega - otm_greeks.vega
-            theta = atm_greeks.theta - otm_greeks.theta
-            rho = atm_greeks.rho - otm_greeks.rho
-            atm_put_delta = atm_greeks.delta
-            otm_put_delta = -otm_greeks.delta  # Negative since short
+                # OTM put Greeks (short position)
+                otm_greeks = black_scholes_greeks(
+                    spot=spot,
+                    strike=otm_strike,
+                    rate=r,
+                    dividend=q,
+                    volatility=sigma,
+                    time_to_expiry=term_years,
+                    option_type=OptionType.PUT,
+                )
+
+                # Net position: Long ATM - Short OTM
+                delta = atm_greeks.delta - otm_greeks.delta
+                gamma = atm_greeks.gamma - otm_greeks.gamma
+                vega = atm_greeks.vega - otm_greeks.vega
+                theta = atm_greeks.theta - otm_greeks.theta
+                rho = atm_greeks.rho - otm_greeks.rho
+                atm_put_delta = atm_greeks.delta
+                otm_put_delta = -otm_greeks.delta  # Negative since short
 
         else:
             # Floor = Long OTM put

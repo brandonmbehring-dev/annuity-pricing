@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/validation/gates.py
+# hypothesis_version: 6.148.7
+
+[-0.001, 0.0, 0.01, 0.02, 0.1, 0.3, 0.5, 1.0, 3.0, 30.0, 100.0, 'arbitrage_bounds', 'base_gate', 'buffer', 'buffer_rate', 'cap_rate', 'duration_bounds', 'fia_expected_credit', 'fia_option_budget', 'floor', 'gate', 'halt', 'message', 'n_halted', 'n_warned', 'overall_status', 'participation_rate', 'pass', 'passed', 'premium', 'present_value_bounds', 'results', 'rila_max_loss', 'spread_rate', 'status', 'threshold', 'value', 'warn']

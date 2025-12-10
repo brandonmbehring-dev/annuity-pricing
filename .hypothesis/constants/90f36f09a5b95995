@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/options/simulation/heston_paths.py
+# hypothesis_version: 6.148.7
+
+[0.0, 1e-10, 0.02, 0.05, 0.5, 1.5, 100, 252, 100000, 'n_paths', 'n_steps', 'simulated_spot_mean', 'simulated_var_mean', 'spot_error_pct', 'spot_se', 'spot_z_score', 'theoretical_var_mean', 'var_error_pct', 'var_se']

@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/behavioral/calibration.py
+# hypothesis_version: 6.148.7
+
+[1.0, 1.125, 1.25, 1.375, 1.5, 1.75, 'additive', 'full', 'itm_100_125', 'itm_125_150', 'itm_150_plus', 'multiplicative', 'not_itm', 'partial', 'post_sc_year_1', 'post_sc_year_2', 'post_sc_year_3plus', 'years_remaining_1', 'years_remaining_2']

@@ -290,7 +290,12 @@ class TestReproducibility:
         assert result1.cte70 == pytest.approx(result2.cte70, rel=0.01)
 
     def test_different_seed_different_result(self) -> None:
-        """Different seeds should produce different results."""
+        """Different seeds should produce different stochastic paths.
+
+        Note: With 100 scenarios, results may be similar but paths should differ.
+        We verify this by checking that the underlying scenarios differ, not just
+        the final reserve (which could coincidentally be similar).
+        """
         policy = PolicyData(av=100_000, gwb=110_000, age=70)
 
         calc1 = VM21Calculator(n_scenarios=100, seed=11111)
@@ -299,9 +304,22 @@ class TestReproducibility:
         result1 = calc1.calculate_reserve(policy)
         result2 = calc2.calculate_reserve(policy)
 
-        # Results should differ (allow for some variance)
-        # They could be similar but not exactly equal
-        assert abs(result1.reserve - result2.reserve) > 0 or True  # Just checking runs
+        # Both calculations must complete successfully
+        assert result1.reserve >= 0, f"Seed 11111 produced invalid reserve: {result1.reserve}"
+        assert result2.reserve >= 0, f"Seed 99999 produced invalid reserve: {result2.reserve}"
+
+        # With different seeds, at least one of these should differ:
+        # (CTE values are more sensitive to path differences than final reserve)
+        values_differ = (
+            result1.reserve != result2.reserve or
+            result1.cte70 != result2.cte70 or
+            result1.cte90 != result2.cte90
+        )
+        assert values_differ, (
+            f"Different seeds produced identical results - stochastic model may be broken. "
+            f"Seed 11111: reserve={result1.reserve}, CTE70={result1.cte70}. "
+            f"Seed 99999: reserve={result2.reserve}, CTE70={result2.cte70}."
+        )
 
 
 class TestEdgeCases:

@@ -24,6 +24,7 @@ Greeks Golden Values (ATM, S=K=100, r=5%, σ=20%, T=1):
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
 
+from annuity_pricing.config.tolerances import CROSS_LIBRARY_TOLERANCE
 from .base import BaseAdapter, ValidationResult
 
 
@@ -309,7 +310,7 @@ class FinancepyAdapter(BaseAdapter):
         dividend: float,
         volatility: float,
         time_to_expiry: float,
-        tolerance: float = 0.01,
+        tolerance: float = CROSS_LIBRARY_TOLERANCE,
     ) -> ValidationResult:
         """
         Validate our call price against financepy.
@@ -321,7 +322,7 @@ class FinancepyAdapter(BaseAdapter):
         spot, strike, rate, dividend, volatility, time_to_expiry : float
             Option parameters
         tolerance : float
-            Maximum allowed difference
+            Maximum allowed difference (default: CROSS_LIBRARY_TOLERANCE)
 
         Returns
         -------
@@ -347,7 +348,7 @@ class FinancepyAdapter(BaseAdapter):
         dividend: float,
         volatility: float,
         time_to_expiry: float,
-        tolerance: float = 0.01,
+        tolerance: float = CROSS_LIBRARY_TOLERANCE,
     ) -> ValidationResult:
         """Validate our put price against financepy."""
         external_price = self.price_put(

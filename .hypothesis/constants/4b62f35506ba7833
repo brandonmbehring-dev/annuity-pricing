@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/adapters/pyfeng_adapter.py
+# hypothesis_version: 6.148.7
+
+[0.02, 0.05, 0.1, 0.15, 0.2, 1.0, 9.93, 15.24, 90.0, 100.0, 100000, 'ATM call 1Y', 'ITM call 1Y', 'MC→BS', 'call', 'pip install pyfeng', 'pyfeng']

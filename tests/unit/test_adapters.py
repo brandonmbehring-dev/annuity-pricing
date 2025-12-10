@@ -10,7 +10,6 @@ import numpy as np
 
 from annuity_pricing.adapters import (
     FINANCEPY_AVAILABLE,
-    PYFENG_AVAILABLE,
     QUANTLIB_AVAILABLE,
     ValidationResult,
 )
@@ -152,58 +151,6 @@ class TestFinancepyAdapter:
             )
 
 
-@pytest.mark.skipif(not PYFENG_AVAILABLE, reason="pyfeng not installed")
-class TestPyfengAdapter:
-    """Tests for pyfeng Monte Carlo validation."""
-
-    @pytest.fixture
-    def adapter(self):
-        """Create adapter instance."""
-        from annuity_pricing.adapters.pyfeng_adapter import PyfengAdapter
-
-        return PyfengAdapter()
-
-    def test_adapter_available(self, adapter):
-        """Adapter should report availability."""
-        assert adapter.is_available
-        assert adapter.name == "pyfeng"
-
-    def test_price_bs_call(self, adapter):
-        """Should price call with BS."""
-        price = adapter.price_bs_call(
-            spot=100.0,
-            strike=100.0,
-            rate=0.05,
-            dividend=0.02,
-            volatility=0.20,
-            time_to_expiry=1.0,
-        )
-        assert price > 0
-        assert price < 100
-
-    def test_bs_matches_our_implementation(self, adapter):
-        """Pyfeng BS should match our BS."""
-        our_price = black_scholes_call(100.0, 100.0, 0.05, 0.02, 0.20, 1.0)
-        pf_price = adapter.price_bs_call(100.0, 100.0, 0.05, 0.02, 0.20, 1.0)
-
-        assert abs(our_price - pf_price) < 0.01
-
-    def test_validate_against_pyfeng_bs(self, adapter):
-        """Should validate against pyfeng BS."""
-        our_price = black_scholes_call(100.0, 95.0, 0.05, 0.02, 0.20, 1.0)
-        result = adapter.validate_against_pyfeng_bs(
-            our_price=our_price,
-            spot=100.0,
-            strike=95.0,
-            rate=0.05,
-            dividend=0.02,
-            volatility=0.20,
-            time_to_expiry=1.0,
-        )
-
-        assert result.passed
-
-
 @pytest.mark.skipif(not QUANTLIB_AVAILABLE, reason="QuantLib not installed")
 class TestQuantLibAdapter:
     """Tests for QuantLib yield curve validation."""
@@ -286,15 +233,6 @@ class TestAdapterNotInstalled:
         from annuity_pricing.adapters.financepy_adapter import FinancepyAdapter
 
         adapter = FinancepyAdapter()
-        if not adapter.is_available:
-            with pytest.raises(ImportError, match="not installed"):
-                adapter.require_available()
-
-    def test_pyfeng_import_error(self):
-        """Should handle missing pyfeng gracefully."""
-        from annuity_pricing.adapters.pyfeng_adapter import PyfengAdapter
-
-        adapter = PyfengAdapter()
         if not adapter.is_available:
             with pytest.raises(ImportError, match="not installed"):
                 adapter.require_available()

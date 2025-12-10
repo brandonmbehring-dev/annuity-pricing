@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/options/pricing/heston.py
+# hypothesis_version: 6.148.7
+
+[0.0, 0.5, 1.5, 15.0, 252, 4096, 50000, 'B', 'N', 'alpha', 'cos', 'cos_params', 'fft', 'mc', 'paths', 'seed', 'steps']

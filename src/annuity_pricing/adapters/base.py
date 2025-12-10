@@ -2,11 +2,14 @@
 Base adapter interface for validation against external libraries.
 
 All adapters should inherit from BaseAdapter and implement the required methods.
+See: docs/TOLERANCE_JUSTIFICATION.md for tolerance derivations.
 """
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Optional
+
+from annuity_pricing.config.tolerances import CROSS_LIBRARY_TOLERANCE
 
 
 @dataclass(frozen=True)
@@ -95,7 +98,7 @@ class BaseAdapter(ABC):
         self,
         our_value: float,
         external_value: float,
-        tolerance: float = 0.01,
+        tolerance: float = CROSS_LIBRARY_TOLERANCE,
         test_case: Optional[str] = None,
     ) -> ValidationResult:
         """

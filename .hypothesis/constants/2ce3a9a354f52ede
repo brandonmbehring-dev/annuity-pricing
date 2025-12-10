@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/options/payoffs/fia.py
+# hypothesis_version: 6.148.7
+
+[0.0, 'cap', 'cap_rate', 'floor_rate', 'method', 'monthly_average', 'participation', 'participation_rate', 'spread', 'spread_rate', 'trigger', 'trigger_met', 'trigger_rate', 'trigger_threshold']

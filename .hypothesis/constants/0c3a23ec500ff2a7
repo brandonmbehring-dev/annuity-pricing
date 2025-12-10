@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/loaders/yield_curve.py
+# hypothesis_version: 6.148.7
+
+[0.0, 0.25, 0.5, 1.0, 2.0, 10000000000.0, 100, 1000, '#', '-', '2024-01-01', 'DGS1', 'DGS10', 'DGS1MO', 'DGS2', 'DGS20', 'DGS2MO', 'DGS3', 'DGS30', 'DGS3MO', 'DGS5', 'DGS6MO', 'DGS7', 'FRED_API_KEY', 'Nelder-Mead', '_', 'cubic', 'custom', 'flat', 'fred', 'linear', 'log_linear', 'maturity', 'maxiter', 'nelson_siegel', 'quantlib', 'r', 'rate', 'treasury_fixture', 'treasury_fred']

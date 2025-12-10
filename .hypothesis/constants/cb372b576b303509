@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/behavioral/withdrawal.py
+# hypothesis_version: 6.148.7
+
+[0.0, 0.01, 0.03, 0.035, 0.04, 0.045, 0.05, 0.055, 0.06, 0.1, 0.3, 0.32, 0.5, 0.7, 1.0, 'additive', 'hardcoded', 'multiplicative', 'soa_2018']

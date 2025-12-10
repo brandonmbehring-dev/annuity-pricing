@@ -381,8 +381,15 @@ class TestTermYearsRequirement:
         result_1y = pricer.price(product, term_years=1.0)
         result_5y = pricer.price(product, term_years=5.0)
 
-        # 5-year option budget should be 5x the 1-year budget
-        assert abs(result_5y.option_budget - 5 * result_1y.option_budget) < 0.01
+        # [FIX] Option budget now uses annuity factor (discounted), not linear scaling.
+        # 5-year budget should be ~4.33x the 1-year budget (at 5% rate), not 5x.
+        # Formula: annuity_factor_5y / annuity_factor_1y = 4.3295 / 0.9524 ≈ 4.55
+        # See: codex-audit-report.md Finding 3
+        ratio = result_5y.option_budget / result_1y.option_budget
+        assert 4.0 < ratio < 5.0, (
+            f"5Y/1Y budget ratio {ratio:.2f} should be between 4 and 5 "
+            f"(discounted, not linear)"
+        )
 
     def test_fia_invalid_term_raises(self, pricer, cap_product):
         """Zero or negative term_years should raise."""

@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/data/loader.py
+# hypothesis_version: 6.148.7
+
+[8192, 'FA', 'FIA', 'IVA', 'MYGA', 'RILA', 'current', 'historic', 'market_status', 'new', 'nlam', 'productGroup', 'rb', 'status']

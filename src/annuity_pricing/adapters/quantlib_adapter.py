@@ -219,6 +219,54 @@ class QuantLibAdapter(BaseAdapter):
 
         return option.NPV()
 
+    def price_european_put(
+        self,
+        spot: float,
+        strike: float,
+        rate: float,
+        dividend: float,
+        volatility: float,
+        time_to_expiry: float,
+    ) -> float:
+        """
+        Price European put using QuantLib.
+
+        [T1] Used for RILA buffer/floor validation.
+        """
+        self.require_available()
+
+        today = ql.Date.todaysDate()
+        ql.Settings.instance().evaluationDate = today
+
+        # Create expiry date
+        expiry = self._make_date(time_to_expiry)
+
+        # Build curves
+        risk_free_curve = self.build_flat_curve(rate)
+        dividend_curve = self.build_flat_curve(dividend)
+        vol_curve = ql.BlackVolTermStructureHandle(
+            ql.BlackConstantVol(today, ql.NullCalendar(), volatility, ql.Actual365Fixed())
+        )
+
+        # Spot quote
+        spot_handle = ql.QuoteHandle(ql.SimpleQuote(spot))
+
+        # Black-Scholes process
+        process = ql.BlackScholesMertonProcess(
+            spot_handle, dividend_curve, risk_free_curve, vol_curve
+        )
+
+        # Option (PUT instead of CALL)
+        payoff = ql.PlainVanillaPayoff(ql.Option.Put, strike)
+        exercise = ql.EuropeanExercise(expiry)
+        option = ql.VanillaOption(payoff, exercise)
+
+        # Pricing engine
+        engine = ql.AnalyticEuropeanEngine(process)
+        option.setPricingEngine(engine)
+
+        return option.NPV()
+
     def validate_discount_factor(
         self,
         our_df: float,
@@ -247,6 +295,100 @@ class QuantLibAdapter(BaseAdapter):
             tolerance,
             test_case=f"DF r={rate:.2%} T={term_years}Y",
         )
+
+    def calculate_greeks(
+        self,
+        spot: float,
+        strike: float,
+        rate: float,
+        dividend: float,
+        volatility: float,
+        time_to_expiry: float,
+        option_type: str = "call",
+    ) -> Dict[str, float]:
+        """
+        Calculate option Greeks using QuantLib analytical engine.
+
+        [T1] Provides external validation for our Black-Scholes Greeks.
+
+        Parameters
+        ----------
+        spot : float
+            Current spot price
+        strike : float
+            Strike price
+        rate : float
+            Risk-free interest rate (decimal)
+        dividend : float
+            Dividend yield (decimal)
+        volatility : float
+            Implied volatility (decimal)
+        time_to_expiry : float
+            Time to expiry in years
+        option_type : str
+            "call" or "put"
+
+        Returns
+        -------
+        Dict[str, float]
+            Dictionary with keys: delta, gamma, vega, theta, rho
+
+        Notes
+        -----
+        QuantLib scaling conventions:
+        - Vega is per 1% vol move (we scale by 0.01)
+        - Theta is per calendar day (we scale by 1/365)
+        - Rho is per 1% rate move (we scale by 0.01)
+        """
+        self.require_available()
+
+        today = ql.Date.todaysDate()
+        ql.Settings.instance().evaluationDate = today
+
+        # Create expiry date
+        expiry = self._make_date(time_to_expiry)
+
+        # Build curves
+        risk_free_curve = self.build_flat_curve(rate)
+        dividend_curve = self.build_flat_curve(dividend)
+        vol_curve = ql.BlackVolTermStructureHandle(
+            ql.BlackConstantVol(today, ql.NullCalendar(), volatility, ql.Actual365Fixed())
+        )
+
+        # Spot quote
+        spot_handle = ql.QuoteHandle(ql.SimpleQuote(spot))
+
+        # Black-Scholes process
+        process = ql.BlackScholesMertonProcess(
+            spot_handle, dividend_curve, risk_free_curve, vol_curve
+        )
+
+        # Option type
+        opt_type = ql.Option.Call if option_type.lower() == "call" else ql.Option.Put
+        payoff = ql.PlainVanillaPayoff(opt_type, strike)
+        exercise = ql.EuropeanExercise(expiry)
+        option = ql.VanillaOption(payoff, exercise)
+
+        # Pricing engine
+        engine = ql.AnalyticEuropeanEngine(process)
+        option.setPricingEngine(engine)
+
+        # Extract Greeks - align with our black_scholes.py conventions:
+        # - Our vega: scaled to 1% vol move (×0.01)
+        # - Our theta: scaled to per-day (/365.0)
+        # - Our rho: scaled to 1% rate move (×0.01)
+        #
+        # QuantLib conventions:
+        # - vega: per 100% move (absolute) → divide by 100 to get per 1%
+        # - theta: per year → divide by 365 to get per day
+        # - rho: per 100% move (absolute) → divide by 100 to get per 1%
+        return {
+            "delta": option.delta(),
+            "gamma": option.gamma(),
+            "vega": option.vega() / 100.0,  # Per 1% vol move (matches our convention)
+            "theta": option.theta() / 365.0,  # Per day (matches our convention)
+            "rho": option.rho() / 100.0,  # Per 1% rate move (matches our convention)
+        }
 
     def run_curve_tests(self) -> List[ValidationResult]:
         """

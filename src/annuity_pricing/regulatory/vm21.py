@@ -1,6 +1,33 @@
 """
 VM-21 Calculator - Phase 9.
 
+[PROTOTYPE] EDUCATIONAL USE ONLY - NOT FOR PRODUCTION REGULATORY FILING
+===========================================================================
+This module provides a simplified implementation of NAIC VM-21/AG43
+for educational purposes. Key limitations vs production requirements:
+
+MISSING FOR COMPLIANCE:
+- NAIC-prescribed scenario generator (GOES/AAA Economic Scenario Generator)
+- Full CDHS (Conditional Dynamic Hedging Scenarios) if applicable
+- Complete policy data model with all contract features
+- Prescribed mortality tables with improvement scales
+- Asset portfolio modeling and hedge effectiveness
+- Reinsurance and counterparty adjustments
+- Aggregation across all policies
+- VM-31 Actuarial Report requirements
+
+This implementation uses:
+- Custom Vasicek + GBM scenarios (NOT NAIC-prescribed)
+- Simplified single-policy projections
+- Educational mortality approximations
+- Simplified fee/benefit structures
+
+For production regulatory filing, requires FSA/MAAA certification and
+NAIC-compliant scenario generators. Estimated gap: 6-12 months, $15K+ annually.
+
+See: docs/regulatory/AG43_COMPLIANCE_GAP.md
+===========================================================================
+
 Implements NAIC VM-21 (AG43) for variable annuity reserves.
 
 Theory
@@ -93,6 +120,11 @@ class VM21Calculator:
     """
     VM-21 reserve calculator for variable annuities.
 
+    [PROTOTYPE] EDUCATIONAL USE ONLY
+    --------------------------------
+    This calculator is for educational/research purposes only.
+    NOT suitable for regulatory filings. See module docstring for details.
+
     [T1] VM-21 Reserve = max(CTE70, SSA, CSV floor)
 
     Examples
@@ -103,7 +135,10 @@ class VM21Calculator:
     >>> result.reserve > 0
     True
 
-    See: docs/knowledge/domain/vm21_vm22.md
+    See Also
+    --------
+    docs/regulatory/AG43_COMPLIANCE_GAP.md : Detailed compliance gap analysis
+    docs/knowledge/domain/vm21_vm22.md : Theory reference
     """
 
     def __init__(

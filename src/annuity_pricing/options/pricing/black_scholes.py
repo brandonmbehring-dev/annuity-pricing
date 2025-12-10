@@ -5,6 +5,7 @@ Implements analytical pricing for European options.
 See: CONSTITUTION.md Section 3.1
 See: docs/knowledge/domain/option_pricing.md
 See: docs/appendix/derivations/black_scholes.md
+See: docs/TOLERANCE_JUSTIFICATION.md for tolerance derivations
 
 References
 ----------
@@ -19,6 +20,7 @@ from typing import Optional
 import numpy as np
 from scipy import stats
 
+from annuity_pricing.config.tolerances import PUT_CALL_PARITY_TOLERANCE
 from annuity_pricing.options.payoffs.base import OptionType
 
 
@@ -385,7 +387,7 @@ def put_call_parity_check(
     rate: float,
     dividend: float,
     time_to_expiry: float,
-    tolerance: float = 0.01,
+    tolerance: float = PUT_CALL_PARITY_TOLERANCE,
 ) -> tuple[bool, float]:
     """
     Verify put-call parity holds.

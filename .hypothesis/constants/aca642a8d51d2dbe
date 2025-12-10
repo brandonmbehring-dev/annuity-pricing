@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/data/schemas.py
+# hypothesis_version: 6.148.7
+
+[0.0, 'FIA', 'MYGA', 'RILA', 'Unknown', 'Y', 'after', 'bufferModifier', 'bufferRate', 'capRate', 'companyName', 'effectiveDate', 'effectiveYield', 'fixedRate', 'guaranteeDuration', 'indexUsed', 'indexingMethod', 'mva', 'participationRate', 'premiumBand', 'productName', 'spreadRate', 'status', 'surrChargeDuration', 'termYears', 'unknown', 'up to']

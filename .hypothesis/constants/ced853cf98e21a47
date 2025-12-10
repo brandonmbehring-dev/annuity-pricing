@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/adapters/financepy_adapter.py
+# hypothesis_version: 6.148.7
+
+[0.0, 0.02, 0.05, 0.1, 0.2, 0.5, 1.0, 4.76, 7.45, 9.93, 12.72, 40.0, 42.0, 95.0, 100.0, 105.0, 2024, 'ATM', 'Hull 15.6', 'ITM', 'OTM', 'delta', 'financepy', 'gamma', 'price', 'rho', 'theta', 'vega']

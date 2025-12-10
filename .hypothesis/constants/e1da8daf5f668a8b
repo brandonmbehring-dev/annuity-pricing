@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/config/tolerances.py
+# hypothesis_version: 6.148.7
+
+[1e-10, 1e-08, 1e-06, 1e-05, 0.0001, 0.005, 0.006, 0.01, 0.02, 0.2, 3.0, ', ', 'anti_pattern', 'bs_mc_convergence', 'buffer_absorption', 'cap_enforcement', 'cross_library', 'floor_enforcement', 'golden_relative', 'greeks_numerical', 'greeks_validation', 'hull_example', 'integration', 'mc_100k', 'mc_10k', 'mc_500k', 'portfolio', 'put_call_parity']

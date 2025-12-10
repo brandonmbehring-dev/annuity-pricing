@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/adapters/__init__.py
+# hypothesis_version: 6.148.7
+
+['BaseAdapter', 'FINANCEPY_AVAILABLE', 'FinancepyAdapter', 'PYFENG_AVAILABLE', 'PyfengAdapter', 'QUANTLIB_AVAILABLE', 'QuantLibAdapter', 'ValidationResult']

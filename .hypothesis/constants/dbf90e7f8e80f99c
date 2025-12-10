@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/options/payoffs/rila.py
+# hypothesis_version: 6.148.7
+
+[0.0, 'buffer', 'buffer_applied', 'buffer_benefit', 'buffer_better', 'buffer_credits', 'buffer_floor', 'buffer_rate', 'cap_rate', 'floor', 'floor_benefit', 'floor_better', 'floor_credits', 'floor_rate', 'index_returns', 'method', 'same', 'tier1_buffer', 'tier2_buffer', 'tier2_protection']

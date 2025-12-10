@@ -14,6 +14,7 @@ Golden Values (MC convergence to BS)
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 
+from annuity_pricing.config.tolerances import CROSS_LIBRARY_TOLERANCE
 from .base import BaseAdapter, ValidationResult
 
 
@@ -203,7 +204,7 @@ class PyfengAdapter(BaseAdapter):
         dividend: float,
         volatility: float,
         time_to_expiry: float,
-        tolerance: float = 0.01,
+        tolerance: float = CROSS_LIBRARY_TOLERANCE,
     ) -> ValidationResult:
         """Validate our BS implementation against pyfeng's BS."""
         external_price = self.price_bs_call(

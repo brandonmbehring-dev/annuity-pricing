@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/competitive/rankings.py
+# hypothesis_version: 6.148.7
+
+[100, 'Competitive', 'Follower', 'Leader', 'Unknown', 'avg_rate', 'best_rate', 'company', 'companyName', 'count', 'current', 'duration', 'duration_coverage', 'durations_available', 'fixedRate', 'guaranteeDuration', 'max', 'mean', 'min', 'min_rate', 'product', 'productGroup', 'productName', 'product_count', 'rank', 'rate', 'rate_max', 'rate_mean', 'rate_median', 'rate_min', 'rate_percentile', 'status', 'tier', 'total_companies', 'total_products']

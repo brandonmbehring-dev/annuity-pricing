@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/products/fia.py
+# hypothesis_version: 6.148.7
+
+[0.0, 1e-10, 1e-08, 1e-06, 0.01, 0.03, 1.0, 100.0, 252, 100000, 'FIA', 'average', 'averaging', 'cap', 'capRate', 'cap_rate', 'company_name', 'cos', 'discount_factor', 'error', 'expected_credit', 'fair_cap', 'fair_participation', 'indexUsed', 'index_used', 'indexingMethod', 'indexing_method', 'method', 'monthly', 'monthly_average', 'params', 'participation', 'participationRate', 'participation_rate', 'premium', 'present_value', 'productGroup', 'product_name', 'spread', 'spread_rate', 'term_years', 'trigger', 'trigger_rate']

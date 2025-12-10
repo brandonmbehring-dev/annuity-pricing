@@ -244,6 +244,9 @@ class ProductRegistry:
                 context["cap_rate"] = product.cap_rate
             if product.participation_rate is not None:
                 context["participation_rate"] = product.participation_rate
+            # [FIX] Include spread_rate for validation (codex-audit Finding 2)
+            if product.spread_rate is not None:
+                context["spread_rate"] = product.spread_rate
 
         # RILA-specific context
         elif isinstance(product, RILAProduct):

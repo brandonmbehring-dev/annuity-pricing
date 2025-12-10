@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/options/simulation/gbm.py
+# hypothesis_version: 6.148.7
+
+[0.01, 0.5, 100, 100000, 'mean_error', 'mean_error_pct', 'mean_se', 'mean_z_score', 'n_paths', 'simulated_mean', 'theoretical_mean', 'validation_passed', 'variance_error_pct']

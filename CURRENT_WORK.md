@@ -1,73 +1,92 @@
 # CURRENT_WORK.md - 30-Second Context Switch
 
-**Last Updated**: 2025-12-05 | **Session**: Phase 10 Complete
+**Last Updated**: 2025-12-09 | **Session**: E2E Testing Remediation Complete
 
 ---
 
 ## Right Now
 
-All implementation phases complete (0-10). Project in maintenance/enhancement mode.
+Completed comprehensive E2E testing remediation (P0-P3). All priority items implemented.
 
-**Phase**: 10 Complete ✅
+**Phase**: E2E Testing Remediation Complete ✅
 
-**Test Status**: 953 passed, 4 skipped
-
----
-
-## What Was Just Completed
-
-### Phase 10: Data Integration ✅
-- `loaders/yield_curve.py` — YieldCurve, Nelson-Siegel, interpolation, duration
-- `loaders/mortality.py` — SOA 2012 IAM, Gompertz, life expectancy, annuity PV
-- 83 tests for loaders
-
-### Phase 9: Regulatory Modules ✅
-- `regulatory/scenarios.py` — Vasicek + GBM correlated scenarios
-- `regulatory/vm21.py` — VM-21/AG43 CTE calculations
-- `regulatory/vm22.py` — VM-22 fixed annuity PBR
-- 91 tests for regulatory
-
-### Phase 8: GLWB Modules ✅
-- `glwb/rollup.py` — Simple/compound rollup, ratchet mechanics
-- `glwb/gwb_tracker.py` — GWB state tracking with fees, withdrawals
-- `glwb/path_sim.py` — Path-dependent MC with mortality, fair fee calculation
-- 64 tests for GLWB
-
-### Phase 7: Behavioral Modules ✅
-- `behavioral/dynamic_lapse.py` — Moneyness-based lapse rates
-- `behavioral/withdrawal.py` — GLWB withdrawal utilization
-- `behavioral/expenses.py` — Per-policy + M&E + acquisition costs
-- 70 tests for behavioral
+**Test Status**: 2471 passed, 6 skipped (85% coverage)
 
 ---
 
-## Potential Next Steps
+## What Was Just Completed (2025-12-09)
 
-| Task | Description |
-|------|-------------|
-| Integration notebook | Demonstrate GLWB pricing end-to-end |
-| Mortality validation | Cross-validate SOA tables against Julia/R |
-| Yield curve validation | Cross-validate against QuantLib curves |
-| Documentation | API reference, usage examples |
+### E2E Testing Remediation - P3 Items ✅
+
+| Item | Status | Details |
+|------|--------|---------|
+| Multi-seed stability | ✅ Already existed | `test_mc_multi_seed.py` (15 tests, CV < 5%) |
+| 100% buffer edge case | ✅ Fixed | `rila.py:586` maps 100% buffer → ATM put |
+| Oracle fallback | ✅ Implemented | Golden file + conftest fixtures + 9 tests |
+| Coverage gating | ✅ Configured | 75% threshold in pyproject.toml + CI |
+
+**Files created/modified**:
+- `tests/golden/outputs/oracle_bs_prices.json` — Stored BS oracle values
+- `tests/validation/test_bs_vs_oracle.py` — Oracle fallback tests (9 tests)
+- `tests/conftest.py` — Oracle loading fixtures
+- `tests/anti_patterns/test_buffer_mechanics.py` — Added 5 edge case tests
+- `src/annuity_pricing/products/rila.py` — Fixed 100% buffer edge case
+- `tests/golden/outputs/wink_products.json` — Updated deep buffer golden
+- `pyproject.toml` — Added coverage configuration (75% threshold)
+- `.github/workflows/ci.yml` — Added coverage gates + anti-pattern tests
+
+---
+
+### E2E Testing Remediation - Full Summary
+
+| Priority | Items | Status |
+|----------|-------|--------|
+| **P0** | Anti-patterns, Hull validation, Put-call parity | ✅ Complete |
+| **P1** | Cross-library BS, MC convergence, Heston COS | ✅ Complete |
+| **P2** | Hedge effectiveness, Variance reduction, Integration | ✅ Complete |
+| **P3** | Multi-seed, Oracle fallback, Buffer edge case, Coverage | ✅ Complete |
+
+**Total new tests added**: ~900+ tests across all priorities
+
+---
+
+## Phase History
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| A-I | Core implementation phases | ✅ Complete |
+| Audit | Repository audit + fixes | ✅ Complete |
+| Stream E | Codex accuracy audit | ✅ Complete |
+| Stream F | Code quality hardening | ✅ Complete |
+| Stream G | Audit v2 remediation | ✅ Complete |
+| **E2E** | **End-to-end testing remediation** | ✅ **Complete** |
+
+---
+
+## Test Coverage Summary
+
+```
+Total tests: 2471 passed, 6 skipped
+Coverage: 85.19% (threshold: 75%)
+
+Test categories:
+- anti_patterns/: Bug prevention (critical)
+- validation/: External verification (Hull, cross-library)
+- unit/: Standard unit tests
+- integration/: Workflow tests
+- golden/: Regression tests
+- properties/: Property-based tests
+```
 
 ---
 
 ## Context When I Return
 
-**Files created this session**:
-- `src/annuity_pricing/loaders/yield_curve.py`
-- `src/annuity_pricing/loaders/mortality.py`
-- `src/annuity_pricing/loaders/__init__.py`
-- `tests/unit/test_loaders_yield_curve.py`
-- `tests/unit/test_loaders_mortality.py`
+**No blockers. All major work complete.**
 
-**Key modules by phase**:
-- Phase 7: `behavioral/` (dynamic_lapse, withdrawal, expenses)
-- Phase 8: `glwb/` (rollup, gwb_tracker, path_sim)
-- Phase 9: `regulatory/` (scenarios, vm21, vm22)
-- Phase 10: `loaders/` (yield_curve, mortality)
-
-**Blockers**: None
+**6 skipped tests** (expected):
+- `test_delta_hedge_across_spot_shocks` (6 parameterized cases)
+- Skip reason: "Negligible P&L ($0.00)" - intentional skip when hedge P&L too small
 
 ---
 
@@ -77,4 +96,5 @@ All implementation phases complete (0-10). Project in maintenance/enhancement mo
 |----------|---------|
 | [ROADMAP.md](ROADMAP.md) | Progress tracking |
 | [CONSTITUTION.md](CONSTITUTION.md) | Frozen methodology |
-| [Plan file](~/.claude/plans/purrfect-wondering-rabin.md) | Full implementation plan |
+| [docs/TOLERANCE_JUSTIFICATION.md](docs/TOLERANCE_JUSTIFICATION.md) | Test tolerance tiers |
+| [tests/conftest.py](tests/conftest.py) | Shared fixtures + oracle fallback |

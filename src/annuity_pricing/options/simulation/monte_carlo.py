@@ -14,7 +14,7 @@ See: Glasserman (2003) "Monte Carlo Methods in Financial Engineering"
 """
 
 from dataclasses import dataclass
-from typing import Callable, Optional, Union
+from typing import Callable, Optional, Union, TYPE_CHECKING
 
 import numpy as np
 
@@ -25,6 +25,9 @@ from annuity_pricing.options.simulation.gbm import (
     generate_gbm_paths,
     generate_terminal_values,
 )
+
+if TYPE_CHECKING:
+    from annuity_pricing.options.pricing.heston import HestonParams
 
 
 @dataclass(frozen=True)
@@ -232,6 +235,116 @@ class MonteCarloEngine:
             payoffs[i] = params.spot * result.credited_return
 
         return self._compute_result(params, payoffs)
+
+    def price_with_payoff_heston(
+        self,
+        spot: float,
+        rate: float,
+        dividend: float,
+        time_to_expiry: float,
+        heston_params: "HestonParams",
+        payoff: BasePayoff,
+        n_steps: int = 252,
+    ) -> MCResult:
+        """
+        Price option with custom payoff using Heston stochastic volatility paths.
+
+        [T1] Generates paths using Andersen QE scheme for variance process.
+        Uses vectorized calculation when available, falls back to path-by-path.
+
+        Parameters
+        ----------
+        spot : float
+            Initial spot price
+        rate : float
+            Risk-free rate (decimal)
+        dividend : float
+            Dividend yield (decimal)
+        time_to_expiry : float
+            Time to expiry in years
+        heston_params : HestonParams
+            Heston model parameters (v0, kappa, theta, sigma, rho)
+        payoff : BasePayoff
+            Payoff object (FIA or RILA)
+        n_steps : int, default 252
+            Number of time steps for path simulation
+
+        Returns
+        -------
+        MCResult
+            Monte Carlo pricing result with credited returns
+
+        Examples
+        --------
+        >>> from annuity_pricing.options.pricing.heston import HestonParams
+        >>> heston = HestonParams(v0=0.04, kappa=2.0, theta=0.04, sigma=0.3, rho=-0.7)
+        >>> engine = MonteCarloEngine(n_paths=50000, seed=42)
+        >>> result = engine.price_with_payoff_heston(100, 0.05, 0.02, 1.0, heston, payoff)
+        """
+        from annuity_pricing.options.simulation.heston_paths import (
+            generate_heston_paths,
+            generate_heston_terminal_spots,
+        )
+
+        # Create a dummy GBMParams for _compute_result (uses rate, time_to_expiry)
+        dummy_params = GBMParams(
+            spot=spot,
+            rate=rate,
+            dividend=dividend,
+            volatility=np.sqrt(heston_params.v0),  # Use sqrt(v0) as reference vol
+            time_to_expiry=time_to_expiry,
+        )
+
+        # Use vectorized path for point-to-point payoffs
+        if payoff.supports_vectorized():
+            # Generate only terminal values for efficiency
+            terminal = generate_heston_terminal_spots(
+                spot=spot,
+                time=time_to_expiry,
+                steps=n_steps,
+                paths=self.n_paths,
+                rate=rate,
+                dividend=dividend,
+                params=heston_params,
+                seed=self.seed,
+            )
+
+            # Calculate returns
+            index_returns = (terminal - spot) / spot
+
+            # Vectorized payoff calculation
+            credited_returns = payoff.calculate_vectorized(index_returns)
+
+            # Convert to dollar payoffs
+            payoffs = spot * credited_returns
+
+            return self._compute_result(dummy_params, payoffs)
+
+        # Fallback: full path simulation for path-dependent payoffs
+        path_result = generate_heston_paths(
+            spot=spot,
+            time=time_to_expiry,
+            steps=n_steps,
+            paths=self.n_paths,
+            rate=rate,
+            dividend=dividend,
+            params=heston_params,
+            seed=self.seed,
+        )
+
+        # Calculate payoffs for each path
+        payoffs = np.zeros(self.n_paths)
+        for i in range(self.n_paths):
+            # Create IndexPath from Heston path
+            index_path = IndexPath(
+                times=path_result.times,
+                values=path_result.spot_paths[i, :],
+            )
+            result = payoff.calculate_from_path(index_path)
+            # Convert credited return to dollar payoff
+            payoffs[i] = spot * result.credited_return
+
+        return self._compute_result(dummy_params, payoffs)
 
     def price_with_terminal_payoff(
         self,

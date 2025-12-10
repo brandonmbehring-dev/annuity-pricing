@@ -20,7 +20,7 @@
 \usepackage{geometry}
 \usepackage{hyperref}
 \usepackage{xcolor}
-\usepackage{natbib}
+% natbib removed - biblatex is used in main.tex instead
 % UTF-8 is default in modern LaTeX; inputenc is not needed
 % \usepackage[utf-8]{inputenc}
 
@@ -214,7 +214,7 @@
 % References
 % ============================================================================
 
-\bibliographystyle{agsm}
+% bibliographystyle removed - using biblatex in main.tex
 \renewcommand\refname{References}
 
 \endinput

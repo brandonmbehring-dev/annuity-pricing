@@ -13,7 +13,7 @@ See: CONSTITUTION.md Section 3.2
 See: docs/knowledge/domain/crediting_methods.md
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 from typing import Any, Optional
 
@@ -23,6 +23,7 @@ import pandas as pd
 from annuity_pricing.data.schemas import FIAProduct
 from annuity_pricing.options.payoffs.fia import (
     CappedCallPayoff,
+    MonthlyAveragePayoff,
     ParticipationPayoff,
     SpreadPayoff,
     TriggerPayoff,
@@ -32,6 +33,12 @@ from annuity_pricing.options.pricing.black_scholes import (
     black_scholes_call,
     price_capped_call,
     _calculate_d1_d2,
+)
+from annuity_pricing.options.volatility_models import (
+    VolatilityModel,
+    VolatilityModelType,
+    HestonVolatility,
+    SABRVolatility,
 )
 from scipy.stats import norm
 from annuity_pricing.options.simulation.gbm import GBMParams
@@ -70,6 +77,13 @@ class MarketParams:
     """
     Market parameters for FIA pricing.
 
+    [T1] Hybrid architecture for volatility models:
+    - volatility: Required scalar field (backward compatible, default BS)
+    - vol_model: Optional override for stochastic volatility (Heston/SABR)
+
+    If vol_model is provided, pricing dispatcher uses that model.
+    Otherwise, falls back to Black-Scholes with scalar volatility.
+
     Attributes
     ----------
     spot : float
@@ -80,12 +94,28 @@ class MarketParams:
         Index dividend yield (annualized, decimal)
     volatility : float
         Index volatility (annualized, decimal)
+        Used for Black-Scholes or as fallback when vol_model not provided.
+    vol_model : VolatilityModel, optional
+        Stochastic volatility model override (Heston or SABR).
+        If provided, takes precedence over scalar volatility for option pricing.
+
+    Examples
+    --------
+    >>> # Standard Black-Scholes (backward compatible)
+    >>> market = MarketParams(spot=100, risk_free_rate=0.05, dividend_yield=0.02, volatility=0.20)
+
+    >>> # Heston stochastic volatility
+    >>> from annuity_pricing.options.pricing.heston import HestonParams
+    >>> from annuity_pricing.options.volatility_models import HestonVolatility
+    >>> heston = HestonVolatility(HestonParams(v0=0.04, kappa=2.0, theta=0.04, sigma=0.3, rho=-0.7))
+    >>> market = MarketParams(spot=100, risk_free_rate=0.05, dividend_yield=0.02, volatility=0.20, vol_model=heston)
     """
 
     spot: float
     risk_free_rate: float
     dividend_yield: float
     volatility: float
+    vol_model: Optional[VolatilityModel] = None
 
     def __post_init__(self) -> None:
         """Validate market params."""
@@ -93,6 +123,23 @@ class MarketParams:
             raise ValueError(f"CRITICAL: spot must be > 0, got {self.spot}")
         if self.volatility < 0:
             raise ValueError(f"CRITICAL: volatility must be >= 0, got {self.volatility}")
+
+    def uses_stochastic_vol(self) -> bool:
+        """Check if stochastic volatility model is configured."""
+        return self.vol_model is not None
+
+    def get_vol_model_type(self) -> VolatilityModelType:
+        """
+        Get the volatility model type.
+
+        Returns
+        -------
+        VolatilityModelType
+            BLACK_SCHOLES if no vol_model, otherwise the model's type.
+        """
+        if self.vol_model is None:
+            return VolatilityModelType.BLACK_SCHOLES
+        return self.vol_model.get_model_type()
 
 
 class FIAPricer(BasePricer):
@@ -202,10 +249,22 @@ class FIAPricer(BasePricer):
         # Determine crediting method
         method, params = self._determine_crediting_method(product)
 
-        # [F.1] Calculate option budget SCALED BY TERM
-        # Multi-year FIA needs proportionally larger option budget
-        # e.g., 5-year term with 3% annual budget = 15% total budget
-        option_budget = premium * self.option_budget_pct * term_years
+        # [F.1] Calculate option budget with TIME VALUE OF MONEY
+        # Option budget is the present value of annual hedge spend over term.
+        # Uses annuity-immediate factor: PV of $1/year for n years at rate r
+        #
+        # Formula: a_n = (1 - (1 + r)^(-n)) / r
+        #
+        # [FIX] Previously used linear scaling (budget = pct * term) which
+        # ignored time value. Discounted approach is more accurate for
+        # multi-year terms. See: codex-audit-report.md Finding 3
+        r = self.market_params.risk_free_rate
+        if r > 1e-8:  # Avoid division by zero
+            annuity_factor = (1 - (1 + r) ** (-term_years)) / r
+        else:
+            # At r=0, annuity factor equals term (linear case)
+            annuity_factor = term_years
+        option_budget = premium * self.option_budget_pct * annuity_factor
 
         # Price embedded option using Black-Scholes
         embedded_option_value = self._price_embedded_option(
@@ -372,6 +431,79 @@ class FIAPricer(BasePricer):
                 "Check WINK data or product configuration."
             )
 
+    def _price_call_option(
+        self,
+        strike: float,
+        term_years: float,
+    ) -> float:
+        """
+        Price a call option using the appropriate volatility model.
+
+        [T1] Dispatcher routes to Black-Scholes, Heston, or SABR based on
+        the vol_model configured in market_params.
+
+        Parameters
+        ----------
+        strike : float
+            Strike price
+        term_years : float
+            Time to expiry in years
+
+        Returns
+        -------
+        float
+            Call option price
+        """
+        m = self.market_params
+        model_type = m.get_vol_model_type()
+
+        if model_type == VolatilityModelType.BLACK_SCHOLES:
+            # Standard Black-Scholes with scalar volatility
+            return black_scholes_call(
+                m.spot, strike, m.risk_free_rate, m.dividend_yield, m.volatility, term_years
+            )
+
+        elif model_type == VolatilityModelType.HESTON:
+            # Heston stochastic volatility via COS method
+            from annuity_pricing.options.pricing.heston import heston_price
+            from annuity_pricing.options.payoffs.base import OptionType
+
+            heston_vol = m.vol_model
+            assert isinstance(heston_vol, HestonVolatility), "Expected HestonVolatility"
+
+            return heston_price(
+                spot=m.spot,
+                strike=strike,
+                rate=m.risk_free_rate,
+                dividend=m.dividend_yield,
+                time=term_years,
+                params=heston_vol.params,
+                option_type=OptionType.CALL,
+                method="cos",  # COS is most accurate (0% error vs QuantLib)
+            )
+
+        elif model_type == VolatilityModelType.SABR:
+            # SABR: compute implied vol, then use Black-Scholes
+            from annuity_pricing.options.pricing.sabr import sabr_price_call
+
+            sabr_vol = m.vol_model
+            assert isinstance(sabr_vol, SABRVolatility), "Expected SABRVolatility"
+
+            return sabr_price_call(
+                spot=m.spot,
+                strike=strike,
+                rate=m.risk_free_rate,
+                dividend=m.dividend_yield,
+                time=term_years,
+                params=sabr_vol.params,
+            )
+
+        else:
+            raise ValueError(
+                f"CRITICAL: Unknown volatility model type: {model_type}. "
+                f"Supported: BLACK_SCHOLES, HESTON, SABR"
+            )
+
     def _price_embedded_option(
         self,
         method: str,
@@ -380,7 +512,10 @@ class FIAPricer(BasePricer):
         premium: float,
     ) -> float:
         """
-        Price the embedded option using Black-Scholes.
+        Price the embedded option using appropriate volatility model.
+
+        [T1] Uses _price_call_option dispatcher for all option pricing.
+        Supports Black-Scholes, Heston, and SABR models.
 
         Parameters
         ----------
@@ -405,16 +540,12 @@ class FIAPricer(BasePricer):
             cap_rate = params["cap_rate"]
 
             # ATM call
-            atm_call = black_scholes_call(
-                m.spot, m.spot, m.risk_free_rate, m.dividend_yield, m.volatility, term_years
-            )
+            atm_call = self._price_call_option(m.spot, term_years)
 
             # OTM call at cap strike (S * (1 + cap))
             if cap_rate > 0:
                 cap_strike = m.spot * (1 + cap_rate)
-                otm_call = black_scholes_call(
-                    m.spot, cap_strike, m.risk_free_rate, m.dividend_yield, m.volatility, term_years
-                )
+                otm_call = self._price_call_option(cap_strike, term_years)
                 capped_call_value = atm_call - otm_call
             else:
                 capped_call_value = 0.0
@@ -424,27 +555,28 @@ class FIAPricer(BasePricer):
         elif method == "participation":
             # Participation = par_rate × ATM call
             par_rate = params["participation_rate"]
-            atm_call = black_scholes_call(
-                m.spot, m.spot, m.risk_free_rate, m.dividend_yield, m.volatility, term_years
-            )
+            atm_call = self._price_call_option(m.spot, term_years)
             return par_rate * (atm_call / m.spot) * premium
 
         elif method == "spread":
             # Spread: approximately ATM call with adjusted strike
             spread_rate = params["spread_rate"]
             effective_strike = m.spot * (1 + spread_rate)
-            spread_call = black_scholes_call(
-                m.spot, effective_strike, m.risk_free_rate, m.dividend_yield, m.volatility, term_years
-            )
+            spread_call = self._price_call_option(effective_strike, term_years)
             return (spread_call / m.spot) * premium
 
         elif method == "trigger":
             # [T1] Digital option pricing using risk-neutral probability
             # PV(digital) = e^(-rT) * N(d2) * trigger_rate * notional
             # where N(d2) is the risk-neutral probability of finishing ITM
+            #
+            # NOTE: For stochastic vol models, digital pricing differs.
+            # This currently uses BS-based d2; future enhancement could
+            # use model-specific digital pricing.
             trigger_rate = params["trigger_rate"]
 
             # Calculate d1, d2 for ATM option (strike = spot)
+            # Use scalar volatility for d2 (BS approximation)
             d1, d2 = _calculate_d1_d2(
                 m.spot, m.spot, m.risk_free_rate, m.dividend_yield,
                 m.volatility, term_years
@@ -463,15 +595,11 @@ class FIAPricer(BasePricer):
             # Use MC result (expected_credit) for accurate pricing.
             cap_rate = params["cap_rate"]
 
-            atm_call = black_scholes_call(
-                m.spot, m.spot, m.risk_free_rate, m.dividend_yield, m.volatility, term_years
-            )
+            atm_call = self._price_call_option(m.spot, term_years)
 
             if cap_rate > 0:
                 cap_strike = m.spot * (1 + cap_rate)
-                otm_call = black_scholes_call(
-                    m.spot, cap_strike, m.risk_free_rate, m.dividend_yield, m.volatility, term_years
-                )
+                otm_call = self._price_call_option(cap_strike, term_years)
                 capped_call_value = atm_call - otm_call
             else:
                 capped_call_value = 0.0
@@ -489,6 +617,9 @@ class FIAPricer(BasePricer):
     ) -> float:
         """
         Calculate expected credited return via Monte Carlo.
+
+        [T1] Uses GBM or Heston paths based on vol_model configuration.
+        Dispatches to appropriate MC method for path generation.
 
         Parameters
         ----------
@@ -511,17 +642,41 @@ class FIAPricer(BasePricer):
         # Create payoff object
         payoff = create_fia_payoff(method, **params)
 
-        # Set up GBM parameters
-        gbm_params = GBMParams(
-            spot=self.market_params.spot,
-            rate=self.market_params.risk_free_rate,
-            dividend=self.market_params.dividend_yield,
-            volatility=self.market_params.volatility,
-            time_to_expiry=term_years,
-        )
+        # Determine n_steps based on payoff type
+        # [FIX] Monthly averaging requires 12 observations per year, not 252 daily
+        # See: docs/knowledge/derivations/monte_carlo.md (ObservationSchedule design)
+        if isinstance(payoff, MonthlyAveragePayoff):
+            n_steps = int(12 * term_years)  # 12 monthly observations per year
+        else:
+            n_steps = 252  # Default daily for other payoffs
 
-        # Price using MC engine
-        mc_result = self.mc_engine.price_with_payoff(gbm_params, payoff)
+        # Dispatch to appropriate MC method based on vol_model
+        model_type = self.market_params.get_vol_model_type()
+
+        if model_type == VolatilityModelType.HESTON:
+            # Use Heston paths for MC simulation
+            heston_vol = self.market_params.vol_model
+            assert isinstance(heston_vol, HestonVolatility), "Expected HestonVolatility"
+
+            mc_result = self.mc_engine.price_with_payoff_heston(
+                spot=self.market_params.spot,
+                rate=self.market_params.risk_free_rate,
+                dividend=self.market_params.dividend_yield,
+                time_to_expiry=term_years,
+                heston_params=heston_vol.params,
+                payoff=payoff,
+                n_steps=n_steps,
+            )
+        else:
+            # Use GBM paths (default: BS or SABR falls back to GBM paths)
+            gbm_params = GBMParams(
+                spot=self.market_params.spot,
+                rate=self.market_params.risk_free_rate,
+                dividend=self.market_params.dividend_yield,
+                volatility=self.market_params.volatility,
+                time_to_expiry=term_years,
+            )
+            mc_result = self.mc_engine.price_with_payoff(gbm_params, payoff, n_steps=n_steps)
 
         # Convert back to return (MC gives dollar payoff)
         expected_credit = mc_result.payoffs.mean() / self.market_params.spot
@@ -538,6 +693,7 @@ class FIAPricer(BasePricer):
         Solve for fair cap rate given option budget.
 
         [T1] Find cap such that capped_call_value = option_budget
+        Uses pricing dispatcher for consistent volatility model handling.
 
         Parameters
         ----------
@@ -555,10 +711,8 @@ class FIAPricer(BasePricer):
         """
         m = self.market_params
 
-        # ATM call value
-        atm_call = black_scholes_call(
-            m.spot, m.spot, m.risk_free_rate, m.dividend_yield, m.volatility, term_years
-        )
+        # ATM call value using dispatcher
+        atm_call = self._price_call_option(m.spot, term_years)
         atm_call_pct = atm_call / m.spot
 
         # Budget as percentage of premium
@@ -576,9 +730,7 @@ class FIAPricer(BasePricer):
             mid = (low + high) / 2
             cap_strike = m.spot * (1 + mid)
 
-            otm_call = black_scholes_call(
-                m.spot, cap_strike, m.risk_free_rate, m.dividend_yield, m.volatility, term_years
-            )
+            otm_call = self._price_call_option(cap_strike, term_years)
             capped_value = (atm_call - otm_call) / m.spot
 
             if abs(capped_value - target) < 1e-6:
@@ -600,6 +752,7 @@ class FIAPricer(BasePricer):
         Solve for fair participation rate given option budget.
 
         [T1] Participation = option_budget / ATM_call_value
+        Uses pricing dispatcher for consistent volatility model handling.
 
         Parameters
         ----------
@@ -617,10 +770,8 @@ class FIAPricer(BasePricer):
         """
         m = self.market_params
 
-        # ATM call value as percentage
-        atm_call = black_scholes_call(
-            m.spot, m.spot, m.risk_free_rate, m.dividend_yield, m.volatility, term_years
-        )
+        # ATM call value using dispatcher
+        atm_call = self._price_call_option(m.spot, term_years)
         atm_call_pct = atm_call / m.spot
 
         if atm_call_pct < 1e-10:

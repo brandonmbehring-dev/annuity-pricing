@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/competitive/spreads.py
+# hypothesis_version: 6.148.7
+
+[100, 10000, 'DGS1', 'DGS10', 'DGS2', 'DGS3', 'DGS5', 'DGS7', 'count', 'current', 'fixedRate', 'guaranteeDuration', 'market_median_bps', 'max', 'max_bps', 'mean', 'mean_spread_bps', 'median', 'median_spread_bps', 'min', 'min_bps', 'percentile', 'productGroup', 'rank', 'spread_bps', 'status', 'std', 'std_bps', 'total_products', 'vs_median_bps']

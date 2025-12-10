@@ -3,11 +3,19 @@ Frozen configuration settings for actuarial pricing.
 
 All configuration is immutable (frozen dataclasses) to ensure reproducibility.
 See: CONSTITUTION.md for methodology specifications.
+See: docs/TOLERANCE_JUSTIFICATION.md for tolerance derivations.
 """
 
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Tuple
+
+# Import centralized tolerances
+from annuity_pricing.config.tolerances import (
+    ANTI_PATTERN_TOLERANCE,
+    BS_MC_CONVERGENCE_TOLERANCE,
+    PUT_CALL_PARITY_TOLERANCE,
+)
 
 
 # =============================================================================
@@ -95,6 +103,11 @@ class OptionConfig:
         Random seed for reproducibility
     trading_days_per_year : int
         Number of trading days in a year
+
+    Note
+    ----
+    Tolerances are now centralized in config/tolerances.py.
+    See docs/TOLERANCE_JUSTIFICATION.md for derivations.
     """
 
     # Monte Carlo parameters [T3: Assumptions]
@@ -102,14 +115,12 @@ class OptionConfig:
     mc_seed: int = 42  # Reproducibility
     trading_days_per_year: int = 252  # [T1]
 
-    # Convergence tolerance [T1]
-    bs_mc_tolerance: float = 0.01  # 1% relative error for vanilla
-
-    # No-arbitrage bounds tolerance [T1]
-    arbitrage_tolerance: float = 1e-6
-
-    # Put-call parity tolerance [T1]
-    put_call_parity_tolerance: float = 0.01
+    # Tolerances from centralized module (see docs/TOLERANCE_JUSTIFICATION.md)
+    # These are kept here for backward compatibility but should be accessed
+    # directly from tolerances.py in new code.
+    bs_mc_tolerance: float = BS_MC_CONVERGENCE_TOLERANCE  # Was 0.01, now from tolerances
+    arbitrage_tolerance: float = ANTI_PATTERN_TOLERANCE  # Was 1e-6, now 1e-10
+    put_call_parity_tolerance: float = PUT_CALL_PARITY_TOLERANCE  # Was 0.01, now 1e-8
 
 
 # =============================================================================

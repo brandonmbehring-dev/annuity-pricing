@@ -1,0 +1,4 @@
+# file: /home/brandon_behring/Claude/annuity-pricing/src/annuity_pricing/regulatory/scenarios.py
+# hypothesis_version: 6.148.7
+
+[-0.2, 0.0, 0.01, 0.02, 0.04, 0.07, 0.18, 0.2, 0.5, 1.0, 100.0, 1000, 'equity_return_mean', 'equity_return_std', 'n_scenarios', 'projection_years', 'rate_max', 'rate_mean', 'rate_min', 'rate_std', 'terminal_rate_5pct', 'terminal_rate_95pct', 'terminal_rate_mean']

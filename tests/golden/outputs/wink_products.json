@@ -312,9 +312,8 @@
       }
     },
     "expected": {
-      "buffer_cost_pct": 17.04,
-      "notes": "Full downside protection - requires special handling (OTM strike=0)",
-      "skip_reason": "100% buffer requires special pricing logic"
+      "buffer_cost_pct": 6.33,
+      "notes": "Full downside protection - 100% buffer equals ATM put value"
     }
   },
   "rila_edge_shallow_buffer": {
