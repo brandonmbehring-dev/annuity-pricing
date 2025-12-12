@@ -88,8 +88,15 @@ actuarial = [
     "actuarialmath>=1.0",     # Life contingencies (Python)
     "lifelib>=0.8",           # Actuarial models library
 ]
+docs = [
+    "sphinx>=7.0",
+    "furo>=2024.1",
+    "myst-nb>=1.0",
+    "sphinx-autodoc-typehints>=2.0",
+    "sphinx-copybutton>=0.5",
+]
 all = [
-    "annuity-pricing[dev,viz,vol,validation,actuarial]",
+    "annuity-pricing[dev,viz,vol,validation,actuarial,docs]",
 ]
 
 [build-system]
