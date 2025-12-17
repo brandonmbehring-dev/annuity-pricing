@@ -20,15 +20,21 @@ __version__ = "0.2.0"
 # =============================================================================
 # Products - Primary API
 # =============================================================================
-from annuity_pricing.products.fia import FIAPricer, FIAPricingResult, FIAProduct
-from annuity_pricing.products.rila import RILAPricer, RILAPricingResult, RILAProduct
-from annuity_pricing.products.myga import MYGAPricer, MYGAProduct
+from annuity_pricing.products.fia import FIAPricer, FIAPricingResult
+from annuity_pricing.products.rila import RILAPricer, RILAPricingResult
+from annuity_pricing.products.myga import MYGAPricer
+from annuity_pricing.products.glwb import GLWBPricer, GLWBPricingResult
+
+# Product dataclasses from schemas
+from annuity_pricing.data.schemas import FIAProduct, RILAProduct, MYGAProduct, GLWBProduct
 
 # =============================================================================
 # Market Parameters
 # =============================================================================
 from annuity_pricing.products.fia import MarketParams
-from annuity_pricing.products.fia import (
+
+# Volatility models
+from annuity_pricing.options.volatility_models import (
     VolatilityModelType,
     HestonVolatility,
     SABRVolatility,
@@ -86,6 +92,9 @@ __all__ = [
     "RILAProduct",
     "MYGAPricer",
     "MYGAProduct",
+    "GLWBPricer",
+    "GLWBPricingResult",
+    "GLWBProduct",
     # Market
     "MarketParams",
     "VolatilityModelType",

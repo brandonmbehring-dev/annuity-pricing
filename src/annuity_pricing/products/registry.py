@@ -16,6 +16,7 @@ import pandas as pd
 from annuity_pricing.data.schemas import (
     BaseProduct,
     FIAProduct,
+    GLWBProduct,
     MYGAProduct,
     RILAProduct,
     create_fia_from_row,
@@ -26,12 +27,13 @@ from annuity_pricing.products.base import BasePricer, CompetitivePosition, Prici
 from annuity_pricing.products.myga import MYGAPricer
 from annuity_pricing.products.fia import FIAPricer, FIAPricingResult, MarketParams as FIAMarketParams
 from annuity_pricing.products.rila import RILAPricer, RILAPricingResult, MarketParams as RILAMarketParams
+from annuity_pricing.products.glwb import GLWBPricer, GLWBPricingResult
 from annuity_pricing.validation.gates import ValidationEngine
 
 
 # Type alias for any product type
-AnyProduct = Union[MYGAProduct, FIAProduct, RILAProduct]
-AnyPricingResult = Union[PricingResult, FIAPricingResult, RILAPricingResult]
+AnyProduct = Union[MYGAProduct, FIAProduct, RILAProduct, GLWBProduct]
+AnyPricingResult = Union[PricingResult, FIAPricingResult, RILAPricingResult, GLWBPricingResult]
 
 
 @dataclass(frozen=True)
@@ -123,7 +125,7 @@ class ProductRegistry:
     """
 
     # Supported product types
-    SUPPORTED_TYPES = {"MYGA", "FIA", "RILA"}
+    SUPPORTED_TYPES = {"MYGA", "FIA", "RILA", "GLWB"}
 
     def __init__(
         self,
@@ -152,6 +154,8 @@ class ProductRegistry:
             n_mc_paths=n_mc_paths,
             seed=seed,
         )
+        # GLWB pricer is lazy-initialized (has stricter validation, e.g., no negative rates)
+        self._glwb_pricer: Optional[GLWBPricer] = None
 
     def price(
         self,
@@ -198,9 +202,25 @@ class ProductRegistry:
         """
         pricer = self._get_pricer(product)
 
-        # Inject discount_rate for MYGA if not provided
-        if isinstance(product, MYGAProduct) and "discount_rate" not in kwargs:
-            kwargs["discount_rate"] = self.market_env.risk_free_rate
+        # Filter kwargs to only those accepted by each pricer type
+        # MYGAPricer: principal, discount_rate, include_mgsv
+        # FIA/RILAPricer: term_years, premium
+        # GLWBPricer: premium, age, max_age, gender
+        if isinstance(product, MYGAProduct):
+            # Inject discount_rate for MYGA if not provided
+            if "discount_rate" not in kwargs:
+                kwargs["discount_rate"] = self.market_env.risk_free_rate
+            # Filter to only MYGA-accepted params
+            myga_params = {"principal", "discount_rate", "include_mgsv", "premium"}
+            kwargs = {k: v for k, v in kwargs.items() if k in myga_params}
+        elif isinstance(product, GLWBProduct):
+            # GLWB accepts premium, age, max_age, gender
+            glwb_params = {"premium", "age", "max_age", "gender"}
+            kwargs = {k: v for k, v in kwargs.items() if k in glwb_params}
+        else:
+            # FIA/RILA accept term_years, premium
+            fia_rila_params = {"term_years", "premium"}
+            kwargs = {k: v for k, v in kwargs.items() if k in fia_rila_params}
 
         result = pricer.price(product, as_of_date=as_of_date, **kwargs)
 
@@ -362,6 +382,15 @@ class ProductRegistry:
                         "expected_return": result.expected_return,
                         "max_loss": result.max_loss,
                     })
+                elif isinstance(result, GLWBPricingResult):
+                    result_dict.update({
+                        "guarantee_cost": result.guarantee_cost,
+                        "prob_ruin": result.prob_ruin,
+                        "mean_ruin_year": result.mean_ruin_year,
+                        "prob_lapse": result.prob_lapse,
+                        "mean_lapse_year": result.mean_lapse_year,
+                        "n_paths": result.n_paths,
+                    })
 
                 results.append(result_dict)
             except ValueError as e:
@@ -399,6 +428,16 @@ class ProductRegistry:
             return self._fia_pricer
         elif isinstance(product, RILAProduct):
             return self._rila_pricer
+        elif isinstance(product, GLWBProduct):
+            # Lazy initialization for GLWB pricer
+            if self._glwb_pricer is None:
+                self._glwb_pricer = GLWBPricer(
+                    risk_free_rate=self.market_env.risk_free_rate,
+                    volatility=self.market_env.volatility,
+                    n_paths=self.n_mc_paths,
+                    seed=self.seed,
+                )
+            return self._glwb_pricer
         else:
             raise ValueError(
                 f"CRITICAL: Unsupported product type {type(product).__name__}. "

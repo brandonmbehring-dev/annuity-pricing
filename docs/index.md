@@ -51,20 +51,29 @@ pip install annuity-pricing[validation]
 ### Basic Usage
 
 ```python
-from annuity_pricing.products import FIAPricer, RILAPricer
-from annuity_pricing.data.schemas import FIAProduct, RILAProduct
+from annuity_pricing.products.fia import FIAPricer, MarketParams
+from annuity_pricing.data.schemas import FIAProduct
+
+# Set up market conditions
+market = MarketParams(
+    spot=100.0,
+    risk_free_rate=0.05,
+    dividend_yield=0.02,
+    volatility=0.20,
+)
 
 # Price an FIA with 10% cap
 fia = FIAProduct(
     company_name="Example Life",
     product_name="S&P 500 Cap",
     product_group="FIA",
+    status="current",
     cap_rate=0.10,
     index_used="S&P 500",
 )
 
-pricer = FIAPricer()
-result = pricer.price(fia, premium=100_000, term_years=1.0)
+pricer = FIAPricer(market_params=market)
+result = pricer.price(fia, term_years=1.0, premium=100_000)
 
 print(f"Expected Credit: {result.expected_credit:.2%}")
 print(f"Present Value: ${result.present_value:,.0f}")

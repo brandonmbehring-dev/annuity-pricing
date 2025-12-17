@@ -388,3 +388,81 @@ def create_rila_from_row(row: dict) -> RILAProduct:
         indexing_method=row.get("indexingMethod"),
         term_years=term_years,
     )
+
+
+# =============================================================================
+# GLWB Product
+# =============================================================================
+
+@dataclass(frozen=True)
+class GLWBProduct(BaseProduct):
+    """
+    Guaranteed Lifetime Withdrawal Benefit product. [T1]
+
+    GLWB provides guaranteed income for life regardless of account performance.
+    Key characteristic: Withdrawals continue even if account value exhausted.
+
+    Attributes
+    ----------
+    withdrawal_rate : float
+        Annual withdrawal rate as % of benefit base (e.g., 0.05 = 5%)
+    rollup_rate : float
+        Annual rollup rate for benefit base growth (e.g., 0.06 = 6%)
+    rollup_type : str
+        'simple' or 'compound' rollup
+    rollup_cap_years : int
+        Maximum years rollup applies (typically 10)
+    step_up_frequency : int
+        How often ratchet occurs (years, typically 1)
+    fee_rate : float
+        Annual fee as % of account value (e.g., 0.01 = 1%)
+    deferral_years : int
+        Years before withdrawals begin
+
+    Examples
+    --------
+    >>> glwb = GLWBProduct(
+    ...     company_name="Example Life",
+    ...     product_name="GLWB 5%",
+    ...     product_group="GLWB",
+    ...     status="current",
+    ...     withdrawal_rate=0.05,
+    ...     rollup_rate=0.06,
+    ... )
+
+    See: docs/knowledge/domain/glwb_mechanics.md
+    See: docs/references/L3/bauer_kling_russ_2008.md
+    """
+
+    # GLWB-specific fields
+    withdrawal_rate: float = 0.05  # Annual withdrawal as % of benefit base
+    rollup_rate: float = 0.06  # Annual benefit base growth rate
+    rollup_type: str = "compound"  # 'simple' or 'compound'
+    rollup_cap_years: int = 10  # Max years rollup applies
+    step_up_frequency: int = 1  # Ratchet frequency (years)
+    fee_rate: float = 0.01  # Annual fee as % of AV
+    deferral_years: int = 0  # Years before withdrawals begin
+
+    def __post_init__(self) -> None:
+        """Validate GLWB fields."""
+        if self.product_group != "GLWB":
+            raise ValueError(
+                f"CRITICAL: GLWBProduct requires product_group='GLWB', "
+                f"got '{self.product_group}'"
+            )
+        if not 0 < self.withdrawal_rate <= 0.20:
+            raise ValueError(
+                f"CRITICAL: withdrawal_rate must be in (0, 0.20], "
+                f"got {self.withdrawal_rate}"
+            )
+        if self.rollup_rate < 0:
+            raise ValueError(
+                f"CRITICAL: rollup_rate must be >= 0, got {self.rollup_rate}"
+            )
+        if self.rollup_type not in ("simple", "compound"):
+            raise ValueError(
+                f"CRITICAL: rollup_type must be 'simple' or 'compound', "
+                f"got '{self.rollup_type}'"
+            )
+        if self.fee_rate < 0:
+            raise ValueError(f"CRITICAL: fee_rate must be >= 0, got {self.fee_rate}")

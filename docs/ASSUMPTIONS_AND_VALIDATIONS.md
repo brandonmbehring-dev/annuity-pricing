@@ -112,9 +112,20 @@ This document provides a single source of truth for all simplifying assumptions 
 
 | Assumption | Justification | Validation |
 |------------|--------------|------------|
-| Continuous discounting | Standard actuarial practice | N/A |
+| Product-specific discounting | Matches cash flow mechanics | See below |
 | Flat yield curve | Simplification | User can provide custom rates |
 | No credit adjustment | Separate from base pricing | Credit module available |
+
+**Discounting Method by Product** (intentional design choice):
+
+| Product | Method | Formula | Rationale |
+|---------|--------|---------|-----------|
+| **MYGA** | Discrete | `(1+r)^t` | Matches fixed annuity accrual mechanics; annual compounding aligns with product crediting |
+| **FIA/RILA** | Continuous | `exp(-rT)` | Standard for option pricing under risk-neutral measure (Black-Scholes framework) |
+
+This is **not** an inconsistency—each method is appropriate for its product type:
+- MYGA: Deterministic cash flows with annual crediting → discrete discounting
+- FIA/RILA: Embedded options priced via martingale methods → continuous discounting
 
 **Validation Tests**:
 - `tests/unit/test_products_myga.py`

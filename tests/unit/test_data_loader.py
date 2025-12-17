@@ -97,7 +97,11 @@ class TestVerifyChecksum:
 # =============================================================================
 
 class TestLoadWinkData:
-    """Tests for load_wink_data function."""
+    """Tests for load_wink_data function.
+
+    Note: These tests explicitly set use_synthetic=False to test real file loading
+    behavior, even when ANNUITY_USE_SYNTHETIC env var is set.
+    """
 
     def test_loads_fixture_without_verification(self, sample_wink_path: Path) -> None:
         """Should load fixture data when verification is skipped."""
@@ -105,7 +109,8 @@ class TestLoadWinkData:
             mock_settings.data.wink_path = sample_wink_path
             mock_settings.data.wink_checksum = SAMPLE_CHECKSUM
 
-            df = load_wink_data(path=sample_wink_path, verify=False)
+            # Explicitly disable synthetic to test real file loading
+            df = load_wink_data(path=sample_wink_path, verify=False, use_synthetic=False)
 
         assert isinstance(df, pd.DataFrame)
         assert len(df) == 100  # Our fixture has 100 rows
@@ -118,7 +123,8 @@ class TestLoadWinkData:
             mock_settings.data.wink_path = sample_wink_path
             mock_settings.data.wink_checksum = SAMPLE_CHECKSUM
 
-            df = load_wink_data(path=sample_wink_path, verify=True)
+            # Explicitly disable synthetic to test real file loading
+            df = load_wink_data(path=sample_wink_path, verify=True, use_synthetic=False)
 
         assert len(df) == 100
 
@@ -126,17 +132,19 @@ class TestLoadWinkData:
         """Should load only specified columns."""
         columns = ["companyName", "productGroup", "status"]
 
-        df = load_wink_data(path=sample_wink_path, verify=False, columns=columns)
+        # Explicitly disable synthetic to test real file loading
+        df = load_wink_data(path=sample_wink_path, verify=False, columns=columns, use_synthetic=False)
 
         assert list(df.columns) == columns
         assert len(df) == 100
 
     def test_raises_on_missing_file(self, tmp_path: Path) -> None:
-        """Should raise DataLoadError for missing file."""
+        """Should raise FileNotFoundError for missing file (when not using synthetic)."""
         missing_file = tmp_path / "missing.parquet"
 
+        # Explicitly disable synthetic to test error behavior
         with pytest.raises((FileNotFoundError, DataLoadError)):
-            load_wink_data(path=missing_file, verify=False)
+            load_wink_data(path=missing_file, verify=False, use_synthetic=False)
 
     def test_raises_on_checksum_mismatch(self, sample_wink_path: Path) -> None:
         """Should raise DataIntegrityError on checksum mismatch."""
@@ -144,8 +152,9 @@ class TestLoadWinkData:
             mock_settings.data.wink_path = sample_wink_path
             mock_settings.data.wink_checksum = "wrong_checksum_value"
 
+            # Explicitly disable synthetic to test checksum verification
             with pytest.raises(DataIntegrityError):
-                load_wink_data(path=sample_wink_path, verify=True)
+                load_wink_data(path=sample_wink_path, verify=True, use_synthetic=False)
 
 
 # =============================================================================

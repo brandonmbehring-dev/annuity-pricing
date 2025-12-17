@@ -217,13 +217,12 @@ class RILAPricer(BasePricer):
             n_paths=n_mc_paths, antithetic=True, seed=seed
         )
 
-    def price(
+    def price(  # type: ignore[override]  # Subclass has specific params
         self,
         product: RILAProduct,
         as_of_date: Optional[date] = None,
         term_years: Optional[float] = None,
         premium: float = 100.0,
-        **kwargs: Any,
     ) -> RILAPricingResult:
         """
         Price RILA product.
@@ -692,7 +691,8 @@ class RILAPricer(BasePricer):
         float
             Expected return (decimal)
         """
-        # Create payoff object
+        # Create payoff object (BufferPayoff or FloorPayoff based on protection type)
+        payoff: BufferPayoff | FloorPayoff
         if is_buffer:
             payoff = BufferPayoff(buffer_rate=buffer_rate, cap_rate=cap_rate)
         else:

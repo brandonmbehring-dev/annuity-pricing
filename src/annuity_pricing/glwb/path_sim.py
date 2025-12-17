@@ -138,6 +138,7 @@ class GLWBPathSimulator:
         lapse_assumptions: Optional[LapseAssumptions] = None,
         withdrawal_assumptions: Optional[WithdrawalAssumptions] = None,
         expense_assumptions: Optional[ExpenseAssumptions] = None,
+        steps_per_year: int = 1,
     ):
         """
         Initialize GLWB simulator.
@@ -156,10 +157,17 @@ class GLWBPathSimulator:
             Withdrawal utilization parameters. If None, uses defaults.
         expense_assumptions : ExpenseAssumptions, optional
             Expense parameters. If None, uses defaults.
+        steps_per_year : int
+            Number of timesteps per year. Default 1 (annual).
+            Use 12 for monthly timesteps (Round 6 decision for Julia port).
         """
+        if steps_per_year < 1:
+            raise ValueError(f"steps_per_year must be >= 1, got {steps_per_year}")
+
         self.gwb_config = gwb_config
         self.n_paths = n_paths
         self.seed = seed
+        self.steps_per_year = steps_per_year
         self._rng = np.random.default_rng(seed)
         self._mortality_loader = MortalityLoader()
 
@@ -186,6 +194,7 @@ class GLWBPathSimulator:
         gender: str = "male",
         surrender_period_years: int = 7,
         use_behavioral_models: bool = True,
+        deferral_years: int = 0,
     ) -> GLWBPricingResult:
         """
         Price GLWB guarantee using path-dependent MC.
@@ -215,6 +224,9 @@ class GLWBPathSimulator:
             Years until surrender period ends (affects lapse rates)
         use_behavioral_models : bool
             If True, uses lapse/withdrawal/expense models. If False, simple mode.
+        deferral_years : int
+            Years before withdrawals begin. During deferral, rollup applies
+            to benefit base. After deferral, withdrawals begin and rollup stops.
 
         Returns
         -------
@@ -258,6 +270,7 @@ class GLWBPathSimulator:
                 utilization_rate=utilization_rate,
                 surrender_period_years=surrender_period_years,
                 use_behavioral_models=use_behavioral_models,
+                deferral_years=deferral_years,
             )
             path_results.append(result)
             if result.ruin_year >= 0:
@@ -300,6 +313,7 @@ class GLWBPathSimulator:
         utilization_rate: Optional[float] = None,
         surrender_period_years: int = 7,
         use_behavioral_models: bool = True,
+        deferral_years: int = 0,
     ) -> PathResult:
         """
         Simulate a single GLWB path.
@@ -311,27 +325,42 @@ class GLWBPathSimulator:
         age : int
             Starting age
         r : float
-            Risk-free rate
+            Risk-free rate (annual)
         sigma : float
-            Volatility
+            Volatility (annual)
         n_years : int
             Maximum years to simulate
         mortality_func : callable
-            Function age -> qx (mortality rate)
+            Function age -> qx (annual mortality rate)
         utilization_rate : float, optional
             Fixed utilization rate. If None, uses WithdrawalModel.
         surrender_period_years : int
             Years until surrender period ends (for lapse model)
         use_behavioral_models : bool
             Whether to use lapse/withdrawal/expense models
+        deferral_years : int
+            Years before withdrawals begin (rollup applies during deferral)
 
         Returns
         -------
         PathResult
             Path simulation result
+
+        Notes
+        -----
+        Timestep granularity is controlled by self.steps_per_year:
+        - steps_per_year=1: Annual timesteps (dt=1.0)
+        - steps_per_year=12: Monthly timesteps (dt=1/12)
+
+        Monthly timesteps provide more realistic fee accrual and market dynamics
+        but require 12x more computational steps.
         """
         tracker = GWBTracker(self.gwb_config, premium)
         state = tracker.initial_state()
+
+        # Timestep parameters
+        dt = 1.0 / self.steps_per_year  # e.g., 1/12 for monthly
+        n_steps = n_years * self.steps_per_year
 
         pv_insurer_payments = 0.0
         pv_withdrawals = 0.0
@@ -340,66 +369,89 @@ class GLWBPathSimulator:
         lapse_year = -1
         death_year = -1
         current_age = age
-        first_withdrawal_year = 0  # Assume withdrawals start immediately
+        first_withdrawal_step = deferral_years * self.steps_per_year
 
-        for t in range(n_years):
-            # Check mortality
-            qx = mortality_func(current_age)
-            if self._rng.random() < qx:
-                death_year = t
+        # GBM parameters scaled to timestep
+        drift_per_step = (r - 0.5 * sigma**2) * dt
+        diffusion_per_step = sigma * np.sqrt(dt)
+
+        # Annual mortality scaled to timestep: qx_step ≈ 1 - (1 - qx)^dt
+        # For small dt, this is approximately qx * dt
+
+        for step in range(n_steps):
+            # Current time in years (for discounting and events)
+            t_years = (step + 1) * dt
+
+            # Check mortality (annual rate converted to step rate)
+            # Use conditional probability: P(death in step | alive at start of step)
+            # For step k in year, P(death) = qx / steps_per_year (approximation)
+            # More accurate: 1 - (1 - qx)^(1/steps_per_year)
+            if step % self.steps_per_year == 0:  # New year, get new qx
+                qx_annual = mortality_func(current_age)
+                # Convert annual qx to per-step probability
+                qx_step = 1 - (1 - qx_annual) ** dt
+
+            if self._rng.random() < qx_step:
+                death_year = int(t_years)
                 break
 
-            # Check dynamic lapse (if behavioral models enabled)
-            if use_behavioral_models and state.av > 0:
-                surrender_complete = t >= surrender_period_years
+            # Check dynamic lapse (at annual frequency for stability)
+            if use_behavioral_models and state.av > 0 and step % self.steps_per_year == 0:
+                surrender_complete = t_years >= surrender_period_years
                 lapse_result = self._lapse_model.calculate_lapse(
                     gwb=state.gwb,
                     av=state.av,
                     surrender_period_complete=surrender_complete,
                 )
                 if self._rng.random() < lapse_result.lapse_rate:
-                    lapse_year = t
+                    lapse_year = int(t_years)
                     break  # Policy lapses, no further payments
 
-            # Generate return (risk-neutral GBM)
+            # Generate return (risk-neutral GBM at timestep granularity)
             # [T1] Under risk-neutral measure: drift = r - 0.5*sigma^2
             z = self._rng.standard_normal()
-            av_return = (r - 0.5 * sigma**2) + sigma * z
+            av_return = drift_per_step + diffusion_per_step * z
 
-            # Discount factor
-            df = np.exp(-r * (t + 1))
+            # Discount factor to this point in time
+            df = np.exp(-r * t_years)
 
             # Calculate expenses (if behavioral models enabled)
             if use_behavioral_models and state.av > 0:
                 expense_result = self._expense_model.calculate_period_expense(
                     av=state.av,
-                    period_years=1.0,
-                    years_from_issue=t,
+                    period_years=dt,
+                    years_from_issue=t_years,
                 )
                 pv_expenses += expense_result.total_expense * df
 
-            # Calculate withdrawal
-            max_withdrawal = tracker.calculate_max_withdrawal(state)
+            # Calculate withdrawal (only after deferral period)
+            # Scale max withdrawal to timestep (annual withdrawal spread across steps)
+            max_withdrawal_annual = tracker.calculate_max_withdrawal(state)
+            max_withdrawal_step = max_withdrawal_annual * dt
 
-            if utilization_rate is not None:
+            if step < first_withdrawal_step:
+                # During deferral period - no withdrawals, rollup applies
+                withdrawal = 0.0
+            elif utilization_rate is not None:
                 # Use fixed utilization rate
-                withdrawal = max_withdrawal * utilization_rate
+                withdrawal = max_withdrawal_step * utilization_rate
             elif use_behavioral_models:
-                # Use behavioral model for withdrawal utilization
-                years_since = t - first_withdrawal_year if t >= first_withdrawal_year else 0
+                # Use behavioral model for withdrawal utilization (at annual equivalent)
+                years_since = (step - first_withdrawal_step) / self.steps_per_year
                 withdrawal_result = self._withdrawal_model.calculate_withdrawal(
                     gwb=state.gwb,
                     withdrawal_rate=self.gwb_config.withdrawal_rate,
                     age=current_age,
                     years_since_first_withdrawal=years_since,
                 )
-                withdrawal = withdrawal_result.withdrawal_amount
+                # Scale withdrawal to timestep
+                withdrawal = withdrawal_result.withdrawal_amount * dt
             else:
                 # Default to 100% utilization
-                withdrawal = max_withdrawal
+                withdrawal = max_withdrawal_step
 
-            # Step forward
-            result = tracker.step(state, av_return, dt=1.0, withdrawal=withdrawal)
+            # Step forward with appropriate dt
+            result = tracker.step(state, av_return, dt=dt, withdrawal=withdrawal)
             state = result.new_state
 
             # Track withdrawals
@@ -407,14 +459,16 @@ class GLWBPathSimulator:
 
             # Check for ruin (AV exhausted)
             if state.av <= 0 and ruin_year < 0:
-                ruin_year = t + 1
+                ruin_year = int(t_years) + 1
 
             # If ruined, insurer pays guaranteed amount
             if state.av <= 0:
-                insurer_payment = max_withdrawal  # Continue guaranteed payment
+                insurer_payment = max_withdrawal_step  # Guaranteed payment this step
                 pv_insurer_payments += insurer_payment * df
 
-            current_age += 1
+            # Age increments annually (on anniversary)
+            if (step + 1) % self.steps_per_year == 0:
+                current_age += 1
 
         return PathResult(
             pv_insurer_payments=pv_insurer_payments,

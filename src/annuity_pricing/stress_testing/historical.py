@@ -39,8 +39,9 @@ class CrisisProfile:
 
     Attributes
     ----------
-    month : int
-        Month offset from crisis start (0 = start, negative = pre-crisis)
+    month : float
+        Month offset from crisis start (0 = start, negative = pre-crisis).
+        Fractional months allowed for intra-month events (e.g., 0.5 = mid-month).
     equity_cumulative : float
         Cumulative equity return from start (decimal, e.g., -0.30 = -30%)
     rate_level : float
@@ -49,7 +50,7 @@ class CrisisProfile:
         VIX index level at this point
     """
 
-    month: int
+    month: float
     equity_cumulative: float
     rate_level: float
     vix_level: float

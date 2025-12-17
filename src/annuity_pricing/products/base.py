@@ -35,7 +35,7 @@ class PricingResult:
     present_value: float
     duration: Optional[float] = None
     convexity: Optional[float] = None
-    details: Optional[dict] = None
+    details: Optional[dict[str, Any]] = None
     as_of_date: Optional[date] = None
 
     def __post_init__(self) -> None:

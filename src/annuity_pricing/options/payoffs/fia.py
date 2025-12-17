@@ -543,7 +543,7 @@ class MonthlyAveragePayoff(BasePayoff):
 
         # Calculate average of monthly index levels
         avg_value = np.mean(path.values)
-        avg_return = (avg_value - path.initial_value) / path.initial_value
+        avg_return = float((avg_value - path.initial_value) / path.initial_value)
 
         return self.calculate(avg_return)
 

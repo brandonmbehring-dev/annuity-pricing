@@ -8,6 +8,7 @@ See: wink-research-archive/product-guides/ANNUITY_PRODUCT_GUIDE.md
 
 from datetime import date
 from typing import Any, Optional
+import warnings
 
 import numpy as np
 import pandas as pd
@@ -46,14 +47,14 @@ class MYGAPricer(BasePricer):
     True
     """
 
-    def price(
+    def price(  # type: ignore[override]  # Subclass has specific params
         self,
         product: MYGAProduct,
         as_of_date: Optional[date] = None,
         principal: float = 100_000.0,
         discount_rate: Optional[float] = None,
         include_mgsv: bool = True,
-        **kwargs: Any,
+        premium: Optional[float] = None,  # DEPRECATED: use principal
     ) -> PricingResult:
         """
         Price MYGA product.
@@ -70,6 +71,8 @@ class MYGAPricer(BasePricer):
             Discount rate for PV calculation. If None, uses product rate.
         include_mgsv : bool, default True
             Whether to include MGSV floor in result details
+        premium : float, optional
+            DEPRECATED: Use 'principal' instead. Will be removed in v0.4.0.
 
         Returns
         -------
@@ -81,6 +84,16 @@ class MYGAPricer(BasePricer):
         ValueError
             If product missing required fields
         """
+        # Handle deprecated premium parameter
+        if premium is not None:
+            warnings.warn(
+                "DEPRECATION: 'premium' is deprecated for MYGA, use 'principal'. "
+                "Will be removed in v0.4.0.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            principal = premium
+
         # Validate required fields
         self.validate_product(product, ["fixed_rate", "guarantee_duration"])
 

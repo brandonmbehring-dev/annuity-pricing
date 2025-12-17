@@ -156,7 +156,8 @@ class TestWinkPipelineIntegration:
             mock_settings.data.wink_path = wink_sample_path
             mock_settings.data.wink_checksum = SAMPLE_CHECKSUM
 
-            df_raw = load_wink_data(path=wink_sample_path, verify=True)
+            # Explicitly disable synthetic to test real file loading
+            df_raw = load_wink_data(path=wink_sample_path, verify=True, use_synthetic=False)
 
         # Clean
         df_clean = clean_wink_data(df_raw)

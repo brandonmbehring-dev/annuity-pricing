@@ -169,7 +169,8 @@ class GWBTracker:
         self.config = config
         self.initial_premium = initial_premium
 
-        # Initialize rollup mechanics
+        # Initialize rollup mechanics (type annotation for polymorphic assignment)
+        self._rollup: SimpleRollup | CompoundRollup | None
         if config.rollup_type == RollupType.SIMPLE:
             self._rollup = SimpleRollup()
         elif config.rollup_type == RollupType.COMPOUND:

@@ -64,13 +64,14 @@ myga = MYGAProduct(
     company_name="Example Life",
     product_name="5-Year MYGA",
     product_group="MYGA",
+    status="current",
     fixed_rate=0.045,  # 4.5% guaranteed
     guarantee_duration=5,
 )
 
 # Price it
-pricer = MYGAPricer(discount_rate=0.05)  # 5% discount rate
-result = pricer.price(myga, premium=100_000)
+pricer = MYGAPricer()
+result = pricer.price(myga, principal=100_000, discount_rate=0.05)
 
 print(f"Present Value: ${result.present_value:,.0f}")
 # Spread is the difference between earned rate and discount rate
@@ -97,6 +98,7 @@ fia = FIAProduct(
     company_name="Example Life",
     product_name="S&P 500 Cap",
     product_group="FIA",
+    status="current",
     cap_rate=0.10,
     participation_rate=1.0,  # 100% participation
     index_used="S&P 500",
@@ -104,7 +106,7 @@ fia = FIAProduct(
 
 # Price
 pricer = FIAPricer(market_params=market, seed=42)
-result = pricer.price(fia, premium=100_000, term_years=1.0)
+result = pricer.price(fia, term_years=1.0, premium=100_000)
 
 print(f"Expected Credit: {result.expected_credit:.2%}")
 print(f"Option Budget: {result.option_budget:.2%}")
@@ -130,6 +132,7 @@ rila = RILAProduct(
     company_name="Example Life",
     product_name="10% Buffer S&P",
     product_group="RILA",
+    status="current",
     buffer_rate=0.10,
     buffer_modifier="Losses Covered Up To",
     cap_rate=0.15,
@@ -137,10 +140,10 @@ rila = RILAProduct(
 )
 
 pricer = RILAPricer(market_params=market, seed=42)
-result = pricer.price(rila, premium=100_000, term_years=1.0)
+result = pricer.price(rila, term_years=1.0, premium=100_000)
 
 print(f"Expected Return: {result.expected_return:.2%}")
-print(f"Downside Protection Cost: {result.protection_cost:.2%}")
+print(f"Downside Protection Value: ${result.protection_value:,.2f}")
 print(f"Present Value: ${result.present_value:,.0f}")
 ```
 
@@ -150,17 +153,22 @@ print(f"Present Value: ${result.present_value:,.0f}")
 
 ### PricingResult Dataclass
 
-All pricers return frozen dataclasses with consistent fields:
+All pricers return frozen dataclasses. The base class has common fields:
 
 ```python
 @dataclass(frozen=True)
 class PricingResult:
-    present_value: float      # PV of future cash flows
-    expected_credit: float    # Expected credited return (FIA/RILA)
-    option_budget: float      # Cost of embedded options
-    fair_value: float         # Risk-neutral fair value
-    # ... additional fields vary by product
+    present_value: float           # PV of future cash flows
+    duration: Optional[float]      # Macaulay/modified duration
+    convexity: Optional[float]     # Convexity measure
+    details: Optional[dict]        # Product-specific details
+    as_of_date: Optional[date]     # Valuation date
 ```
+
+**Product-specific result classes** extend this with additional fields:
+
+- **FIAPricingResult**: `expected_credit`, `option_budget`, `fair_cap`, `fair_participation`, `embedded_option_value`
+- **RILAPricingResult**: `expected_return`, `protection_value`, `protection_type`, `upside_value`, `max_loss`
 
 ### Key Metrics
 

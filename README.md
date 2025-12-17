@@ -63,8 +63,7 @@ from annuity_pricing.data.schemas import MYGAProduct, FIAProduct
 # Create registry with market environment
 registry = create_default_registry(
     risk_free_rate=0.045,
-    dividend_yield=0.02,
-    volatility=0.18
+    volatility=0.18,
 )
 
 # Price a MYGA product
@@ -72,10 +71,11 @@ myga = MYGAProduct(
     company_name="Example Life",
     product_name="5-Year MYGA",
     product_group="MYGA",
+    status="current",
     guarantee_duration=5,
-    fixed_rate=0.045  # 4.5% guaranteed
+    fixed_rate=0.045,  # 4.5% guaranteed
 )
-result = registry.price(myga, premium=100_000)
+result = registry.price(myga, principal=100_000)
 print(f"Present Value: ${result.present_value:,.2f}")
 
 # Price an FIA product
@@ -83,12 +83,13 @@ fia = FIAProduct(
     company_name="Example Life",
     product_name="S&P 500 Cap",
     product_group="FIA",
+    status="current",
     index_used="S&P 500",
     indexing_method="Annual Point to Point",
     cap_rate=0.10,
-    term_years=6
+    term_years=6,
 )
-result = registry.price(fia, market_params=market, premium=100_000)
+result = registry.price(fia, term_years=6, premium=100_000)
 print(f"Expected Credit: {result.expected_credit:.2%}")
 ```
 

@@ -285,6 +285,7 @@ def calculate_rollup_with_cap(
     effective_years = min(years, cap_years)
 
     # Calculate rollup
+    mechanic: RollupMechanic
     if rollup_type == "simple":
         mechanic = SimpleRollup()
     elif rollup_type == "compound":

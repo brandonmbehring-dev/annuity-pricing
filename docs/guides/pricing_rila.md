@@ -21,19 +21,62 @@ RILA (Registered Index-Linked Annuity) products offer market participation with 
 
 ## Payoff Formulas
 
-### Buffer Payoff
-$$\text{Return} = \min\left(\text{Cap}, \max\left(\text{Index Return} + \text{Buffer}, \text{Index Return}\right)\right)$$
+### Buffer Payoff [T1]
 
-### Floor Payoff
-$$\text{Return} = \min\left(\text{Cap}, \max\left(\text{Floor}, \text{Index Return}\right)\right)$$
+The buffer absorbs the **first X%** of losses:
+
+```
+if index_return >= 0:
+    payoff = min(index_return, cap)     # Upside capped
+elif index_return >= -buffer:
+    payoff = 0                          # Buffer absorbs loss
+else:
+    payoff = index_return + buffer      # Client absorbs excess
+```
+
+**Replication**: Buffer = Long Put(K=100%) - Long Put(K=100%-buffer)
+
+### Floor Payoff [T1]
+
+The floor limits **maximum loss** to X%:
+
+```
+if index_return >= 0:
+    payoff = min(index_return, cap)     # Upside capped
+else:
+    payoff = max(index_return, -floor)  # Floor limits loss
+```
+
+**Replication**: Floor = Long Put(K=100%-floor)
 
 ## Greeks
 
 ```python
-from annuity_pricing.products.rila import RILAPricer
+from annuity_pricing.products.rila import RILAPricer, MarketParams
+from annuity_pricing.data.schemas import RILAProduct
 
-pricer = RILAPricer()
-greeks = pricer.calculate_greeks(rila_product, premium=100_000, term_years=1.0)
+# Market setup
+market = MarketParams(
+    spot=100.0,
+    risk_free_rate=0.05,
+    dividend_yield=0.02,
+    volatility=0.20,
+)
+
+# Product definition
+rila = RILAProduct(
+    company_name="Example Life",
+    product_name="10% Buffer S&P",
+    product_group="RILA",
+    status="current",
+    buffer_rate=0.10,
+    buffer_modifier="Losses Covered Up To",
+    cap_rate=0.15,
+    index_used="S&P 500",
+)
+
+pricer = RILAPricer(market_params=market)
+greeks = pricer.calculate_greeks(rila, term_years=1.0, premium=100_000)
 
 print(f"Delta: {greeks.delta:.4f}")
 print(f"Vega: {greeks.vega:.4f}")

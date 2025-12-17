@@ -7,6 +7,7 @@ See: docs/TOLERANCE_JUSTIFICATION.md for tolerance derivations.
 """
 
 from dataclasses import dataclass
+import os
 from pathlib import Path
 from typing import Tuple
 
@@ -22,6 +23,26 @@ from annuity_pricing.config.tolerances import (
 # Data Configuration
 # =============================================================================
 
+def _resolve_wink_path() -> Path:
+    """
+    Resolve WINK data file path with environment variable override.
+
+    Priority:
+    1. WINK_PATH environment variable (if set)
+    2. Default: wink.parquet in project root
+
+    Returns
+    -------
+    Path
+        Resolved path to WINK parquet file
+    """
+    env_path = os.environ.get("WINK_PATH")
+    if env_path:
+        return Path(env_path)
+    # Default to project root (where scripts/Makefile expect it)
+    return Path(__file__).parent.parent.parent.parent / "wink.parquet"
+
+
 @dataclass(frozen=True)
 class DataConfig:
     """
@@ -30,13 +51,19 @@ class DataConfig:
     Attributes
     ----------
     wink_path : Path
-        Path to WINK parquet file
+        Path to WINK parquet file. Override with WINK_PATH environment variable.
     wink_checksum : str
         SHA-256 checksum for data integrity verification
     """
 
-    wink_path: Path = Path(__file__).parent.parent.parent.parent / "data" / "raw" / "wink.parquet"
+    wink_path: Path = None  # type: ignore[assignment]  # Set in __post_init__
     wink_checksum: str = "5b1ae9e712544c55099b4e7a91dd725955e310d36cfaa9d6665f46459a40cc9a"
+
+    def __post_init__(self) -> None:
+        """Initialize wink_path using resolver function."""
+        # Frozen dataclass workaround: use object.__setattr__
+        if self.wink_path is None:
+            object.__setattr__(self, "wink_path", _resolve_wink_path())
 
     # Data quality thresholds [T2: From gap reports]
     cap_rate_max: float = 10.0  # Clip capRate to ≤ 10.0 (1000%)

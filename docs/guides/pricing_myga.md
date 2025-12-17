@@ -30,12 +30,13 @@ myga = MYGAProduct(
     company_name="Example Life",
     product_name="5-Year MYGA",
     product_group="MYGA",
+    status="current",
     fixed_rate=0.045,  # 4.5% guaranteed
     guarantee_duration=5,
 )
 
-pricer = MYGAPricer(discount_rate=0.05)
-result = pricer.price(myga, premium=100_000)
+pricer = MYGAPricer()
+result = pricer.price(myga, principal=100_000, discount_rate=0.05)
 
 print(f"Present Value: ${result.present_value:,.0f}")
 ```
