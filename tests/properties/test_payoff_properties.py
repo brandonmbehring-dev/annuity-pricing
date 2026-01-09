@@ -21,15 +21,14 @@ References:
 See: docs/knowledge/domain/buffer_floor.md
 """
 
-import numpy as np
-import pytest
-from hypothesis import given, strategies as st, settings, assume
+from hypothesis import assume, given, settings
+from hypothesis import strategies as st
 
 from annuity_pricing.config.tolerances import (
     ANTI_PATTERN_TOLERANCE,
-    FLOOR_ENFORCEMENT_TOLERANCE,
-    CAP_ENFORCEMENT_TOLERANCE,
     BUFFER_ABSORPTION_TOLERANCE,
+    CAP_ENFORCEMENT_TOLERANCE,
+    FLOOR_ENFORCEMENT_TOLERANCE,
 )
 from annuity_pricing.options.payoffs.fia import (
     CappedCallPayoff,
@@ -40,9 +39,7 @@ from annuity_pricing.options.payoffs.fia import (
 from annuity_pricing.options.payoffs.rila import (
     BufferPayoff,
     FloorPayoff,
-    BufferWithFloorPayoff,
 )
-
 
 # =============================================================================
 # Strategy Definitions

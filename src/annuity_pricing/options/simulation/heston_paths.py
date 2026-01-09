@@ -23,7 +23,6 @@ Validation: tests/validation/test_heston_vs_quantlib.py (MC validated to <1% err
 """
 
 from dataclasses import dataclass
-from typing import Optional
 
 import numpy as np
 
@@ -65,7 +64,7 @@ class HestonPathResult:
     rate: float
     dividend: float
     time_to_expiry: float
-    seed: Optional[int] = None
+    seed: int | None = None
 
     @property
     def n_paths(self) -> int:
@@ -101,7 +100,7 @@ def generate_heston_paths(
     rate: float,
     dividend: float,
     params: HestonParams,
-    seed: Optional[int] = None,
+    seed: int | None = None,
 ) -> HestonPathResult:
     """
     Generate Heston paths using Andersen QE discretization.
@@ -206,7 +205,7 @@ def generate_heston_paths(
         v_next = np.where(
             psi <= psi_c,
             a * (np.sqrt(b2) + Z2[:, i])**2,
-            np.where(U <= p, 0.0, np.log((1 - p) / (1 - U)) / beta)
+            np.where(p >= U, 0.0, np.log((1 - p) / (1 - U)) / beta)
         )
 
         v[:, i + 1] = v_next
@@ -237,7 +236,7 @@ def generate_heston_terminal_spots(
     rate: float,
     dividend: float,
     params: HestonParams,
-    seed: Optional[int] = None,
+    seed: int | None = None,
 ) -> np.ndarray:
     """
     Generate only terminal spot values (faster for European options).
@@ -316,7 +315,7 @@ def generate_heston_terminal_spots(
         v_next = np.where(
             psi <= psi_c,
             a * (np.sqrt(b2) + Z2)**2,
-            np.where(U <= p, 0.0, np.log((1 - p) / (1 - U)) / beta)
+            np.where(p >= U, 0.0, np.log((1 - p) / (1 - U)) / beta)
         )
 
         # Spot update (use v_curr BEFORE updating)

@@ -16,21 +16,16 @@ See: Glasserman (2003) Ch. 3 - Monte Carlo theory
 
 import numpy as np
 import pytest
-from scipy import stats
 
-from annuity_pricing.options.simulation.gbm import GBMParams
-from annuity_pricing.options.simulation.monte_carlo import (
-    MonteCarloEngine,
-    convergence_analysis,
-    price_vanilla_mc,
-)
-from annuity_pricing.options.payoffs.base import OptionType
 from annuity_pricing.options.pricing.black_scholes import (
     black_scholes_call,
     black_scholes_put,
 )
-from annuity_pricing.config.tolerances import mc_tolerance, BS_MC_CONVERGENCE_TOLERANCE
-
+from annuity_pricing.options.simulation.gbm import GBMParams
+from annuity_pricing.options.simulation.monte_carlo import (
+    MonteCarloEngine,
+    convergence_analysis,
+)
 
 # =============================================================================
 # Test Configuration

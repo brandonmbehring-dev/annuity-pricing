@@ -15,11 +15,10 @@ See: docs/TOLERANCE_JUSTIFICATION.md for CLT-derived tolerances
 """
 
 import numpy as np
-import pytest
-from hypothesis import given, strategies as st, settings, assume
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 from annuity_pricing.config.tolerances import (
-    ANTI_PATTERN_TOLERANCE,
     MC_10K_TOLERANCE,
     MC_100K_TOLERANCE,
 )
@@ -28,7 +27,6 @@ from annuity_pricing.options.pricing.black_scholes import (
     black_scholes_put,
 )
 from annuity_pricing.options.simulation.monte_carlo import monte_carlo_price
-
 
 # =============================================================================
 # Strategy Definitions

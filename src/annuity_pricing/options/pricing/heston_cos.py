@@ -16,7 +16,6 @@ Target: <0.1% error vs QuantLib AnalyticHestonEngine
 """
 
 from dataclasses import dataclass
-from typing import Optional, Tuple
 
 import numpy as np
 
@@ -52,7 +51,7 @@ def heston_cumulants(
     rate: float,
     dividend: float,
     params: HestonParams,
-) -> Tuple[float, float, float, float]:
+) -> tuple[float, float, float, float]:
     """
     Calculate first four cumulants of log-price under Heston.
 
@@ -251,7 +250,7 @@ def cos_truncation_range(
     c1: float,
     c2: float,
     L: float = 10.0,
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """
     Calculate COS truncation range [a, b] from cumulants.
 
@@ -290,7 +289,7 @@ def chi_psi_coefficients(
     c: float,
     d: float,
     k: np.ndarray,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Calculate chi and psi coefficients for COS payoff.
 
@@ -354,7 +353,7 @@ def heston_price_cos(
     time: float,
     params: HestonParams,
     option_type: OptionType = OptionType.CALL,
-    cos_params: Optional[COSParams] = None,
+    cos_params: COSParams | None = None,
 ) -> float:
     """
     Price European option using Heston model via COS method.
@@ -468,7 +467,7 @@ def heston_price_call_cos(
     dividend: float,
     time: float,
     params: HestonParams,
-    cos_params: Optional[COSParams] = None,
+    cos_params: COSParams | None = None,
 ) -> float:
     """
     Price European call using Heston COS method.
@@ -489,7 +488,7 @@ def heston_price_put_cos(
     dividend: float,
     time: float,
     params: HestonParams,
-    cos_params: Optional[COSParams] = None,
+    cos_params: COSParams | None = None,
 ) -> float:
     """
     Price European put using Heston COS method.

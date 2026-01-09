@@ -27,21 +27,17 @@ See: docs/TOLERANCE_JUSTIFICATION.md
 """
 
 import numpy as np
-import pytest
-from hypothesis import given, strategies as st, settings, assume
+from hypothesis import assume, given, settings
+from hypothesis import strategies as st
 
 from annuity_pricing.config.tolerances import (
     ANTI_PATTERN_TOLERANCE,
-    PUT_CALL_PARITY_TOLERANCE,
 )
-from annuity_pricing.options.payoffs.base import OptionType
 from annuity_pricing.options.pricing.black_scholes import (
     black_scholes_call,
     black_scholes_put,
-    black_scholes_greeks,
     put_call_parity_check,
 )
-
 
 # =============================================================================
 # Strategy Definitions

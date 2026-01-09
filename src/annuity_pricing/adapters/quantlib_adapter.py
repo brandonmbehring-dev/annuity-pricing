@@ -12,11 +12,9 @@ Golden Values (Nelson-Siegel)
 Note: QuantLib requires separate wheel installation on some platforms.
 """
 
-from typing import Dict, List, Optional
 from dataclasses import dataclass
 
 from .base import BaseAdapter, ValidationResult
-
 
 # Try to import QuantLib
 try:
@@ -40,7 +38,7 @@ class CurveTestCase:
 
 # Simple flat curve test cases
 # Note: QuantLib uses calendar-based day counts, so we need tolerance for longer terms
-CURVE_CASES: List[CurveTestCase] = [
+CURVE_CASES: list[CurveTestCase] = [
     CurveTestCase(
         name="5% flat 1Y",
         rate=0.05,
@@ -102,7 +100,7 @@ class QuantLibAdapter(BaseAdapter):
             return today + ql.Period(days, ql.Days)
 
     def build_flat_curve(
-        self, rate: float, day_count: Optional[str] = None
+        self, rate: float, day_count: str | None = None
     ) -> "ql.YieldTermStructureHandle":
         """
         Build a flat yield curve in QuantLib.
@@ -305,7 +303,7 @@ class QuantLibAdapter(BaseAdapter):
         volatility: float,
         time_to_expiry: float,
         option_type: str = "call",
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Calculate option Greeks using QuantLib analytical engine.
 
@@ -390,7 +388,7 @@ class QuantLibAdapter(BaseAdapter):
             "rho": option.rho() / 100.0,  # Per 1% rate move (matches our convention)
         }
 
-    def run_curve_tests(self) -> List[ValidationResult]:
+    def run_curve_tests(self) -> list[ValidationResult]:
         """
         Run all curve validation test cases.
 

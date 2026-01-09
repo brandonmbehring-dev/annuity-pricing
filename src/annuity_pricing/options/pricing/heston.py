@@ -24,7 +24,6 @@ Validation: tests/validation/test_heston_vs_quantlib.py (8/8 tests passed, <1% M
 """
 
 from dataclasses import dataclass
-from typing import Optional
 
 import numpy as np
 from scipy import fft
@@ -287,7 +286,7 @@ def heston_price_call_mc(
     params: HestonParams,
     paths: int = 50000,
     steps: int = 252,
-    seed: Optional[int] = None,
+    seed: int | None = None,
 ) -> float:
     """
     Price European call option using Heston model via Monte Carlo.
@@ -353,7 +352,7 @@ def heston_price_put_mc(
     params: HestonParams,
     paths: int = 50000,
     steps: int = 252,
-    seed: Optional[int] = None,
+    seed: int | None = None,
 ) -> float:
     """
     Price European put option using Heston model via Monte Carlo.

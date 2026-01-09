@@ -6,13 +6,12 @@ Tests for Dynamic Lapse Model - Phase 7.
 See: docs/knowledge/domain/dynamic_lapse.md
 """
 
-import pytest
 import numpy as np
+import pytest
 
 from annuity_pricing.behavioral.dynamic_lapse import (
     DynamicLapseModel,
     LapseAssumptions,
-    LapseResult,
 )
 
 

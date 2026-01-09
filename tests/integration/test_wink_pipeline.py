@@ -9,7 +9,6 @@ If checksum mismatch occurs, regenerate fixtures via:
     scripts/regenerate_goldens.py --wink-fixture
 """
 
-import hashlib
 from pathlib import Path
 from unittest.mock import patch
 
@@ -18,14 +17,13 @@ import pytest
 
 from annuity_pricing.data.cleaner import clean_wink_data, get_cleaning_summary
 from annuity_pricing.data.loader import (
-    load_wink_data,
-    compute_sha256,
-    verify_checksum,
     DataIntegrityError,
+    compute_sha256,
+    load_wink_data,
+    verify_checksum,
 )
 from annuity_pricing.data.schemas import FIAProduct, MYGAProduct, RILAProduct
 from annuity_pricing.products.registry import create_default_registry
-
 
 # =============================================================================
 # Fixtures and Constants

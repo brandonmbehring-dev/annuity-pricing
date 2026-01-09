@@ -21,7 +21,6 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-
 # =============================================================================
 # Import Tests
 # =============================================================================
@@ -32,9 +31,9 @@ class TestRegulatoryImports:
     def test_import_scenarios(self):
         """Scenario generation should be importable."""
         from annuity_pricing.regulatory import (
-            ScenarioGenerator,
-            EconomicScenario,
             AG43Scenarios,
+            EconomicScenario,
+            ScenarioGenerator,
         )
 
         assert ScenarioGenerator is not None
@@ -44,10 +43,9 @@ class TestRegulatoryImports:
     def test_import_vm21(self):
         """VM-21 calculator should be importable."""
         from annuity_pricing.regulatory import (
+            PolicyData,
             VM21Calculator,
             VM21Result,
-            PolicyData,
-            calculate_cte_levels,
         )
 
         assert VM21Calculator is not None
@@ -57,9 +55,9 @@ class TestRegulatoryImports:
     def test_import_vm22(self):
         """VM-22 calculator should be importable."""
         from annuity_pricing.regulatory import (
+            ReserveType,
             VM22Calculator,
             VM22Result,
-            ReserveType,
         )
 
         assert VM22Calculator is not None
@@ -77,6 +75,7 @@ class TestCTELevels:
     def test_cte_levels_function(self):
         """calculate_cte_levels should compute percentiles."""
         import numpy as np
+
         from annuity_pricing.regulatory import calculate_cte_levels
 
         losses = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
@@ -150,7 +149,7 @@ class TestVM21GoldenBaseline:
 
     def test_va_glwb_cte70(self, vm21_data: dict) -> None:
         """[P1] CTE70 calculation should match baseline."""
-        from annuity_pricing.regulatory.vm21 import VM21Calculator, PolicyData
+        from annuity_pricing.regulatory.vm21 import PolicyData, VM21Calculator
 
         product_data = vm21_data["va_sample_glwb"]
         params = product_data["parameters"]
@@ -184,7 +183,7 @@ class TestVM21GoldenBaseline:
 
     def test_va_glwb_reserve(self, vm21_data: dict) -> None:
         """[P1] Reserve calculation should match baseline."""
-        from annuity_pricing.regulatory.vm21 import VM21Calculator, PolicyData
+        from annuity_pricing.regulatory.vm21 import PolicyData, VM21Calculator
 
         product_data = vm21_data["va_sample_glwb"]
         params = product_data["parameters"]
@@ -257,7 +256,7 @@ class TestVM22GoldenBaseline:
     ])
     def test_fixed_annuity_reserve(self, vm22_data: dict, product_key: str) -> None:
         """[P1] Reserve calculation should match baseline."""
-        from annuity_pricing.regulatory.vm22 import VM22Calculator, FixedAnnuityPolicy
+        from annuity_pricing.regulatory.vm22 import FixedAnnuityPolicy, VM22Calculator
 
         if product_key not in vm22_data:
             pytest.skip(f"Product {product_key} not in golden file")
@@ -301,7 +300,7 @@ class TestVM22GoldenBaseline:
     ])
     def test_deterministic_reserve(self, vm22_data: dict, product_key: str) -> None:
         """[P1] Deterministic reserve should match baseline."""
-        from annuity_pricing.regulatory.vm22 import VM22Calculator, FixedAnnuityPolicy
+        from annuity_pricing.regulatory.vm22 import FixedAnnuityPolicy, VM22Calculator
 
         if product_key not in vm22_data:
             pytest.skip(f"Product {product_key} not in golden file")
@@ -341,7 +340,7 @@ class TestVM22GoldenBaseline:
 
     def test_set_passes_for_simple_product(self, vm22_data: dict) -> None:
         """[P1] Stochastic Exclusion Test should pass for simple fixed annuity."""
-        from annuity_pricing.regulatory.vm22 import VM22Calculator, FixedAnnuityPolicy
+        from annuity_pricing.regulatory.vm22 import FixedAnnuityPolicy, VM22Calculator
 
         product_data = vm22_data["fixed_annuity_5yr"]
         params = product_data["parameters"]

@@ -14,10 +14,9 @@ import pytest
 
 from annuity_pricing.options.simulation.gbm import (
     GBMParams,
-    PathResult,
     generate_gbm_paths,
-    generate_terminal_values,
     generate_paths_with_monthly_observations,
+    generate_terminal_values,
     validate_gbm_simulation,
 )
 

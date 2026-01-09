@@ -10,8 +10,8 @@ See: CONSTITUTION.md Section 2.1
 See: docs/knowledge/domain/option_pricing.md
 """
 
-import pytest
 import numpy as np
+import pytest
 
 from annuity_pricing.config.settings import SETTINGS
 from annuity_pricing.options.pricing.black_scholes import (

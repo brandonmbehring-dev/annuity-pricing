@@ -9,7 +9,6 @@ See: docs/knowledge/domain/option_pricing.md
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional, Union
 
 import numpy as np
 
@@ -117,7 +116,7 @@ class PayoffResult:
     index_return: float
     cap_applied: bool = False
     floor_applied: bool = False
-    details: Optional[dict] = None
+    details: dict | None = None
 
 
 class BasePayoff(ABC):

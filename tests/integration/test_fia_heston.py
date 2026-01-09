@@ -11,14 +11,12 @@ Validates that:
 See: docs/knowledge/domain/option_pricing.md
 """
 
-import numpy as np
 import pytest
 
 from annuity_pricing.data.schemas import FIAProduct
 from annuity_pricing.options.pricing.heston import HestonParams
 from annuity_pricing.options.volatility_models import HestonVolatility
 from annuity_pricing.products.fia import FIAPricer, MarketParams
-
 
 # =============================================================================
 # Test Configuration

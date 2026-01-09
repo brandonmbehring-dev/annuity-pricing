@@ -16,10 +16,10 @@ Validators: QuantLib, PyCurve
 See: docs/CROSS_VALIDATION_MATRIX.md
 """
 
-from dataclasses import dataclass
-from typing import Optional, List, Literal, Tuple
-from enum import Enum
 import logging
+from dataclasses import dataclass
+from enum import Enum
+
 import numpy as np
 
 logger = logging.getLogger(__name__)
@@ -340,8 +340,8 @@ class YieldCurveLoader:
     def from_fred(
         self,
         as_of_date: str,
-        api_key: Optional[str] = None,
-        maturities: Optional[np.ndarray] = None,
+        api_key: str | None = None,
+        maturities: np.ndarray | None = None,
     ) -> YieldCurve:
         """
         Load Treasury curve from FRED.
@@ -376,11 +376,11 @@ class YieldCurveLoader:
 
         try:
             import pandas_datareader.data as web
-        except ImportError:
+        except ImportError as err:
             raise ImportError(
                 "pandas-datareader required for FRED data. "
                 "Install with: pip install pandas-datareader"
-            )
+            ) from err
 
         maturities = maturities if maturities is not None else self.TREASURY_MATURITIES
 
@@ -420,7 +420,7 @@ class YieldCurveLoader:
         beta2: float,
         tau: float,
         as_of_date: str = "2024-01-01",
-        maturities: Optional[np.ndarray] = None,
+        maturities: np.ndarray | None = None,
     ) -> YieldCurve:
         """
         Construct Nelson-Siegel curve.
@@ -556,7 +556,7 @@ class YieldCurveLoader:
     def from_fixture(
         self,
         fixture_path: str,
-        as_of_date: Optional[str] = None,
+        as_of_date: str | None = None,
     ) -> YieldCurve:
         """
         Load Treasury curve from CSV fixture file.
@@ -590,7 +590,7 @@ class YieldCurveLoader:
         maturities = []
         rates = []
 
-        with open(path, "r") as f:
+        with open(path) as f:
             reader = csv.DictReader(
                 filter(lambda row: not row.startswith("#"), f)
             )
@@ -627,7 +627,7 @@ class YieldCurveLoader:
     def from_quantlib(
         self,
         as_of_date: str,
-        market_quotes: List[Tuple[float, float]],
+        market_quotes: list[tuple[float, float]],
     ) -> YieldCurve:
         """
         Build curve using QuantLib (if available).
@@ -650,11 +650,11 @@ class YieldCurveLoader:
         """
         try:
             import QuantLib as ql
-        except ImportError:
+        except ImportError as err:
             raise ImportError(
                 "QuantLib required for this method. "
                 "Install with: pip install QuantLib-Python"
-            )
+            ) from err
 
         # Parse date
         year, month, day = map(int, as_of_date.split("-"))
@@ -700,7 +700,7 @@ class YieldCurveLoader:
 def fit_nelson_siegel(
     maturities: np.ndarray,
     rates: np.ndarray,
-    initial_guess: Optional[Tuple[float, float, float, float]] = None,
+    initial_guess: tuple[float, float, float, float] | None = None,
 ) -> NelsonSiegelParams:
     """
     Fit Nelson-Siegel parameters to market rates.

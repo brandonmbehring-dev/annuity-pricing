@@ -13,15 +13,15 @@ See: docs/knowledge/domain/option_pricing.md
 See: Glasserman (2003) "Monte Carlo Methods in Financial Engineering"
 """
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Optional, Union, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 import numpy as np
 
-from annuity_pricing.options.payoffs.base import BasePayoff, IndexPath, OptionType, PayoffResult
+from annuity_pricing.options.payoffs.base import BasePayoff, IndexPath, OptionType
 from annuity_pricing.options.simulation.gbm import (
     GBMParams,
-    PathResult,
     generate_gbm_paths,
     generate_terminal_values,
 )
@@ -96,7 +96,7 @@ class MonteCarloEngine:
         self,
         n_paths: int = 100000,
         antithetic: bool = True,
-        seed: Optional[int] = None,
+        seed: int | None = None,
     ):
         if n_paths <= 0:
             raise ValueError(f"CRITICAL: n_paths must be > 0, got {n_paths}")
@@ -420,7 +420,7 @@ class MonteCarloEngine:
         self,
         params: GBMParams,
         buffer_rate: float,
-        cap_rate: Optional[float] = None,
+        cap_rate: float | None = None,
     ) -> MCResult:
         """
         Price buffer protection (RILA style).
@@ -469,7 +469,7 @@ class MonteCarloEngine:
         self,
         params: GBMParams,
         floor_rate: float,
-        cap_rate: Optional[float] = None,
+        cap_rate: float | None = None,
     ) -> MCResult:
         """
         Price floor protection (RILA style).
@@ -560,7 +560,7 @@ def price_vanilla_mc(
     time_to_expiry: float,
     option_type: OptionType,
     n_paths: int = 100000,
-    seed: Optional[int] = None,
+    seed: int | None = None,
 ) -> MCResult:
     """
     Convenience function to price vanilla option via MC.
@@ -611,7 +611,7 @@ def convergence_analysis(
     params: GBMParams,
     strike: float,
     analytical_price: float,
-    path_counts: list[int] = [1000, 5000, 10000, 50000, 100000, 500000],
+    path_counts: list[int] = None,
     seed: int = 42,
 ) -> dict:
     """
@@ -637,6 +637,8 @@ def convergence_analysis(
     dict
         Convergence analysis results
     """
+    if path_counts is None:
+        path_counts = [1000, 5000, 10000, 50000, 100000, 500000]
     results = []
 
     for n in path_counts:
@@ -701,7 +703,7 @@ def monte_carlo_price(
     time_to_expiry: float,
     n_paths: int = 100000,
     option_type: str = "call",
-    seed: Optional[int] = None,
+    seed: int | None = None,
 ) -> float:
     """
     Convenience function to price vanilla option via Monte Carlo.

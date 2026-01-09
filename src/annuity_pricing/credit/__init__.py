@@ -15,6 +15,11 @@ Provides:
 See: docs/knowledge/domain/credit_risk.md (to be created)
 """
 
+from annuity_pricing.credit.cva import (
+    CVAResult,
+    calculate_credit_adjusted_price,
+    calculate_cva,
+)
 from annuity_pricing.credit.default_prob import (
     AMBestRating,
     RatingPD,
@@ -24,13 +29,8 @@ from annuity_pricing.credit.default_prob import (
 )
 from annuity_pricing.credit.guaranty_funds import (
     GuarantyFundCoverage,
-    get_state_coverage,
     calculate_covered_amount,
-)
-from annuity_pricing.credit.cva import (
-    CVAResult,
-    calculate_cva,
-    calculate_credit_adjusted_price,
+    get_state_coverage,
 )
 
 __all__ = [

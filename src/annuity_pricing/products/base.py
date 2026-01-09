@@ -8,7 +8,7 @@ See: CONSTITUTION.md Section 4
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import date
-from typing import Any, Optional
+from typing import Any
 
 import pandas as pd
 
@@ -33,10 +33,10 @@ class PricingResult:
     """
 
     present_value: float
-    duration: Optional[float] = None
-    convexity: Optional[float] = None
-    details: Optional[dict[str, Any]] = None
-    as_of_date: Optional[date] = None
+    duration: float | None = None
+    convexity: float | None = None
+    details: dict[str, Any] | None = None
+    as_of_date: date | None = None
 
     def __post_init__(self) -> None:
         """Validate pricing result."""
@@ -68,9 +68,9 @@ class CompetitivePosition:
 
     rate: float
     percentile: float
-    spread_over_treasury: Optional[float] = None
-    rank: Optional[int] = None
-    total_products: Optional[int] = None
+    spread_over_treasury: float | None = None
+    rank: int | None = None
+    total_products: int | None = None
 
     def __post_init__(self) -> None:
         """Validate position."""
@@ -95,7 +95,7 @@ class BasePricer(ABC):
     def price(
         self,
         product: Any,
-        as_of_date: Optional[date] = None,
+        as_of_date: date | None = None,
         **kwargs: Any,
     ) -> PricingResult:
         """

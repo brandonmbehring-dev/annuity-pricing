@@ -4,21 +4,21 @@ Integration tests for ProductRegistry.
 Tests unified dispatch across all product types (MYGA, FIA, RILA).
 """
 
-import pytest
 import pandas as pd
+import pytest
 
 from annuity_pricing.data.schemas import (
     FIAProduct,
     MYGAProduct,
     RILAProduct,
 )
+from annuity_pricing.products.fia import FIAPricingResult
 from annuity_pricing.products.registry import (
-    ProductRegistry,
     MarketEnvironment,
+    ProductRegistry,
     create_default_registry,
     price_product,
 )
-from annuity_pricing.products.fia import FIAPricingResult
 from annuity_pricing.products.rila import RILAPricingResult
 
 

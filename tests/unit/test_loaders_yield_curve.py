@@ -9,16 +9,16 @@ Tests for Yield Curve Loader - Phase 10.
 See: docs/knowledge/domain/yield_curves.md
 """
 
-import pytest
 import numpy as np
+import pytest
 
 from annuity_pricing.loaders.yield_curve import (
+    InterpolationMethod,
+    NelsonSiegelParams,
     YieldCurve,
     YieldCurveLoader,
-    NelsonSiegelParams,
-    InterpolationMethod,
-    fit_nelson_siegel,
     calculate_duration,
+    fit_nelson_siegel,
 )
 
 

@@ -7,13 +7,13 @@ Tests for VM-21 Calculator - Phase 9.
 See: docs/knowledge/domain/vm21_vm22.md
 """
 
-import pytest
 import numpy as np
+import pytest
 
 from annuity_pricing.regulatory.vm21 import (
+    PolicyData,
     VM21Calculator,
     VM21Result,
-    PolicyData,
     calculate_cte_levels,
     sensitivity_analysis,
 )

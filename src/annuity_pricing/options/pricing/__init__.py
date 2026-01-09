@@ -35,8 +35,8 @@ from annuity_pricing.options.pricing.heston import (
 )
 from annuity_pricing.options.pricing.heston_cos import (
     COSParams,
-    heston_price_cos,
     heston_price_call_cos,
+    heston_price_cos,
     heston_price_put_cos,
 )
 from annuity_pricing.options.pricing.sabr import (

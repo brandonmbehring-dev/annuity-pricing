@@ -9,12 +9,11 @@ See: CONSTITUTION.md Section 4
 
 from dataclasses import dataclass
 from datetime import date
-from typing import Any, Optional, Union
+from typing import Any
 
 import pandas as pd
 
 from annuity_pricing.data.schemas import (
-    BaseProduct,
     FIAProduct,
     GLWBProduct,
     MYGAProduct,
@@ -24,16 +23,17 @@ from annuity_pricing.data.schemas import (
     create_rila_from_row,
 )
 from annuity_pricing.products.base import BasePricer, CompetitivePosition, PricingResult
-from annuity_pricing.products.myga import MYGAPricer
-from annuity_pricing.products.fia import FIAPricer, FIAPricingResult, MarketParams as FIAMarketParams
-from annuity_pricing.products.rila import RILAPricer, RILAPricingResult, MarketParams as RILAMarketParams
+from annuity_pricing.products.fia import FIAPricer, FIAPricingResult
+from annuity_pricing.products.fia import MarketParams as FIAMarketParams
 from annuity_pricing.products.glwb import GLWBPricer, GLWBPricingResult
+from annuity_pricing.products.myga import MYGAPricer
+from annuity_pricing.products.rila import MarketParams as RILAMarketParams
+from annuity_pricing.products.rila import RILAPricer, RILAPricingResult
 from annuity_pricing.validation.gates import ValidationEngine
 
-
 # Type alias for any product type
-AnyProduct = Union[MYGAProduct, FIAProduct, RILAProduct, GLWBProduct]
-AnyPricingResult = Union[PricingResult, FIAPricingResult, RILAPricingResult, GLWBPricingResult]
+AnyProduct = MYGAProduct | FIAProduct | RILAProduct | GLWBProduct
+AnyPricingResult = PricingResult | FIAPricingResult | RILAPricingResult | GLWBPricingResult
 
 
 @dataclass(frozen=True)
@@ -131,8 +131,8 @@ class ProductRegistry:
         self,
         market_env: MarketEnvironment,
         n_mc_paths: int = 100000,
-        seed: Optional[int] = None,
-        validation_engine: Optional[ValidationEngine] = None,
+        seed: int | None = None,
+        validation_engine: ValidationEngine | None = None,
     ):
         self.market_env = market_env
         self.n_mc_paths = n_mc_paths
@@ -155,12 +155,12 @@ class ProductRegistry:
             seed=seed,
         )
         # GLWB pricer is lazy-initialized (has stricter validation, e.g., no negative rates)
-        self._glwb_pricer: Optional[GLWBPricer] = None
+        self._glwb_pricer: GLWBPricer | None = None
 
     def price(
         self,
         product: AnyProduct,
-        as_of_date: Optional[date] = None,
+        as_of_date: date | None = None,
         validate: bool = True,
         **kwargs: Any,
     ) -> AnyPricingResult:
@@ -504,7 +504,7 @@ class ProductRegistry:
 def create_default_registry(
     risk_free_rate: float = 0.05,
     volatility: float = 0.20,
-    seed: Optional[int] = None,
+    seed: int | None = None,
 ) -> ProductRegistry:
     """
     Create a product registry with default market parameters.

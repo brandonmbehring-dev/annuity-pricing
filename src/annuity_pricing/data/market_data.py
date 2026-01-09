@@ -11,7 +11,6 @@ See: codex-pricing-resources-rila-fia-myga.md Section 2
 
 import os
 from datetime import datetime, timedelta
-from typing import Optional
 
 import pandas as pd
 
@@ -30,9 +29,9 @@ class MarketDataError(Exception):
 
 def fetch_fred_series(
     series_id: str,
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
-    api_key: Optional[str] = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+    api_key: str | None = None,
 ) -> pd.Series:
     """
     Fetch a single FRED series.
@@ -60,10 +59,10 @@ def fetch_fred_series(
     """
     try:
         from fredapi import Fred
-    except ImportError:
+    except ImportError as err:
         raise MarketDataError(
             "CRITICAL: fredapi not installed. Run: pip install fredapi"
-        )
+        ) from err
 
     key = api_key or os.environ.get("FRED_API_KEY")
     if not key:
@@ -95,8 +94,8 @@ def fetch_fred_series(
 
 
 def fetch_treasury_curve(
-    as_of_date: Optional[str] = None,
-    api_key: Optional[str] = None,
+    as_of_date: str | None = None,
+    api_key: str | None = None,
 ) -> pd.DataFrame:
     """
     Fetch Treasury yield curve from FRED.
@@ -168,9 +167,9 @@ def fetch_treasury_curve(
 
 
 def fetch_vix(
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
-    api_key: Optional[str] = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+    api_key: str | None = None,
 ) -> pd.Series:
     """
     Fetch VIX (implied volatility proxy) from FRED.
@@ -198,8 +197,8 @@ def fetch_vix(
 
 def fetch_yahoo_index(
     ticker: str,
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
 ) -> pd.DataFrame:
     """
     Fetch equity index data from Yahoo Finance.
@@ -225,10 +224,10 @@ def fetch_yahoo_index(
     """
     try:
         import yfinance as yf
-    except ImportError:
+    except ImportError as err:
         raise MarketDataError(
             "CRITICAL: yfinance not installed. Run: pip install yfinance"
-        )
+        ) from err
 
     try:
         ticker_obj = yf.Ticker(ticker)
@@ -248,8 +247,8 @@ def fetch_yahoo_index(
 
 
 def fetch_sp500(
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
 ) -> pd.DataFrame:
     """
     Fetch S&P 500 index data.
@@ -270,8 +269,8 @@ def fetch_sp500(
 
 
 def fetch_russell2000(
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
 ) -> pd.DataFrame:
     """
     Fetch Russell 2000 index data.
@@ -292,8 +291,8 @@ def fetch_russell2000(
 
 
 def fetch_nasdaq100(
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
 ) -> pd.DataFrame:
     """
     Fetch NASDAQ-100 index data.
@@ -319,8 +318,8 @@ def fetch_nasdaq100(
 
 def fetch_stooq_index(
     symbol: str,
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
 ) -> pd.DataFrame:
     """
     Fetch index data from Stooq (backup source).
@@ -381,8 +380,8 @@ def fetch_stooq_index(
 
 def get_risk_free_rate(
     tenor_years: float = 1.0,
-    as_of_date: Optional[str] = None,
-    api_key: Optional[str] = None,
+    as_of_date: str | None = None,
+    api_key: str | None = None,
 ) -> float:
     """
     Get risk-free rate for a given tenor.

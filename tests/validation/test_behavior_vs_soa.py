@@ -13,28 +13,25 @@ See: docs/assumptions/BEHAVIOR_CALIBRATION.md
 
 import pytest
 
-from annuity_pricing.behavioral.soa_benchmarks import (
-    SOA_2006_SURRENDER_BY_DURATION_7YR_SC,
-    SOA_2006_SC_CLIFF_EFFECT,
-    SOA_2006_SC_CLIFF_MULTIPLIER,
-    SOA_2018_GLWB_UTILIZATION_BY_DURATION,
-    SOA_2018_GLWB_UTILIZATION_BY_AGE,
-    SOA_2018_ITM_SENSITIVITY,
-)
 from annuity_pricing.behavioral.calibration import (
-    interpolate_surrender_by_duration,
-    get_sc_cliff_multiplier,
-    interpolate_utilization_by_duration,
-    interpolate_utilization_by_age,
     get_itm_sensitivity_factor,
+    get_sc_cliff_multiplier,
+    interpolate_surrender_by_duration,
+    interpolate_utilization_by_age,
+    interpolate_utilization_by_duration,
 )
 from annuity_pricing.behavioral.dynamic_lapse import (
     SOADynamicLapseModel,
     SOALapseAssumptions,
 )
+from annuity_pricing.behavioral.soa_benchmarks import (
+    SOA_2006_SC_CLIFF_MULTIPLIER,
+    SOA_2006_SURRENDER_BY_DURATION_7YR_SC,
+    SOA_2018_GLWB_UTILIZATION_BY_DURATION,
+)
 from annuity_pricing.behavioral.withdrawal import (
-    SOAWithdrawalModel,
     SOAWithdrawalAssumptions,
+    SOAWithdrawalModel,
 )
 
 

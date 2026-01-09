@@ -21,20 +21,19 @@ Greeks Golden Values (ATM, S=K=100, r=5%, σ=20%, T=1):
 | Theta | -6.4     | 0.5       |
 """
 
-from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
 
 from annuity_pricing.config.tolerances import CROSS_LIBRARY_TOLERANCE
-from .base import BaseAdapter, ValidationResult
 
+from .base import BaseAdapter, ValidationResult
 
 # Try to import financepy
 try:
+    from financepy.market.curves.discount_curve_flat import DiscountCurveFlat
+    from financepy.models.black_scholes import BlackScholes
     from financepy.products.equity import EquityVanillaOption
     from financepy.utils.date import Date
     from financepy.utils.global_types import OptionTypes
-    from financepy.market.curves.discount_curve_flat import DiscountCurveFlat
-    from financepy.models.black_scholes import BlackScholes
 
     FINANCEPY_AVAILABLE = True
 except ImportError:
@@ -53,12 +52,12 @@ class GoldenCase:
     volatility: float
     time_to_expiry: float
     expected_call: float
-    expected_put: Optional[float] = None
+    expected_put: float | None = None
     tolerance: float = 0.05
 
 
 # Hull textbook examples and common cases
-GOLDEN_CASES: List[GoldenCase] = [
+GOLDEN_CASES: list[GoldenCase] = [
     GoldenCase(
         name="Hull 15.6",
         spot=42.0,
@@ -205,7 +204,7 @@ class FinancepyAdapter(BaseAdapter):
         dividend: float,
         volatility: float,
         time_to_expiry: float,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Calculate Greeks using financepy.
 
@@ -256,7 +255,7 @@ class FinancepyAdapter(BaseAdapter):
         dividend: float,
         volatility: float,
         time_to_expiry: float,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Convenience helper to return price and Greeks from financepy.
         """
@@ -361,7 +360,7 @@ class FinancepyAdapter(BaseAdapter):
             test_case=f"Put S={spot} K={strike}",
         )
 
-    def run_golden_tests(self) -> List[ValidationResult]:
+    def run_golden_tests(self) -> list[ValidationResult]:
         """
         Run all golden test cases.
 

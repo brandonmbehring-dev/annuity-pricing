@@ -26,7 +26,7 @@ See: docs/assumptions/BEHAVIOR_CALIBRATION.md (SOA calibration)
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Callable, Optional
+
 import numpy as np
 
 
@@ -363,7 +363,7 @@ class SOADynamicLapseModel:
         av: float,
         duration: int,
         years_to_sc_end: int = 0,
-        age: Optional[int] = None,
+        age: int | None = None,
     ) -> SOALapseResult:
         """
         Calculate SOA-calibrated lapse rate.
@@ -389,9 +389,9 @@ class SOADynamicLapseModel:
             Detailed lapse calculation results
         """
         from annuity_pricing.behavioral.calibration import (
-            interpolate_surrender_by_duration,
             get_sc_cliff_multiplier,
             interpolate_surrender_by_age,
+            interpolate_surrender_by_duration,
         )
 
         # Validate inputs
@@ -470,8 +470,8 @@ class SOADynamicLapseModel:
         gwb_path: np.ndarray,
         av_path: np.ndarray,
         start_duration: int = 1,
-        surrender_charge_length: Optional[int] = None,
-        ages: Optional[np.ndarray] = None,
+        surrender_charge_length: int | None = None,
+        ages: np.ndarray | None = None,
     ) -> np.ndarray:
         """
         Calculate lapse rates along a simulation path.

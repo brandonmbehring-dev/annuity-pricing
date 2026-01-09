@@ -8,14 +8,14 @@ Tests pricing of RILA products with:
 See: docs/knowledge/domain/buffer_floor.md
 """
 
-import pytest
 import pandas as pd
+import pytest
 
 from annuity_pricing.data.schemas import RILAProduct
 from annuity_pricing.products.rila import (
+    MarketParams,
     RILAPricer,
     RILAPricingResult,
-    MarketParams,
 )
 
 

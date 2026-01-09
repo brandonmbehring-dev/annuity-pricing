@@ -17,7 +17,6 @@ References
 import numpy as np
 import pytest
 
-
 # Check if QuantLib is available
 try:
     import QuantLib as ql

@@ -6,13 +6,12 @@ Tests for GLWB Withdrawal Utilization Model - Phase 7.
 See: docs/knowledge/domain/glwb_mechanics.md
 """
 
-import pytest
 import numpy as np
+import pytest
 
 from annuity_pricing.behavioral.withdrawal import (
-    WithdrawalModel,
     WithdrawalAssumptions,
-    WithdrawalResult,
+    WithdrawalModel,
 )
 
 

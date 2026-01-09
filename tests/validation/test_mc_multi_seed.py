@@ -16,22 +16,20 @@ import numpy as np
 import pytest
 from scipy import stats
 
-from annuity_pricing.options.simulation.gbm import GBMParams
-from annuity_pricing.options.simulation.monte_carlo import (
-    MonteCarloEngine,
-    price_vanilla_mc,
+from annuity_pricing.config.tolerances import (
+    MC_10K_TOLERANCE,
+    MC_100K_TOLERANCE,
 )
 from annuity_pricing.options.payoffs.base import OptionType
 from annuity_pricing.options.pricing.black_scholes import (
     black_scholes_call,
     black_scholes_put,
 )
-from annuity_pricing.config.tolerances import (
-    MC_10K_TOLERANCE,
-    MC_100K_TOLERANCE,
-    BS_MC_CONVERGENCE_TOLERANCE,
+from annuity_pricing.options.simulation.gbm import GBMParams
+from annuity_pricing.options.simulation.monte_carlo import (
+    MonteCarloEngine,
+    price_vanilla_mc,
 )
-
 
 # =============================================================================
 # Seed Configuration (Tiered Approach)

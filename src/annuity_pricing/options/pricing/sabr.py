@@ -19,7 +19,6 @@ Validation: tests/validation/test_sabr_vs_quantlib.py (10/10 tests passed, 0% er
 """
 
 from dataclasses import dataclass
-from typing import Optional
 
 import numpy as np
 from scipy.optimize import minimize
@@ -274,7 +273,7 @@ def calibrate_sabr(
     market_vols: list[float],
     time: float,
     beta: float = 0.5,
-    initial_guess: Optional[tuple[float, float, float]] = None,
+    initial_guess: tuple[float, float, float] | None = None,
 ) -> SABRParams:
     """
     Calibrate SABR parameters to market implied volatilities.

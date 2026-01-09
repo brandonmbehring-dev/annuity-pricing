@@ -11,13 +11,10 @@ See: docs/knowledge/domain/competitive_analysis.md
 """
 
 from dataclasses import dataclass
-from datetime import date
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 import pandas as pd
-
-from annuity_pricing.config.settings import SETTINGS
 
 
 @dataclass(frozen=True)
@@ -45,8 +42,8 @@ class RateRecommendation:
 
     recommended_rate: float
     target_percentile: float
-    spread_over_treasury: Optional[float] = None
-    margin_estimate: Optional[float] = None
+    spread_over_treasury: float | None = None
+    margin_estimate: float | None = None
     confidence: str = "medium"
     rationale: str = ""
     comparable_count: int = 0
@@ -132,7 +129,7 @@ class RateRecommender:
         guarantee_duration: int,
         target_percentile: float,
         market_data: pd.DataFrame,
-        treasury_rate: Optional[float] = None,
+        treasury_rate: float | None = None,
         min_margin_bps: float = 50.0,
         **kwargs: Any,
     ) -> RateRecommendation:
@@ -299,7 +296,7 @@ class RateRecommender:
         self,
         rate: float,
         treasury_rate: float,
-        expense_load: Optional[float] = None,
+        expense_load: float | None = None,
     ) -> MarginAnalysis:
         """
         Analyze margin breakdown for a given rate.
@@ -338,7 +335,7 @@ class RateRecommender:
         guarantee_duration: int,
         market_data: pd.DataFrame,
         treasury_rate: float,
-        percentile_range: Optional[list[float]] = None,
+        percentile_range: list[float] | None = None,
     ) -> pd.DataFrame:
         """
         Perform sensitivity analysis across percentile targets.
@@ -447,7 +444,7 @@ class RateRecommender:
         self,
         sample_size: int,
         percentile: float,
-        margin_bps: Optional[float],
+        margin_bps: float | None,
     ) -> str:
         """
         Assess confidence level of recommendation.
@@ -498,8 +495,8 @@ class RateRecommender:
         self,
         recommended_rate: float,
         target_percentile: float,
-        spread_bps: Optional[float],
-        margin_bps: Optional[float],
+        spread_bps: float | None,
+        margin_bps: float | None,
         min_margin_bps: float,
         comparable_count: int,
     ) -> str:

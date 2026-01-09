@@ -4,30 +4,29 @@ Integration tests for Validation Gates (HALT/PASS framework).
 Tests validation of pricing results across all product types.
 """
 
-import pytest
 from datetime import date
+
+import pytest
 
 from annuity_pricing.products.base import PricingResult
 from annuity_pricing.products.fia import FIAPricingResult
 from annuity_pricing.products.rila import RILAPricingResult
 from annuity_pricing.validation.gates import (
-    GateStatus,
-    GateResult,
-    ValidationReport,
-    ValidationGate,
-    PresentValueBoundsGate,
+    ArbitrageBoundsGate,
     DurationBoundsGate,
-    FIAOptionBudgetGate,
     FIAExpectedCreditGate,
+    FIAOptionBudgetGate,
+    GateResult,
+    GateStatus,
+    PresentValueBoundsGate,
+    ProductParameterSanityGate,  # [F.4]
     RILAMaxLossGate,
     RILAProtectionValueGate,
-    ArbitrageBoundsGate,
-    ProductParameterSanityGate,  # [F.4]
     ValidationEngine,
-    validate_pricing_result,
+    ValidationReport,
     ensure_valid,
+    validate_pricing_result,
 )
-
 
 # =============================================================================
 # Test Fixtures

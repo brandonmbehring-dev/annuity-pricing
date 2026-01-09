@@ -5,7 +5,6 @@ Handles outliers and data quality issues identified in gap reports.
 See: wink-research-archive/gap-reports/gap-report-round2.md
 """
 
-from typing import Optional
 
 import numpy as np
 import pandas as pd

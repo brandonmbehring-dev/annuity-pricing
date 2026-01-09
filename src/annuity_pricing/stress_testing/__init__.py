@@ -30,102 +30,102 @@ See: ~/.claude/plans/rippling-spinning-ripple.md (Phase I details)
 
 # Historical crisis definitions
 from .historical import (
-    HistoricalCrisis,
-    CrisisProfile,
-    RecoveryType,
+    # Collections
+    ALL_HISTORICAL_CRISES,
+    CRISIS_2000_DOTCOM,
     # Individual crisis constants
     CRISIS_2008_GFC,
-    CRISIS_2020_COVID,
-    CRISIS_2000_DOTCOM,
     CRISIS_2011_EURO_DEBT,
     CRISIS_2015_CHINA,
     CRISIS_2018_Q4,
+    CRISIS_2020_COVID,
     CRISIS_2022_RATES,
-    # Collections
-    ALL_HISTORICAL_CRISES,
+    CrisisProfile,
+    HistoricalCrisis,
+    RecoveryType,
     get_crisis_by_name,
     get_crisis_summary,
 )
 
-# Stress scenarios
-from .scenarios import (
-    StressScenario,
-    ScenarioType,
-    # ORSA standard scenarios
-    ORSA_MODERATE_ADVERSE,
-    ORSA_SEVERELY_ADVERSE,
-    ORSA_EXTREMELY_ADVERSE,
-    # Collections and utilities
-    ALL_ORSA_SCENARIOS,
-    crisis_to_scenario,
-    create_custom_scenario,
-)
-
 # Metrics and results
 from .metrics import (
+    SeverityLevel,
     StressMetrics,
     StressTestSummary,
-    SeverityLevel,
-    calculate_reserve_delta,
     calculate_percentiles,
+    calculate_reserve_delta,
     classify_severity,
-)
-
-# Runner (wrapper pattern)
-from .runner import (
-    StressTestRunner,
-    StressTestConfig,
-    StressTestResult,
-    quick_stress_test,
-    stress_single_scenario,
-)
-
-# Sensitivity analysis (Phase I.2)
-from .sensitivity import (
-    SensitivityParameter,
-    SensitivityResult,
-    TornadoData,
-    SensitivityDirection,
-    SensitivityAnalyzer,
-    get_default_sensitivity_parameters,
-    format_sensitivity_result,
-    format_tornado_table,
-    format_tornado_summary,
-    quick_sensitivity_analysis,
-)
-
-# Reverse stress testing (Phase I.3)
-from .reverse import (
-    BreachCondition,
-    ReverseStressTarget,
-    ReverseStressResult,
-    ReverseStressReport,
-    ReverseStressTester,
-    # Predefined targets
-    RESERVE_EXHAUSTION,
-    RESERVE_NEGATIVE,
-    RBC_BREACH_200,
-    RBC_BREACH_300,
-    SOLVENCY_BREACH,
-    RESERVE_INCREASE_50,
-    RESERVE_INCREASE_100,
-    ALL_PREDEFINED_TARGETS,
-    # Functions
-    create_custom_target,
-    DEFAULT_SEARCH_RANGES,
-    format_reverse_stress_result,
-    format_reverse_stress_table,
-    format_reverse_stress_summary,
-    quick_reverse_stress,
-    find_reserve_exhaustion_point,
 )
 
 # Reporting (Phase I.4)
 from .reporting import (
     ReportConfig,
     StressTestReporter,
-    generate_stress_report,
     generate_quick_summary,
+    generate_stress_report,
+)
+
+# Reverse stress testing (Phase I.3)
+from .reverse import (
+    ALL_PREDEFINED_TARGETS,
+    DEFAULT_SEARCH_RANGES,
+    RBC_BREACH_200,
+    RBC_BREACH_300,
+    # Predefined targets
+    RESERVE_EXHAUSTION,
+    RESERVE_INCREASE_50,
+    RESERVE_INCREASE_100,
+    RESERVE_NEGATIVE,
+    SOLVENCY_BREACH,
+    BreachCondition,
+    ReverseStressReport,
+    ReverseStressResult,
+    ReverseStressTarget,
+    ReverseStressTester,
+    # Functions
+    create_custom_target,
+    find_reserve_exhaustion_point,
+    format_reverse_stress_result,
+    format_reverse_stress_summary,
+    format_reverse_stress_table,
+    quick_reverse_stress,
+)
+
+# Runner (wrapper pattern)
+from .runner import (
+    StressTestConfig,
+    StressTestResult,
+    StressTestRunner,
+    quick_stress_test,
+    stress_single_scenario,
+)
+
+# Stress scenarios
+from .scenarios import (
+    # Collections and utilities
+    ALL_ORSA_SCENARIOS,
+    ORSA_EXTREMELY_ADVERSE,
+    # ORSA standard scenarios
+    ORSA_MODERATE_ADVERSE,
+    ORSA_SEVERELY_ADVERSE,
+    ScenarioType,
+    StressScenario,
+    create_custom_scenario,
+    crisis_to_scenario,
+)
+
+# Sensitivity analysis (Phase I.2)
+from .sensitivity import (
+    SensitivityAnalyzer,
+    SensitivityDirection,
+    SensitivityParameter,
+    SensitivityResult,
+    TornadoData,
+    format_sensitivity_result,
+    format_tornado_summary,
+    format_tornado_table,
+    get_default_sensitivity_parameters,
+    quick_sensitivity_analysis,
 )
 
 __all__ = [

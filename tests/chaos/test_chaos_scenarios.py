@@ -7,18 +7,18 @@ and concurrent pricing safety.
 Following CLAUDE.md principle: NEVER FAIL SILENTLY
 """
 
-import pytest
-import numpy as np
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
-from annuity_pricing.data.schemas import MYGAProduct, FIAProduct, RILAProduct
+import numpy as np
+import pytest
+
+from annuity_pricing.data.schemas import FIAProduct, MYGAProduct, RILAProduct
 from annuity_pricing.products.registry import (
-    ProductRegistry,
     MarketEnvironment,
+    ProductRegistry,
     create_default_registry,
 )
-
 
 # =============================================================================
 # Constants

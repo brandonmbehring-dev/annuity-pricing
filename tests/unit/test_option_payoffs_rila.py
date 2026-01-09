@@ -11,6 +11,7 @@ See: docs/knowledge/domain/buffer_floor.md
 import numpy as np
 import pytest
 
+from annuity_pricing.options.payoffs.base import CreditingMethod
 from annuity_pricing.options.payoffs.rila import (
     BufferPayoff,
     BufferWithFloorPayoff,
@@ -19,7 +20,6 @@ from annuity_pricing.options.payoffs.rila import (
     compare_buffer_vs_floor,
     create_rila_payoff,
 )
-from annuity_pricing.options.payoffs.base import CreditingMethod
 
 
 class TestBufferPayoff:

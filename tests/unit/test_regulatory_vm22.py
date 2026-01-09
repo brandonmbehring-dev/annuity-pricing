@@ -10,14 +10,13 @@ See: docs/knowledge/domain/vm21_vm22.md
 """
 
 import pytest
-import numpy as np
 
 from annuity_pricing.regulatory.vm22 import (
+    FixedAnnuityPolicy,
+    ReserveType,
+    StochasticExclusionResult,
     VM22Calculator,
     VM22Result,
-    FixedAnnuityPolicy,
-    StochasticExclusionResult,
-    ReserveType,
     compare_reserve_methods,
     vm22_sensitivity,
 )

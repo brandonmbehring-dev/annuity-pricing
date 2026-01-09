@@ -7,8 +7,6 @@ See: wink-research-archive/product-guides/ANNUITY_PRODUCT_GUIDE.md
 
 from dataclasses import dataclass
 from datetime import date
-from typing import Optional
-
 
 # =============================================================================
 # Base Product
@@ -29,11 +27,11 @@ class BaseProduct:
 
     # Status
     status: str  # current, historic, nlam, new
-    effective_date: Optional[date] = None
+    effective_date: date | None = None
 
     # Surrender schedule
-    surrender_charge_duration: Optional[int] = None  # Years
-    mva: Optional[bool] = None  # Market Value Adjustment applies
+    surrender_charge_duration: int | None = None  # Years
+    mva: bool | None = None  # Market Value Adjustment applies
 
 
 # =============================================================================
@@ -75,8 +73,8 @@ class MYGAProduct(BaseProduct):
     # MYGA-specific fields
     fixed_rate: float = 0.0  # Guaranteed rate (decimal)
     guarantee_duration: int = 0  # Years
-    effective_yield: Optional[float] = None
-    premium_band: Optional[str] = None
+    effective_yield: float | None = None
+    premium_band: str | None = None
 
     def __post_init__(self) -> None:
         """Validate MYGA fields."""
@@ -139,14 +137,14 @@ class FIAProduct(BaseProduct):
     """
 
     # FIA-specific fields
-    cap_rate: Optional[float] = None
-    participation_rate: Optional[float] = None
-    spread_rate: Optional[float] = None
-    performance_triggered_rate: Optional[float] = None
-    index_used: Optional[str] = None
-    indexing_method: Optional[str] = None
-    index_crediting_frequency: Optional[str] = None
-    term_years: Optional[int] = None  # Investment term in years
+    cap_rate: float | None = None
+    participation_rate: float | None = None
+    spread_rate: float | None = None
+    performance_triggered_rate: float | None = None
+    index_used: str | None = None
+    indexing_method: str | None = None
+    index_crediting_frequency: str | None = None
+    term_years: int | None = None  # Investment term in years
 
     def __post_init__(self) -> None:
         """Validate FIA fields."""
@@ -212,13 +210,13 @@ class RILAProduct(BaseProduct):
     """
 
     # RILA-specific fields
-    buffer_rate: Optional[float] = None
-    buffer_modifier: Optional[str] = None  # Determines buffer vs floor
-    cap_rate: Optional[float] = None
-    participation_rate: Optional[float] = None
-    index_used: Optional[str] = None
-    indexing_method: Optional[str] = None
-    term_years: Optional[int] = None
+    buffer_rate: float | None = None
+    buffer_modifier: str | None = None  # Determines buffer vs floor
+    cap_rate: float | None = None
+    participation_rate: float | None = None
+    index_used: str | None = None
+    indexing_method: str | None = None
+    term_years: int | None = None
 
     def __post_init__(self) -> None:
         """Validate RILA fields."""

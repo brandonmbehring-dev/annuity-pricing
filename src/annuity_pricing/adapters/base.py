@@ -7,7 +7,6 @@ See: docs/TOLERANCE_JUSTIFICATION.md for tolerance derivations.
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional
 
 from annuity_pricing.config.tolerances import CROSS_LIBRARY_TOLERANCE
 
@@ -41,7 +40,7 @@ class ValidationResult:
     passed: bool
     tolerance: float
     validator_name: str
-    test_case: Optional[str] = None
+    test_case: str | None = None
 
     @property
     def pct_difference(self) -> float:
@@ -99,7 +98,7 @@ class BaseAdapter(ABC):
         our_value: float,
         external_value: float,
         tolerance: float = CROSS_LIBRARY_TOLERANCE,
-        test_case: Optional[str] = None,
+        test_case: str | None = None,
     ) -> ValidationResult:
         """
         Create a ValidationResult comparing our value to external.

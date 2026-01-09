@@ -13,6 +13,7 @@ Tests cover:
 import numpy as np
 import pytest
 
+from annuity_pricing.options.payoffs.base import OptionType
 from annuity_pricing.options.pricing.heston import HestonParams
 from annuity_pricing.options.pricing.heston_cos import (
     COSParams,
@@ -24,8 +25,6 @@ from annuity_pricing.options.pricing.heston_cos import (
     heston_price_cos,
     heston_price_put_cos,
 )
-from annuity_pricing.options.payoffs.base import OptionType
-
 
 # =============================================================================
 # Fixtures

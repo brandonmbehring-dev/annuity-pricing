@@ -8,15 +8,14 @@ Tests for GWB Tracker - Phase 8.
 See: docs/knowledge/domain/glwb_mechanics.md
 """
 
-import pytest
 import numpy as np
+import pytest
 
 from annuity_pricing.glwb.gwb_tracker import (
-    GWBTracker,
-    GWBState,
     GWBConfig,
+    GWBState,
+    GWBTracker,
     RollupType,
-    StepResult,
 )
 
 

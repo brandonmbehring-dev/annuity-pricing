@@ -5,13 +5,14 @@ Tests MYGAPricer: price(), competitive_position(), recommend_rate()
 See: CONSTITUTION.md Section 4
 """
 
-import pandas as pd
-import pytest
 from datetime import date
 
+import pandas as pd
+import pytest
+
 from annuity_pricing.data.schemas import MYGAProduct
+from annuity_pricing.products.base import CompetitivePosition, PricingResult
 from annuity_pricing.products.myga import MYGAPricer
-from annuity_pricing.products.base import PricingResult, CompetitivePosition
 
 
 class TestMYGAPricerInit:

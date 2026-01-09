@@ -16,8 +16,9 @@ References:
     [T1] Glasserman (2003) Ch. 3-4 - Monte Carlo error bounds
 """
 
-import numpy as np
 from typing import Final
+
+import numpy as np
 
 # =============================================================================
 # Tier 1: Analytical Tolerances (Deterministic)

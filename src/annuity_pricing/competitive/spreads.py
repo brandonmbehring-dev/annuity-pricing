@@ -10,12 +10,10 @@ See: docs/knowledge/domain/competitive_analysis.md
 
 from dataclasses import dataclass
 from datetime import date
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 import pandas as pd
-
-from annuity_pricing.config.settings import SETTINGS
 
 
 @dataclass(frozen=True)
@@ -146,7 +144,7 @@ class SpreadAnalyzer:
         product_rate: float,
         treasury_rate: float,
         duration: int,
-        as_of_date: Optional[date] = None,
+        as_of_date: date | None = None,
     ) -> SpreadResult:
         """
         Calculate spread over Treasury.
@@ -189,7 +187,7 @@ class SpreadAnalyzer:
         self,
         market_data: pd.DataFrame,
         treasury_curve: dict[int, float],
-        product_group: Optional[str] = None,
+        product_group: str | None = None,
         status: str = "current",
     ) -> pd.DataFrame:
         """
@@ -224,7 +222,7 @@ class SpreadAnalyzer:
             raise ValueError("CRITICAL: No products found after filtering.")
 
         # Calculate spreads
-        def get_spread(row: pd.Series) -> Optional[float]:
+        def get_spread(row: pd.Series) -> float | None:
             duration = row.get(self.duration_column)
             rate = row.get(self.rate_column)
 
@@ -246,8 +244,8 @@ class SpreadAnalyzer:
         self,
         market_data: pd.DataFrame,
         treasury_curve: dict[int, float],
-        product_group: Optional[str] = None,
-        guarantee_duration: Optional[int] = None,
+        product_group: str | None = None,
+        guarantee_duration: int | None = None,
         duration_tolerance: int = 1,
         status: str = "current",
     ) -> SpreadDistribution:
@@ -312,8 +310,8 @@ class SpreadAnalyzer:
         spread_bps: float,
         market_data: pd.DataFrame,
         treasury_curve: dict[int, float],
-        product_group: Optional[str] = None,
-        guarantee_duration: Optional[int] = None,
+        product_group: str | None = None,
+        guarantee_duration: int | None = None,
         duration_tolerance: int = 1,
     ) -> dict[str, Any]:
         """
@@ -379,7 +377,7 @@ class SpreadAnalyzer:
         self,
         market_data: pd.DataFrame,
         treasury_curve: dict[int, float],
-        product_group: Optional[str] = None,
+        product_group: str | None = None,
         status: str = "current",
     ) -> pd.DataFrame:
         """
@@ -430,7 +428,7 @@ class SpreadAnalyzer:
         self,
         duration: int,
         treasury_curve: dict[int, float],
-    ) -> Optional[float]:
+    ) -> float | None:
         """
         Interpolate Treasury rate for a given duration.
 

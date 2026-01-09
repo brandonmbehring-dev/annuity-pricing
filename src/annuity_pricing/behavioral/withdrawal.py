@@ -25,7 +25,7 @@ See: docs/assumptions/BEHAVIOR_CALIBRATION.md (SOA calibration)
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
+
 import numpy as np
 
 
@@ -432,11 +432,11 @@ class SOAWithdrawalModel:
             Detailed withdrawal calculation results
         """
         from annuity_pricing.behavioral.calibration import (
-            interpolate_utilization_by_duration,
-            interpolate_utilization_by_age,
+            combined_utilization,
             get_itm_sensitivity_factor,
             get_itm_sensitivity_factor_continuous,
-            combined_utilization,
+            interpolate_utilization_by_age,
+            interpolate_utilization_by_duration,
         )
 
         # Validate inputs

@@ -14,9 +14,8 @@ See: docs/stress_testing/STRESS_TESTING_GUIDE.md
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional, Tuple
 
-from .historical import HistoricalCrisis, ALL_HISTORICAL_CRISES
+from .historical import ALL_HISTORICAL_CRISES, HistoricalCrisis
 
 
 class ScenarioType(Enum):
@@ -67,7 +66,7 @@ class StressScenario:
     lapse_multiplier: float = 1.0
     withdrawal_multiplier: float = 1.0
     scenario_type: ScenarioType = ScenarioType.CUSTOM
-    source_crisis: Optional[str] = None
+    source_crisis: str | None = None
     notes: str = ""
 
     def __post_init__(self) -> None:
@@ -124,7 +123,7 @@ ORSA_EXTREMELY_ADVERSE = StressScenario(
     notes="1-in-100 year event. Comparable to 2008 GFC.",
 )
 
-ALL_ORSA_SCENARIOS: Tuple[StressScenario, ...] = (
+ALL_ORSA_SCENARIOS: tuple[StressScenario, ...] = (
     ORSA_MODERATE_ADVERSE,
     ORSA_SEVERELY_ADVERSE,
     ORSA_EXTREMELY_ADVERSE,
@@ -138,7 +137,7 @@ ALL_ORSA_SCENARIOS: Tuple[StressScenario, ...] = (
 
 def crisis_to_scenario(
     crisis: HistoricalCrisis,
-    vol_shock: Optional[float] = None,
+    vol_shock: float | None = None,
     lapse_multiplier: float = 1.0,
     withdrawal_multiplier: float = 1.0,
 ) -> StressScenario:
@@ -254,7 +253,7 @@ def create_custom_scenario(
 def get_all_historical_scenarios(
     lapse_multiplier: float = 1.0,
     withdrawal_multiplier: float = 1.0,
-) -> Tuple[StressScenario, ...]:
+) -> tuple[StressScenario, ...]:
     """
     Convert all historical crises to scenarios.
 
@@ -283,7 +282,7 @@ def get_all_historical_scenarios(
 def get_scenario_by_severity(
     min_equity_shock: float = -1.0,
     max_equity_shock: float = 0.0,
-) -> Tuple[StressScenario, ...]:
+) -> tuple[StressScenario, ...]:
     """
     Filter historical scenarios by equity shock severity.
 

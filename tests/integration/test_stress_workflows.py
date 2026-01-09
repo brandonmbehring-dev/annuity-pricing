@@ -10,27 +10,26 @@ References:
 import pytest
 
 from annuity_pricing.stress_testing import (
+    ALL_HISTORICAL_CRISES,
+    ALL_ORSA_SCENARIOS,
     # Historical crises
     CRISIS_2008_GFC,
     CRISIS_2020_COVID,
-    ALL_HISTORICAL_CRISES,
-    crisis_to_scenario,
-    get_crisis_by_name,
-    # Scenarios
-    StressScenario,
-    ScenarioType,
+    ORSA_EXTREMELY_ADVERSE,
     ORSA_MODERATE_ADVERSE,
     ORSA_SEVERELY_ADVERSE,
-    ORSA_EXTREMELY_ADVERSE,
-    ALL_ORSA_SCENARIOS,
-    create_custom_scenario,
-    # Sensitivity
-    get_default_sensitivity_parameters,
     # Reverse stress
     RESERVE_EXHAUSTION,
     RESERVE_INCREASE_50,
+    ScenarioType,
+    # Scenarios
+    StressScenario,
+    create_custom_scenario,
+    crisis_to_scenario,
+    get_crisis_by_name,
+    # Sensitivity
+    get_default_sensitivity_parameters,
 )
-
 
 # =============================================================================
 # Historical Crisis Tests

@@ -11,12 +11,11 @@ Golden Values (MC convergence to BS)
 | ITM call 1Y   | 100k  | 13.70       | 0.15         |
 """
 
-from typing import Dict, List, Optional
 from dataclasses import dataclass
 
 from annuity_pricing.config.tolerances import CROSS_LIBRARY_TOLERANCE
-from .base import BaseAdapter, ValidationResult
 
+from .base import BaseAdapter, ValidationResult
 
 # Try to import pyfeng
 try:
@@ -44,7 +43,7 @@ class MCConvergenceCase:
 
 
 # MC convergence test cases
-MC_CONVERGENCE_CASES: List[MCConvergenceCase] = [
+MC_CONVERGENCE_CASES: list[MCConvergenceCase] = [
     MCConvergenceCase(
         name="ATM call 1Y",
         spot=100.0,
@@ -146,7 +145,7 @@ class PyfengAdapter(BaseAdapter):
         volatility: float,
         time_to_expiry: float,
         n_paths: int = 100000,
-        seed: Optional[int] = None,
+        seed: int | None = None,
     ) -> float:
         """
         Price European call using pyfeng Monte Carlo.
@@ -217,7 +216,7 @@ class PyfengAdapter(BaseAdapter):
             test_case=f"BS vs pyfeng S={spot} K={strike}",
         )
 
-    def run_convergence_tests(self) -> List[ValidationResult]:
+    def run_convergence_tests(self) -> list[ValidationResult]:
         """
         Run all MC convergence test cases.
 

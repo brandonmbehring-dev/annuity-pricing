@@ -6,13 +6,12 @@ Tests for Expense Model - Phase 7.
 See: docs/knowledge/domain/expense_assumptions.md
 """
 
-import pytest
 import numpy as np
+import pytest
 
 from annuity_pricing.behavioral.expenses import (
-    ExpenseModel,
     ExpenseAssumptions,
-    ExpenseResult,
+    ExpenseModel,
 )
 
 

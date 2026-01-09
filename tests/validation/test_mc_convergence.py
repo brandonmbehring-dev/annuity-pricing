@@ -8,17 +8,17 @@ See: Glasserman (2003) "Monte Carlo Methods in Financial Engineering"
 See: CONSTITUTION.md Section 4
 """
 
-import pytest
 import numpy as np
+import pytest
 
+from annuity_pricing.options.pricing.black_scholes import (
+    black_scholes_call,
+    black_scholes_put,
+)
 from annuity_pricing.options.simulation.gbm import GBMParams
 from annuity_pricing.options.simulation.monte_carlo import (
     MonteCarloEngine,
     convergence_analysis,
-)
-from annuity_pricing.options.pricing.black_scholes import (
-    black_scholes_call,
-    black_scholes_put,
 )
 
 

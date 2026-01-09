@@ -28,27 +28,27 @@ See: docs/knowledge/domain/vm21_vm22.md
 """
 
 from .scenarios import (
-    ScenarioGenerator,
-    EconomicScenario,
     AG43Scenarios,
-    VasicekParams,
+    EconomicScenario,
     EquityParams,
-    generate_deterministic_scenarios,
+    ScenarioGenerator,
+    VasicekParams,
     calculate_scenario_statistics,
+    generate_deterministic_scenarios,
 )
 from .vm21 import (
+    PolicyData,
     VM21Calculator,
     VM21Result,
-    PolicyData,
     calculate_cte_levels,
     sensitivity_analysis,
 )
 from .vm22 import (
+    FixedAnnuityPolicy,
+    ReserveType,
+    StochasticExclusionResult,
     VM22Calculator,
     VM22Result,
-    FixedAnnuityPolicy,
-    StochasticExclusionResult,
-    ReserveType,
     compare_reserve_methods,
     vm22_sensitivity,
 )

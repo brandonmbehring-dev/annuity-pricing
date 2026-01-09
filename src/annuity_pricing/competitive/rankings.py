@@ -9,10 +9,8 @@ See: docs/knowledge/domain/competitive_analysis.md
 """
 
 from dataclasses import dataclass
-from datetime import date
-from typing import Any, Optional
+from typing import Any
 
-import numpy as np
 import pandas as pd
 
 
@@ -129,12 +127,12 @@ class RankingAnalyzer:
     def rank_companies(
         self,
         market_data: pd.DataFrame,
-        product_group: Optional[str] = None,
-        guarantee_duration: Optional[int] = None,
+        product_group: str | None = None,
+        guarantee_duration: int | None = None,
         duration_tolerance: int = 1,
         status: str = "current",
         rank_by: str = "best_rate",
-        top_n: Optional[int] = None,
+        top_n: int | None = None,
     ) -> list[CompanyRanking]:
         """
         Rank companies by rate performance.
@@ -222,11 +220,11 @@ class RankingAnalyzer:
     def rank_products(
         self,
         market_data: pd.DataFrame,
-        product_group: Optional[str] = None,
-        guarantee_duration: Optional[int] = None,
+        product_group: str | None = None,
+        guarantee_duration: int | None = None,
         duration_tolerance: int = 1,
         status: str = "current",
-        top_n: Optional[int] = None,
+        top_n: int | None = None,
     ) -> list[ProductRanking]:
         """
         Rank individual products by rate.
@@ -289,11 +287,11 @@ class RankingAnalyzer:
         self,
         company: str,
         market_data: pd.DataFrame,
-        product_group: Optional[str] = None,
-        guarantee_duration: Optional[int] = None,
+        product_group: str | None = None,
+        guarantee_duration: int | None = None,
         duration_tolerance: int = 1,
         status: str = "current",
-    ) -> Optional[CompanyRanking]:
+    ) -> CompanyRanking | None:
         """
         Get ranking for a specific company.
 
@@ -334,7 +332,7 @@ class RankingAnalyzer:
     def market_summary(
         self,
         market_data: pd.DataFrame,
-        product_group: Optional[str] = None,
+        product_group: str | None = None,
         status: str = "current",
     ) -> dict[str, Any]:
         """
@@ -376,7 +374,7 @@ class RankingAnalyzer:
     def rate_leaders_by_duration(
         self,
         market_data: pd.DataFrame,
-        product_group: Optional[str] = None,
+        product_group: str | None = None,
         status: str = "current",
     ) -> pd.DataFrame:
         """
@@ -425,8 +423,8 @@ class RankingAnalyzer:
     def competitive_landscape(
         self,
         market_data: pd.DataFrame,
-        product_group: Optional[str] = None,
-        guarantee_duration: Optional[int] = None,
+        product_group: str | None = None,
+        guarantee_duration: int | None = None,
         duration_tolerance: int = 1,
         status: str = "current",
     ) -> pd.DataFrame:
@@ -493,10 +491,10 @@ class RankingAnalyzer:
     def _filter_data(
         self,
         market_data: pd.DataFrame,
-        product_group: Optional[str] = None,
-        guarantee_duration: Optional[int] = None,
+        product_group: str | None = None,
+        guarantee_duration: int | None = None,
         duration_tolerance: int = 1,
-        status: Optional[str] = None,
+        status: str | None = None,
     ) -> pd.DataFrame:
         """Filter market data to relevant products."""
         df = market_data.copy()

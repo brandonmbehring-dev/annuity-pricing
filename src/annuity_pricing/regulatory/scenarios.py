@@ -46,7 +46,7 @@ See: docs/knowledge/domain/vm21_vm22.md
 """
 
 from dataclasses import dataclass
-from typing import Optional, List, Tuple, Union
+
 import numpy as np
 
 from ..loaders.yield_curve import YieldCurve, YieldCurveLoader
@@ -97,7 +97,7 @@ class AG43Scenarios:
         Years in each scenario
     """
 
-    scenarios: List[EconomicScenario]
+    scenarios: list[EconomicScenario]
     n_scenarios: int
     projection_years: int
 
@@ -239,7 +239,7 @@ class ScenarioGenerator:
         self,
         n_scenarios: int = 1000,
         projection_years: int = 30,
-        seed: Optional[int] = None,
+        seed: int | None = None,
     ):
         """
         Initialize scenario generator.
@@ -267,8 +267,8 @@ class ScenarioGenerator:
         self,
         initial_rate: float = 0.04,
         initial_equity: float = 100.0,
-        rate_params: Optional[VasicekParams] = None,
-        equity_params: Optional[EquityParams] = None,
+        rate_params: VasicekParams | None = None,
+        equity_params: EquityParams | None = None,
         correlation: float = -0.20,
     ) -> AG43Scenarios:
         """
@@ -337,10 +337,10 @@ class ScenarioGenerator:
 
     def generate_risk_neutral_scenarios(
         self,
-        yield_curve: Optional[YieldCurve] = None,
+        yield_curve: YieldCurve | None = None,
         dividend_yield: float = 0.02,
         equity_sigma: float = 0.18,
-        rate_params: Optional[VasicekParams] = None,
+        rate_params: VasicekParams | None = None,
         correlation: float = -0.20,
     ) -> AG43Scenarios:
         """
@@ -429,7 +429,7 @@ class ScenarioGenerator:
     def generate_rate_scenarios(
         self,
         initial_rate: float = 0.04,
-        params: Optional[VasicekParams] = None,
+        params: VasicekParams | None = None,
     ) -> np.ndarray:
         """
         Generate interest rate scenarios using Vasicek model.
@@ -501,7 +501,7 @@ class ScenarioGenerator:
     def _generate_correlated_shocks(
         self,
         correlation: float,
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    ) -> tuple[np.ndarray, np.ndarray]:
         """
         Generate correlated standard normal shocks.
 
@@ -601,7 +601,7 @@ def generate_deterministic_scenarios(
     n_years: int = 30,
     base_rate: float = 0.04,
     base_equity: float = 0.07,
-) -> List[EconomicScenario]:
+) -> list[EconomicScenario]:
     """
     Generate deterministic stress scenarios for VM-22.
 

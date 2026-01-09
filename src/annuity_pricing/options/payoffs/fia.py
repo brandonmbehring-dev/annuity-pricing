@@ -13,8 +13,6 @@ See: docs/knowledge/domain/crediting_methods.md
 [T1] All FIA payoffs have 0% floor (principal protection).
 """
 
-from dataclasses import dataclass
-from typing import Optional
 
 import numpy as np
 
@@ -150,7 +148,7 @@ class ParticipationPayoff(BasePayoff):
         self,
         participation_rate: float,
         floor_rate: float = 0.0,
-        cap_rate: Optional[float] = None,
+        cap_rate: float | None = None,
     ):
         if participation_rate <= 0:
             raise ValueError(
@@ -275,7 +273,7 @@ class SpreadPayoff(BasePayoff):
         self,
         spread_rate: float,
         floor_rate: float = 0.0,
-        cap_rate: Optional[float] = None,
+        cap_rate: float | None = None,
     ):
         if spread_rate < 0:
             raise ValueError(f"CRITICAL: spread_rate must be >= 0, got {spread_rate}")
@@ -550,10 +548,10 @@ class MonthlyAveragePayoff(BasePayoff):
 
 def create_fia_payoff(
     method: str,
-    cap_rate: Optional[float] = None,
-    participation_rate: Optional[float] = None,
-    spread_rate: Optional[float] = None,
-    trigger_rate: Optional[float] = None,
+    cap_rate: float | None = None,
+    participation_rate: float | None = None,
+    spread_rate: float | None = None,
+    trigger_rate: float | None = None,
     floor_rate: float = 0.0,
 ) -> BasePayoff:
     """

@@ -13,7 +13,7 @@ Usage
 ...     from annuity_pricing.adapters.financepy_adapter import validate_bs_call
 """
 
-from .base import ValidationResult, BaseAdapter
+from .base import BaseAdapter, ValidationResult
 from .financepy_adapter import FINANCEPY_AVAILABLE, FinancepyAdapter
 from .pyfeng_adapter import PYFENG_AVAILABLE, PyfengAdapter
 from .quantlib_adapter import QUANTLIB_AVAILABLE, QuantLibAdapter

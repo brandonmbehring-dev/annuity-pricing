@@ -12,8 +12,8 @@ diverge, it indicates a fundamental error in our understanding.
 See: Hull (2021) Ch. 15 - Black-Scholes-Merton Model
 """
 
-import pytest
 import numpy as np
+import pytest
 
 # Skip if BOTH libraries unavailable
 financepy = pytest.importorskip("financepy", reason="financepy required")

@@ -13,35 +13,36 @@ See: CONSTITUTION.md Section 3.2
 See: docs/knowledge/domain/buffer_floor.md
 """
 
+import logging
 from dataclasses import dataclass
 from datetime import date
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 # brentq removed - using analytical breakeven values instead
 
 from annuity_pricing.data.schemas import RILAProduct
+from annuity_pricing.options.payoffs.base import OptionType
 from annuity_pricing.options.payoffs.rila import (
     BufferPayoff,
     FloorPayoff,
-    create_rila_payoff,
 )
-from annuity_pricing.options.payoffs.base import OptionType
 from annuity_pricing.options.pricing.black_scholes import (
     black_scholes_call,
-    black_scholes_put,
     black_scholes_greeks,
-    price_buffer_protection,
-)
-from annuity_pricing.options.volatility_models import (
-    VolatilityModel,
-    VolatilityModelType,
-    HestonVolatility,
-    SABRVolatility,
+    black_scholes_put,
 )
 from annuity_pricing.options.simulation.gbm import GBMParams
 from annuity_pricing.options.simulation.monte_carlo import MonteCarloEngine
+from annuity_pricing.options.volatility_models import (
+    HestonVolatility,
+    SABRVolatility,
+    VolatilityModel,
+    VolatilityModelType,
+)
 from annuity_pricing.products.base import BasePricer, CompetitivePosition, PricingResult
 
 
@@ -71,7 +72,7 @@ class RILAPricingResult(PricingResult):
     upside_value: float = 0.0
     expected_return: float = 0.0
     max_loss: float = 0.0
-    breakeven_return: Optional[float] = None
+    breakeven_return: float | None = None
 
 
 @dataclass(frozen=True)
@@ -106,7 +107,7 @@ class MarketParams:
     risk_free_rate: float
     dividend_yield: float
     volatility: float
-    vol_model: Optional[VolatilityModel] = None
+    vol_model: VolatilityModel | None = None
 
     def __post_init__(self) -> None:
         """Validate market params."""
@@ -206,7 +207,7 @@ class RILAPricer(BasePricer):
         self,
         market_params: MarketParams,
         n_mc_paths: int = 100000,
-        seed: Optional[int] = None,
+        seed: int | None = None,
     ):
         self.market_params = market_params
         self.n_mc_paths = n_mc_paths
@@ -220,8 +221,8 @@ class RILAPricer(BasePricer):
     def price(  # type: ignore[override]  # Subclass has specific params
         self,
         product: RILAProduct,
-        as_of_date: Optional[date] = None,
-        term_years: Optional[float] = None,
+        as_of_date: date | None = None,
+        term_years: float | None = None,
         premium: float = 100.0,
     ) -> RILAPricingResult:
         """
@@ -623,7 +624,7 @@ class RILAPricer(BasePricer):
 
     def _price_upside(
         self,
-        cap_rate: Optional[float],
+        cap_rate: float | None,
         term_years: float,
         premium: float,
     ) -> float:
@@ -666,7 +667,7 @@ class RILAPricer(BasePricer):
         self,
         is_buffer: bool,
         buffer_rate: float,
-        cap_rate: Optional[float],
+        cap_rate: float | None,
         term_years: float,
     ) -> float:
         """
@@ -736,8 +737,8 @@ class RILAPricer(BasePricer):
         self,
         is_buffer: bool,
         buffer_rate: float,
-        cap_rate: Optional[float],
-    ) -> Optional[float]:
+        cap_rate: float | None,
+    ) -> float | None:
         """
         Calculate breakeven index return.
 
@@ -895,7 +896,7 @@ class RILAPricer(BasePricer):
     def price_multiple(
         self,
         products: list[RILAProduct],
-        term_years: Optional[float] = None,
+        term_years: float | None = None,
         premium: float = 100.0,
     ) -> pd.DataFrame:
         """
@@ -948,7 +949,7 @@ class RILAPricer(BasePricer):
     def calculate_greeks(
         self,
         product: RILAProduct,
-        term_years: Optional[float] = None,
+        term_years: float | None = None,
         notional: float = 100.0,
     ) -> RILAGreeks:
         """

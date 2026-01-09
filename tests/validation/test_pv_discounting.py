@@ -10,8 +10,8 @@ See: docs/knowledge/domain/option_pricing.md
 See: notebooks/validation/pv_correction_derivation.ipynb
 """
 
-import pytest
 import numpy as np
+import pytest
 
 
 class TestPVDiscountingFormula:

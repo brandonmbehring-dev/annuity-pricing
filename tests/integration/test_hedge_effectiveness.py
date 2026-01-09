@@ -20,12 +20,10 @@ consistent, known-correct values. See:
 import json
 from pathlib import Path
 
-import numpy as np
 import pytest
 
 from annuity_pricing.data.schemas import FIAProduct, RILAProduct
-from annuity_pricing.products.registry import ProductRegistry, MarketEnvironment
-
+from annuity_pricing.products.registry import MarketEnvironment, ProductRegistry
 
 # =============================================================================
 # Constants and Configuration

@@ -11,16 +11,15 @@ Approach:
 """
 
 import time
-import pytest
+
 import numpy as np
+import pytest
 
-from annuity_pricing.data.schemas import MYGAProduct, FIAProduct, RILAProduct
+from annuity_pricing.data.schemas import FIAProduct, MYGAProduct, RILAProduct
 from annuity_pricing.products.registry import (
-    ProductRegistry,
     MarketEnvironment,
-    create_default_registry,
+    ProductRegistry,
 )
-
 
 # =============================================================================
 # Constants

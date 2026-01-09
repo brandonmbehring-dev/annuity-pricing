@@ -19,7 +19,6 @@ References
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, Optional
 
 
 class CoverageType(Enum):
@@ -88,7 +87,7 @@ _STANDARD_LIMITS = GuarantyFundCoverage(
 
 # State-specific limits where they differ from standard
 # [T2] Based on NOLHGA and state guaranty association websites
-STATE_GUARANTY_LIMITS: Dict[str, GuarantyFundCoverage] = {
+STATE_GUARANTY_LIMITS: dict[str, GuarantyFundCoverage] = {
     # California - 80% of benefits
     "CA": GuarantyFundCoverage(
         state="CA",

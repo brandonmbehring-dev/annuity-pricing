@@ -13,8 +13,6 @@ See: docs/knowledge/domain/buffer_floor.md
 [T1] Floor = long OTM put at floor strike
 """
 
-from dataclasses import dataclass
-from typing import Optional
 
 import numpy as np
 
@@ -71,8 +69,8 @@ class BufferPayoff(BasePayoff):
     def __init__(
         self,
         buffer_rate: float,
-        cap_rate: Optional[float] = None,
-        floor_rate: Optional[float] = None,
+        cap_rate: float | None = None,
+        floor_rate: float | None = None,
     ):
         if buffer_rate <= 0:
             raise ValueError(f"CRITICAL: buffer_rate must be > 0, got {buffer_rate}")
@@ -223,7 +221,7 @@ class FloorPayoff(BasePayoff):
     def __init__(
         self,
         floor_rate: float,
-        cap_rate: Optional[float] = None,
+        cap_rate: float | None = None,
     ):
         if floor_rate > 0:
             raise ValueError(
@@ -346,7 +344,7 @@ class BufferWithFloorPayoff(BasePayoff):
         self,
         buffer_rate: float,
         floor_rate: float,
-        cap_rate: Optional[float] = None,
+        cap_rate: float | None = None,
     ):
         if buffer_rate <= 0:
             raise ValueError(f"CRITICAL: buffer_rate must be > 0, got {buffer_rate}")
@@ -460,7 +458,7 @@ class StepRateBufferPayoff(BasePayoff):
         tier1_buffer: float,
         tier2_buffer: float,
         tier2_protection: float,
-        cap_rate: Optional[float] = None,
+        cap_rate: float | None = None,
     ):
         if tier1_buffer <= 0:
             raise ValueError(f"CRITICAL: tier1_buffer must be > 0, got {tier1_buffer}")
@@ -550,9 +548,9 @@ class StepRateBufferPayoff(BasePayoff):
 
 def create_rila_payoff(
     protection_type: str,
-    buffer_rate: Optional[float] = None,
-    floor_rate: Optional[float] = None,
-    cap_rate: Optional[float] = None,
+    buffer_rate: float | None = None,
+    floor_rate: float | None = None,
+    cap_rate: float | None = None,
 ) -> BasePayoff:
     """
     Factory function to create RILA payoff from parameters.
@@ -610,7 +608,7 @@ def compare_buffer_vs_floor(
     buffer_rate: float,
     floor_rate: float,
     index_returns: np.ndarray,
-    cap_rate: Optional[float] = None,
+    cap_rate: float | None = None,
 ) -> dict:
     """
     Compare buffer vs floor protection across a range of index returns.

@@ -5,8 +5,8 @@ These tests skip if the external library is not installed.
 Install with: pip install -e .[validation]
 """
 
-import pytest
 import numpy as np
+import pytest
 
 from annuity_pricing.adapters import (
     FINANCEPY_AVAILABLE,
@@ -15,7 +15,6 @@ from annuity_pricing.adapters import (
 )
 from annuity_pricing.options.pricing.black_scholes import (
     black_scholes_call,
-    black_scholes_put,
 )
 
 

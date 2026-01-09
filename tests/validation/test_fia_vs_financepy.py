@@ -17,7 +17,6 @@ See: docs/knowledge/domain/crediting_methods.md
 """
 
 import pytest
-import numpy as np
 
 # Skip entire module if financepy not available
 pytest.importorskip("financepy")

@@ -14,7 +14,6 @@ See: Glasserman (2003) "Monte Carlo Methods in Financial Engineering"
 """
 
 from dataclasses import dataclass
-from typing import Optional, Tuple
 
 import numpy as np
 
@@ -88,7 +87,7 @@ class PathResult:
     paths: np.ndarray
     times: np.ndarray
     params: GBMParams
-    seed: Optional[int] = None
+    seed: int | None = None
     antithetic: bool = False
 
     @property
@@ -139,7 +138,7 @@ def generate_gbm_paths(
     params: GBMParams,
     n_paths: int,
     n_steps: int,
-    seed: Optional[int] = None,
+    seed: int | None = None,
     antithetic: bool = False,
 ) -> PathResult:
     """
@@ -233,7 +232,7 @@ def generate_gbm_paths(
 def generate_terminal_values(
     params: GBMParams,
     n_paths: int,
-    seed: Optional[int] = None,
+    seed: int | None = None,
     antithetic: bool = False,
 ) -> np.ndarray:
     """
@@ -291,7 +290,7 @@ def generate_paths_with_monthly_observations(
     params: GBMParams,
     n_paths: int,
     n_months: int = 12,
-    seed: Optional[int] = None,
+    seed: int | None = None,
     antithetic: bool = False,
 ) -> PathResult:
     """

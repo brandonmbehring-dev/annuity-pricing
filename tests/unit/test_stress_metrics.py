@@ -10,18 +10,16 @@ See: docs/stress_testing/STRESS_TESTING_GUIDE.md
 import pytest
 
 from annuity_pricing.stress_testing.metrics import (
-    StressMetrics,
-    StressTestSummary,
     SeverityLevel,
-    classify_severity,
-    calculate_reserve_delta,
     calculate_percentiles,
-    create_stress_metrics,
-    create_summary,
-    check_reserve_positive,
-    check_solvency_ratio,
+    calculate_reserve_delta,
     check_rbc_ratio,
     check_reserve_increase_limit,
+    check_reserve_positive,
+    check_solvency_ratio,
+    classify_severity,
+    create_stress_metrics,
+    create_summary,
     format_metrics_row,
     format_summary,
 )

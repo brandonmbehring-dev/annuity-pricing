@@ -6,13 +6,12 @@ Tests for SOA-Calibrated Withdrawal Utilization Model - Phase H.
 See: docs/assumptions/BEHAVIOR_CALIBRATION.md
 """
 
-import pytest
 import numpy as np
+import pytest
 
 from annuity_pricing.behavioral.withdrawal import (
-    SOAWithdrawalModel,
     SOAWithdrawalAssumptions,
-    SOAWithdrawalResult,
+    SOAWithdrawalModel,
     UtilizationCalibration,
 )
 
@@ -394,8 +393,8 @@ class TestBackwardCompatibilityWithOriginal:
     def test_original_model_unchanged(self) -> None:
         """Original WithdrawalModel should work with old interface."""
         from annuity_pricing.behavioral.withdrawal import (
-            WithdrawalModel,
             WithdrawalAssumptions,
+            WithdrawalModel,
         )
 
         model = WithdrawalModel(WithdrawalAssumptions())

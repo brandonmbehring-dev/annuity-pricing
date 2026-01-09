@@ -14,8 +14,6 @@ References
 """
 
 from dataclasses import dataclass
-from enum import Enum
-from typing import Optional
 
 import numpy as np
 from scipy import stats
@@ -441,7 +439,7 @@ def implied_volatility(
     initial_guess: float = 0.20,
     max_iterations: int = 100,
     tolerance: float = 1e-6,
-) -> Optional[float]:
+) -> float | None:
     """
     Calculate implied volatility using Newton-Raphson.
 

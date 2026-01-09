@@ -10,7 +10,6 @@ Usage:
 
 import pytest
 
-
 # =============================================================================
 # Import Smoke Tests
 # =============================================================================
@@ -22,18 +21,15 @@ class TestImportSmoke:
         """Core packages should import without error."""
         import annuity_pricing
         import annuity_pricing.data
-        import annuity_pricing.products
         import annuity_pricing.options
+        import annuity_pricing.products
 
         assert annuity_pricing is not None
 
     def test_import_pricing_modules(self):
         """Pricing modules should import successfully."""
-        from annuity_pricing.options.pricing import black_scholes
-        from annuity_pricing.products.registry import ProductRegistry
         from annuity_pricing.products.myga import MYGAPricer
-        from annuity_pricing.products.fia import FIAPricer
-        from annuity_pricing.products.rila import RILAPricer
+        from annuity_pricing.products.registry import ProductRegistry
 
         assert ProductRegistry is not None
         assert MYGAPricer is not None
@@ -48,9 +44,8 @@ class TestImportSmoke:
     def test_import_stress_testing(self):
         """Stress testing modules should import."""
         from annuity_pricing.stress_testing import (
-            StressScenario,
             CRISIS_2008_GFC,
-            ORSA_MODERATE_ADVERSE,
+            StressScenario,
         )
 
         assert StressScenario is not None
@@ -68,8 +63,8 @@ class TestPricingSmoke:
         """MYGA should price successfully."""
         from annuity_pricing.data.schemas import MYGAProduct
         from annuity_pricing.products.registry import (
-            ProductRegistry,
             MarketEnvironment,
+            ProductRegistry,
         )
 
         myga = MYGAProduct(
@@ -93,8 +88,8 @@ class TestPricingSmoke:
         """FIA should price successfully."""
         from annuity_pricing.data.schemas import FIAProduct
         from annuity_pricing.products.registry import (
-            ProductRegistry,
             MarketEnvironment,
+            ProductRegistry,
         )
 
         fia = FIAProduct(
@@ -119,8 +114,8 @@ class TestPricingSmoke:
         """RILA should price successfully."""
         from annuity_pricing.data.schemas import RILAProduct
         from annuity_pricing.products.registry import (
-            ProductRegistry,
             MarketEnvironment,
+            ProductRegistry,
         )
 
         rila = RILAProduct(
@@ -169,8 +164,8 @@ class TestBlackScholesSmoke:
 
     def test_bs_greeks(self):
         """Black-Scholes Greeks should compute."""
-        from annuity_pricing.options.pricing.black_scholes import black_scholes_greeks
         from annuity_pricing.options.payoffs.base import OptionType
+        from annuity_pricing.options.pricing.black_scholes import black_scholes_greeks
 
         greeks = black_scholes_greeks(
             spot=100.0,
@@ -234,7 +229,6 @@ class TestConfigSmoke:
         from annuity_pricing.config.tolerances import (
             ANTI_PATTERN_TOLERANCE,
             PUT_CALL_PARITY_TOLERANCE,
-            CROSS_LIBRARY_TOLERANCE,
         )
 
         assert ANTI_PATTERN_TOLERANCE < 1e-6
@@ -259,8 +253,8 @@ class TestFullStackSmoke:
         """MYGA: Create → Configure → Price → Validate."""
         from annuity_pricing.data.schemas import MYGAProduct
         from annuity_pricing.products.registry import (
-            ProductRegistry,
             MarketEnvironment,
+            ProductRegistry,
         )
 
         # 1. Create product

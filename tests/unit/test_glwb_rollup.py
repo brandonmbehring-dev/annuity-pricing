@@ -8,14 +8,13 @@ Tests for Rollup and Ratchet Mechanics - Phase 8.
 See: docs/knowledge/domain/glwb_mechanics.md
 """
 
-import pytest
 import numpy as np
+import pytest
 
 from annuity_pricing.glwb.rollup import (
-    SimpleRollup,
     CompoundRollup,
     RatchetMechanic,
-    RollupResult,
+    SimpleRollup,
     calculate_rollup_with_cap,
     compare_rollup_methods,
 )

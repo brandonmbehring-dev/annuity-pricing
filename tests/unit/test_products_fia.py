@@ -10,8 +10,8 @@ Tests pricing of FIA products with:
 See: docs/knowledge/domain/crediting_methods.md
 """
 
-import pytest
 import pandas as pd
+import pytest
 
 from annuity_pricing.data.schemas import FIAProduct
 from annuity_pricing.products.fia import (

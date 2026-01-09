@@ -7,14 +7,13 @@ HALT if any violation is detected.
 See: CONSTITUTION.md Section 2.2
 """
 
-import pytest
 import numpy as np
+import pytest
 
 from annuity_pricing.options.pricing.black_scholes import (
     black_scholes_call,
     black_scholes_put,
 )
-
 
 # Standard test parameters
 BASE_PARAMS = {
@@ -235,15 +234,15 @@ class TestParameterizedBounds:
 
         # Put bounds: 0 <= P <= K*e^(-rT)
         assert put >= 0, f"Put negative: {put}"
-        assert put <= K * np.exp(-r * T) + 0.01, f"Put > discounted strike"
+        assert put <= K * np.exp(-r * T) + 0.01, "Put > discounted strike"
 
         # Call lower bound: C >= max(S*e^(-qT) - K*e^(-rT), 0)
         call_intrinsic = max(S * np.exp(-q * T) - K * np.exp(-r * T), 0)
-        assert call >= call_intrinsic - 0.01, f"Call below intrinsic"
+        assert call >= call_intrinsic - 0.01, "Call below intrinsic"
 
         # Put lower bound: P >= max(K*e^(-rT) - S*e^(-qT), 0)
         put_intrinsic = max(K * np.exp(-r * T) - S * np.exp(-q * T), 0)
-        assert put >= put_intrinsic - 0.01, f"Put below intrinsic"
+        assert put >= put_intrinsic - 0.01, "Put below intrinsic"
 
     @pytest.mark.anti_pattern
     @pytest.mark.parametrize(

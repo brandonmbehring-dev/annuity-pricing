@@ -43,13 +43,14 @@ Theory
 See: docs/knowledge/domain/vm21_vm22.md
 """
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Optional, Callable, List, Union
+
 import numpy as np
 
-from .scenarios import ScenarioGenerator, AG43Scenarios, EconomicScenario
 from ..loaders.mortality import MortalityLoader, MortalityTable
 from ..loaders.yield_curve import YieldCurve, YieldCurveLoader
+from .scenarios import AG43Scenarios, EconomicScenario, ScenarioGenerator
 
 
 @dataclass(frozen=True)
@@ -145,7 +146,7 @@ class VM21Calculator:
         self,
         n_scenarios: int = 1000,
         projection_years: int = 30,
-        seed: Optional[int] = None,
+        seed: int | None = None,
     ):
         """
         Initialize VM-21 calculator.
@@ -247,8 +248,8 @@ class VM21Calculator:
     def calculate_ssa(
         self,
         policy: PolicyData,
-        mortality_table: Optional[Union[Callable[[int], float], MortalityTable]] = None,
-        yield_curve: Optional[YieldCurve] = None,
+        mortality_table: Callable[[int], float] | MortalityTable | None = None,
+        yield_curve: YieldCurve | None = None,
         gender: str = "male",
     ) -> float:
         """
@@ -341,9 +342,9 @@ class VM21Calculator:
     def calculate_reserve(
         self,
         policy: PolicyData,
-        scenarios: Optional[AG43Scenarios] = None,
-        mortality_table: Optional[Union[Callable[[int], float], MortalityTable]] = None,
-        yield_curve: Optional[YieldCurve] = None,
+        scenarios: AG43Scenarios | None = None,
+        mortality_table: Callable[[int], float] | MortalityTable | None = None,
+        yield_curve: YieldCurve | None = None,
         gender: str = "male",
     ) -> VM21Result:
         """
@@ -549,7 +550,7 @@ class VM21Calculator:
 
 def calculate_cte_levels(
     scenario_results: np.ndarray,
-    levels: Optional[List[float]] = None,
+    levels: list[float] | None = None,
 ) -> dict:
     """
     Calculate CTE at multiple levels.
@@ -588,7 +589,7 @@ def calculate_cte_levels(
 def sensitivity_analysis(
     policy: PolicyData,
     n_scenarios: int = 1000,
-    seed: Optional[int] = None,
+    seed: int | None = None,
 ) -> dict:
     """
     Perform sensitivity analysis on VM-21 reserve.

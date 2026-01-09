@@ -21,14 +21,14 @@ Grid configuration:
 - Tenors: [1, 3, 5] years
 """
 
-import numpy as np
 import pytest
 
-from annuity_pricing.data.schemas import MYGAProduct, FIAProduct, RILAProduct
+from annuity_pricing.data.schemas import FIAProduct, MYGAProduct, RILAProduct
+from annuity_pricing.products.fia import FIAPricer
+from annuity_pricing.products.fia import MarketParams as FIAMarketParams
 from annuity_pricing.products.myga import MYGAPricer
-from annuity_pricing.products.fia import FIAPricer, MarketParams as FIAMarketParams
-from annuity_pricing.products.rila import RILAPricer, MarketParams as RILAMarketParams
-
+from annuity_pricing.products.rila import MarketParams as RILAMarketParams
+from annuity_pricing.products.rila import RILAPricer
 
 # =============================================================================
 # Test Configuration

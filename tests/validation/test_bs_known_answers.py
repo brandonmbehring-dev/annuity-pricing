@@ -8,15 +8,15 @@ See: Hull, "Options, Futures, and Other Derivatives" (10th ed.)
 See: CONSTITUTION.md Section 2.1
 """
 
-import pytest
 import numpy as np
+import pytest
 
+from annuity_pricing.options.payoffs.base import OptionType
 from annuity_pricing.options.pricing.black_scholes import (
     black_scholes_call,
-    black_scholes_put,
     black_scholes_greeks,
+    black_scholes_put,
 )
-from annuity_pricing.options.payoffs.base import OptionType
 
 
 class TestHullTextbookExamples:

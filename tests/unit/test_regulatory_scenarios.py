@@ -8,20 +8,19 @@ Tests for Scenario Generation - Phase 9.
 See: docs/knowledge/domain/vm21_vm22.md
 """
 
-import pytest
 import numpy as np
+import pytest
 
+from annuity_pricing.loaders.yield_curve import YieldCurveLoader
 from annuity_pricing.regulatory.scenarios import (
-    ScenarioGenerator,
     EconomicScenario,
-    AG43Scenarios,
-    VasicekParams,
     EquityParams,
     RiskNeutralEquityParams,
-    generate_deterministic_scenarios,
+    ScenarioGenerator,
+    VasicekParams,
     calculate_scenario_statistics,
+    generate_deterministic_scenarios,
 )
-from annuity_pricing.loaders.yield_curve import YieldCurveLoader
 
 
 class TestEconomicScenario:

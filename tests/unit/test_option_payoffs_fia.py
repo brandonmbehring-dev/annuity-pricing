@@ -13,6 +13,7 @@ See: docs/knowledge/domain/crediting_methods.md
 import numpy as np
 import pytest
 
+from annuity_pricing.options.payoffs.base import CreditingMethod, IndexPath
 from annuity_pricing.options.payoffs.fia import (
     CappedCallPayoff,
     MonthlyAveragePayoff,
@@ -21,7 +22,6 @@ from annuity_pricing.options.payoffs.fia import (
     TriggerPayoff,
     create_fia_payoff,
 )
-from annuity_pricing.options.payoffs.base import CreditingMethod, IndexPath
 
 
 class TestCappedCallPayoff:

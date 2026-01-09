@@ -11,7 +11,6 @@ See: docs/stress_testing/STRESS_TESTING_GUIDE.md
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 
@@ -65,8 +64,8 @@ class StressMetrics:
     reserve_delta_pct: float
     severity: SeverityLevel
     passed_gates: bool
-    gate_failures: Tuple[str, ...] = ()
-    additional_metrics: Dict[str, float] = field(default_factory=dict)
+    gate_failures: tuple[str, ...] = ()
+    additional_metrics: dict[str, float] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -107,8 +106,8 @@ class StressTestSummary:
     worst_reserve_delta_pct: float
     best_scenario: str
     best_reserve_delta_pct: float
-    percentiles: Dict[int, float]
-    severity_counts: Dict[SeverityLevel, int]
+    percentiles: dict[int, float]
+    severity_counts: dict[SeverityLevel, int]
     base_reserve: float
 
 
@@ -157,7 +156,7 @@ def classify_severity(reserve_delta_pct: float) -> SeverityLevel:
 def calculate_reserve_delta(
     base_reserve: float,
     stressed_reserve: float,
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
     """
     Calculate absolute and percentage reserve delta.
 
@@ -196,9 +195,9 @@ def calculate_reserve_delta(
 
 
 def calculate_percentiles(
-    values: List[float],
-    percentiles: Tuple[int, ...] = (5, 25, 50, 75, 95),
-) -> Dict[int, float]:
+    values: list[float],
+    percentiles: tuple[int, ...] = (5, 25, 50, 75, 95),
+) -> dict[int, float]:
     """
     Calculate percentiles of a distribution.
 
@@ -242,8 +241,8 @@ def create_stress_metrics(
     scenario_name: str,
     base_reserve: float,
     stressed_reserve: float,
-    validation_gates: Optional[Dict[str, bool]] = None,
-    additional_metrics: Optional[Dict[str, float]] = None,
+    validation_gates: dict[str, bool] | None = None,
+    additional_metrics: dict[str, float] | None = None,
 ) -> StressMetrics:
     """
     Create stress metrics from reserve values.
@@ -283,7 +282,7 @@ def create_stress_metrics(
     # Process validation gates
     if validation_gates is None:
         passed_gates = True
-        gate_failures: Tuple[str, ...] = ()
+        gate_failures: tuple[str, ...] = ()
     else:
         gate_failures = tuple(name for name, passed in validation_gates.items() if not passed)
         passed_gates = len(gate_failures) == 0
@@ -302,7 +301,7 @@ def create_stress_metrics(
 
 
 def create_summary(
-    metrics_list: List[StressMetrics],
+    metrics_list: list[StressMetrics],
 ) -> StressTestSummary:
     """
     Create summary from list of stress test metrics.
@@ -349,7 +348,7 @@ def create_summary(
     percentiles = calculate_percentiles(deltas)
 
     # Count by severity
-    severity_counts: Dict[SeverityLevel, int] = {level: 0 for level in SeverityLevel}
+    severity_counts: dict[SeverityLevel, int] = {level: 0 for level in SeverityLevel}
     for m in metrics_list:
         severity_counts[m.severity] += 1
 

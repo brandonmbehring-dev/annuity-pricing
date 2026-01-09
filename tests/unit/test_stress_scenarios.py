@@ -10,18 +10,16 @@ import pytest
 
 from annuity_pricing.stress_testing.historical import (
     CRISIS_2008_GFC,
-    CRISIS_2020_COVID,
-    ALL_HISTORICAL_CRISES,
 )
 from annuity_pricing.stress_testing.scenarios import (
-    StressScenario,
-    ScenarioType,
+    ALL_ORSA_SCENARIOS,
+    ORSA_EXTREMELY_ADVERSE,
     ORSA_MODERATE_ADVERSE,
     ORSA_SEVERELY_ADVERSE,
-    ORSA_EXTREMELY_ADVERSE,
-    ALL_ORSA_SCENARIOS,
-    crisis_to_scenario,
+    ScenarioType,
+    StressScenario,
     create_custom_scenario,
+    crisis_to_scenario,
     get_all_historical_scenarios,
     get_scenario_by_severity,
     scenario_summary,

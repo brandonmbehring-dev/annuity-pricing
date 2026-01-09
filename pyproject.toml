@@ -159,8 +159,60 @@ ignore_errors = true
 
 [tool.ruff]
 line-length = 100
-select = ["E", "F", "I", "N", "W", "UP"]
-ignore = ["E501"]  # Line length handled by black
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "I",    # isort
+    "N",    # pep8-naming
+    "W",    # pycodestyle warnings
+    "UP",   # pyupgrade
+    # Additional rules (from temporalcv/pypi_readiness_report.md)
+    "B",    # flake8-bugbear (finds likely bugs)
+    "SIM",  # flake8-simplify (simpler code)
+    "A",    # flake8-builtins (prevent shadowing)
+]
+ignore = [
+    "E501",   # Line length handled by formatter
+    "B008",   # Function calls in defaults (common in dataclasses)
+    "SIM108", # Ternary instead of if-else (readability preference)
+    "SIM102", # Nested ifs sometimes clearer than combined
+    "SIM105", # try-except-pass sometimes clearer than contextlib.suppress
+    "B905",   # zip strict=True not needed for known-equal-length iterables
+    # Finance notation: S (spot), K (strike), T (time), N (normal CDF) are standard [T1]
+    "N803",   # Argument name should be lowercase
+    "N806",   # Variable name should be lowercase
+    "N802",   # Function name should be lowercase (test_Ax_julia_vs_r is descriptive)
+    "N813",   # Camelcase imported as lowercase (e.g., QuantLib as ql)
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests may have unused fixtures, arguments, intermediate variables, shadowed builtins
+"tests/**/*.py" = ["ARG001", "ARG002", "F841", "B007", "B017", "B028", "A001", "E722"]
+# Examples prioritize clarity over brevity
+"examples/**/*.py" = ["B007"]
+# Optional imports not at top of file (check availability first)
+"src/annuity_pricing/adapters/*.py" = ["E402"]
+"tests/validation/*.py" = ["E402"]
+# Modules with logging setup before imports (common pattern)
+"src/annuity_pricing/data/loader.py" = ["E402"]
+"src/annuity_pricing/products/fia.py" = ["E402"]
+"src/annuity_pricing/products/rila.py" = ["E402"]
+"src/annuity_pricing/products/myga.py" = ["E402"]
+"src/annuity_pricing/validation/gates.py" = ["E402"]
+"src/annuity_pricing/stress_testing/runner.py" = ["E402"]
+# Heston COS has intermediate terms for documentation/derivation clarity
+"src/annuity_pricing/options/pricing/heston_cos.py" = ["F841"]
+# RILA payoffs have intermediate vars for tiered calculation clarity
+"src/annuity_pricing/options/payoffs/rila.py" = ["F841"]
+# Monte Carlo convergence study uses mutable default for common path counts
+"src/annuity_pricing/options/simulation/monte_carlo.py" = ["B006"]
+# Reporting module uses 'format' as parameter name (domain convention)
+"src/annuity_pricing/stress_testing/reporting.py" = ["A002"]
+# Reverse stress has unused tuple unpacking vars for readability
+"src/annuity_pricing/stress_testing/reverse.py" = ["B007", "SIM118"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

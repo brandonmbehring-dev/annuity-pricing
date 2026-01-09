@@ -20,14 +20,13 @@ import pytest
 
 from annuity_pricing.config.tolerances import (
     ANTI_PATTERN_TOLERANCE,
-    CROSS_LIBRARY_TOLERANCE,
     PUT_CALL_PARITY_TOLERANCE,
 )
 from annuity_pricing.options.payoffs.base import OptionType
 from annuity_pricing.options.pricing.black_scholes import (
     black_scholes_call,
-    black_scholes_put,
     black_scholes_greeks,
+    black_scholes_put,
     put_call_parity_check,
 )
 

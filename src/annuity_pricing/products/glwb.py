@@ -11,11 +11,12 @@ See: docs/references/L3/bauer_kling_russ_2008.md
 
 from dataclasses import dataclass
 from datetime import date
-from typing import Optional
+from typing import NoReturn
 
 from annuity_pricing.data.schemas import GLWBProduct
 from annuity_pricing.glwb.gwb_tracker import GWBConfig, RollupType
-from annuity_pricing.glwb.path_sim import GLWBPathSimulator, GLWBPricingResult as SimResult
+from annuity_pricing.glwb.path_sim import GLWBPathSimulator
+from annuity_pricing.glwb.path_sim import GLWBPricingResult as SimResult
 from annuity_pricing.products.base import BasePricer, PricingResult
 
 
@@ -90,7 +91,7 @@ class GLWBPricer(BasePricer):
         risk_free_rate: float = 0.04,
         volatility: float = 0.15,
         n_paths: int = 10000,
-        seed: Optional[int] = None,
+        seed: int | None = None,
     ):
         """
         Initialize GLWB pricer.
@@ -121,7 +122,7 @@ class GLWBPricer(BasePricer):
     def price(  # type: ignore[override]  # Subclass has specific params
         self,
         product: GLWBProduct,
-        as_of_date: Optional[date] = None,
+        as_of_date: date | None = None,
         premium: float = 100_000.0,
         age: int = 65,
         max_age: int = 100,
@@ -216,7 +217,7 @@ class GLWBPricer(BasePricer):
         product: GLWBProduct,
         market_data: "pd.DataFrame",  # type: ignore  # noqa: F821
         **kwargs: object,
-    ) -> None:
+    ) -> NoReturn:
         """
         Competitive positioning not implemented for GLWB.
 

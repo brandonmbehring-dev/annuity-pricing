@@ -11,8 +11,8 @@ import pytest
 
 from annuity_pricing.competitive.positioning import (
     DistributionStats,
-    PositionResult,
     PositioningAnalyzer,
+    PositionResult,
 )
 
 

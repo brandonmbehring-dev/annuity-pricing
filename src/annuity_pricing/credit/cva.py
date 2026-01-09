@@ -19,7 +19,6 @@ References
 """
 
 from dataclasses import dataclass
-from typing import Optional, Sequence
 
 import numpy as np
 
@@ -27,14 +26,12 @@ from annuity_pricing.credit.default_prob import (
     AMBestRating,
     get_annual_pd,
     get_hazard_rate,
-    rating_from_string,
 )
 from annuity_pricing.credit.guaranty_funds import (
     CoverageType,
     calculate_covered_amount,
     get_coverage_ratio,
 )
-
 
 # Industry-standard LGD for insurance companies
 # [T2] Higher recovery than typical corporates due to regulatory protection
@@ -133,7 +130,7 @@ def calculate_cva(
     term_years: int = 1,
     lgd: float = DEFAULT_INSURANCE_LGD,
     risk_free_rate: float = 0.05,
-    state: Optional[str] = None,
+    state: str | None = None,
     coverage_type: CoverageType = CoverageType.ANNUITY_DEFERRED,
 ) -> CVAResult:
     """
@@ -288,7 +285,7 @@ def calculate_credit_adjusted_price(
     term_years: int = 1,
     lgd: float = DEFAULT_INSURANCE_LGD,
     risk_free_rate: float = 0.05,
-    state: Optional[str] = None,
+    state: str | None = None,
     coverage_type: CoverageType = CoverageType.ANNUITY_DEFERRED,
 ) -> float:
     """

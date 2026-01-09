@@ -15,13 +15,11 @@ References:
 import numpy as np
 import pytest
 
-from annuity_pricing.options.simulation.gbm import GBMParams, generate_terminal_values
-from annuity_pricing.options.simulation.monte_carlo import MonteCarloEngine
 from annuity_pricing.options.pricing.black_scholes import (
     black_scholes_call,
-    black_scholes_put,
 )
-
+from annuity_pricing.options.simulation.gbm import GBMParams
+from annuity_pricing.options.simulation.monte_carlo import MonteCarloEngine
 
 # =============================================================================
 # Constants
@@ -505,7 +503,7 @@ class TestVarianceReductionReporting:
 
         # None should show significant increase
         assert all(vi < MAX_VARIANCE_INCREASE for vi in variance_increases), (
-            f"Antithetic caused significant variance increase at some moneyness levels"
+            "Antithetic caused significant variance increase at some moneyness levels"
         )
 
         # Average should be near zero (not significantly better or worse)

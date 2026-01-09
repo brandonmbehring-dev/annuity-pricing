@@ -20,12 +20,12 @@ See: docs/knowledge/domain/glwb_mechanics.md
 See: docs/references/L3/bauer_kling_russ_2008.md (Section 3)
 """
 
-from dataclasses import dataclass, replace
-from typing import Optional, Literal
+from dataclasses import dataclass
 from enum import Enum
+
 import numpy as np
 
-from .rollup import SimpleRollup, CompoundRollup, RatchetMechanic
+from .rollup import CompoundRollup, RatchetMechanic, SimpleRollup
 
 
 class RollupType(Enum):
@@ -360,7 +360,7 @@ class GWBTracker:
     def simulate_path(
         self,
         av_returns: np.ndarray,
-        withdrawals: Optional[np.ndarray] = None,
+        withdrawals: np.ndarray | None = None,
         dt: float = 1.0,
     ) -> tuple[list[GWBState], list[StepResult]]:
         """

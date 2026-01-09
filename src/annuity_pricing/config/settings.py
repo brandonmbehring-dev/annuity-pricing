@@ -6,10 +6,9 @@ See: CONSTITUTION.md for methodology specifications.
 See: docs/TOLERANCE_JUSTIFICATION.md for tolerance derivations.
 """
 
-from dataclasses import dataclass
 import os
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Tuple
 
 # Import centralized tolerances
 from annuity_pricing.config.tolerances import (
@@ -17,7 +16,6 @@ from annuity_pricing.config.tolerances import (
     BS_MC_CONVERGENCE_TOLERANCE,
     PUT_CALL_PARITY_TOLERANCE,
 )
-
 
 # =============================================================================
 # Data Configuration
@@ -90,7 +88,7 @@ class MarketDataConfig:
     """
 
     # FRED series for rates [T1]
-    fred_series: Tuple[str, ...] = (
+    fred_series: tuple[str, ...] = (
         "DTB3",    # 3-month T-bill
         "DGS1",    # 1-year Treasury
         "DGS2",    # 2-year Treasury
@@ -102,7 +100,7 @@ class MarketDataConfig:
     )
 
     # Index tickers for Yahoo Finance [T2]
-    index_tickers: Tuple[str, ...] = (
+    index_tickers: tuple[str, ...] = (
         "^GSPC",   # S&P 500
         "^RUT",    # Russell 2000
         "^NDX",    # NASDAQ-100
@@ -190,10 +188,10 @@ class IndexedAnnuityConfig:
     option_budget_default: float = 0.03  # 3% of assets annually
 
     # Common buffer levels [T2: From WINK]
-    common_buffer_rates: Tuple[float, ...] = (0.10, 0.15, 0.20)
+    common_buffer_rates: tuple[float, ...] = (0.10, 0.15, 0.20)
 
     # Common floor levels [T2: From WINK]
-    common_floor_rates: Tuple[float, ...] = (0.10, 0.15, 0.20)
+    common_floor_rates: tuple[float, ...] = (0.10, 0.15, 0.20)
 
 
 # =============================================================================

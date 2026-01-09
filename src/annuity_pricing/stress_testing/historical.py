@@ -19,7 +19,6 @@ See: docs/stress_testing/HISTORICAL_SCENARIOS.md
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List, Optional, Tuple
 
 
 class RecoveryType(Enum):
@@ -101,7 +100,7 @@ class HistoricalCrisis:
     duration_months: int
     recovery_months: int
     recovery_type: RecoveryType
-    profile: Tuple[CrisisProfile, ...]
+    profile: tuple[CrisisProfile, ...]
     notes: str
 
 
@@ -469,7 +468,7 @@ CRISIS_2022_RATES = HistoricalCrisis(
 # Collection and Utilities
 # =============================================================================
 
-ALL_HISTORICAL_CRISES: Tuple[HistoricalCrisis, ...] = (
+ALL_HISTORICAL_CRISES: tuple[HistoricalCrisis, ...] = (
     CRISIS_2008_GFC,
     CRISIS_2020_COVID,
     CRISIS_2000_DOTCOM,
@@ -479,7 +478,7 @@ ALL_HISTORICAL_CRISES: Tuple[HistoricalCrisis, ...] = (
     CRISIS_2022_RATES,
 )
 
-_CRISIS_BY_NAME: Dict[str, HistoricalCrisis] = {c.name: c for c in ALL_HISTORICAL_CRISES}
+_CRISIS_BY_NAME: dict[str, HistoricalCrisis] = {c.name: c for c in ALL_HISTORICAL_CRISES}
 
 
 def get_crisis_by_name(name: str) -> HistoricalCrisis:
@@ -510,7 +509,7 @@ def get_crisis_by_name(name: str) -> HistoricalCrisis:
     return _CRISIS_BY_NAME[name]
 
 
-def get_crisis_summary() -> Dict[str, Dict[str, float]]:
+def get_crisis_summary() -> dict[str, dict[str, float]]:
     """
     Get summary statistics for all historical crises.
 
@@ -537,7 +536,7 @@ def get_crisis_summary() -> Dict[str, Dict[str, float]]:
     }
 
 
-def get_profile_at_month(crisis: HistoricalCrisis, month: float) -> Optional[CrisisProfile]:
+def get_profile_at_month(crisis: HistoricalCrisis, month: float) -> CrisisProfile | None:
     """
     Get crisis profile at a specific month (exact match).
 

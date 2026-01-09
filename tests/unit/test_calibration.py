@@ -7,20 +7,19 @@ See: docs/assumptions/BEHAVIOR_CALIBRATION.md
 """
 
 import pytest
-import numpy as np
 
 from annuity_pricing.behavioral.calibration import (
-    interpolate_surrender_by_duration,
-    get_sc_cliff_multiplier,
-    get_post_sc_decay_factor,
-    interpolate_surrender_by_age,
-    interpolate_utilization_by_duration,
-    interpolate_utilization_by_age,
+    combined_utilization,
     get_itm_sensitivity_factor,
     get_itm_sensitivity_factor_continuous,
-    combined_utilization,
+    get_post_sc_decay_factor,
+    get_sc_cliff_multiplier,
     get_surrender_curve,
     get_utilization_curve,
+    interpolate_surrender_by_age,
+    interpolate_surrender_by_duration,
+    interpolate_utilization_by_age,
+    interpolate_utilization_by_duration,
 )
 from annuity_pricing.behavioral.soa_benchmarks import (
     SOA_2006_SURRENDER_BY_DURATION_7YR_SC,

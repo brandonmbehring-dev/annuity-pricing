@@ -50,12 +50,12 @@ See: docs/knowledge/domain/vm21_vm22.md
 """
 
 from dataclasses import dataclass
-from typing import Optional, List, Callable, Union
 from enum import Enum
+
 import numpy as np
 
-from .scenarios import ScenarioGenerator, generate_deterministic_scenarios
 from ..loaders.yield_curve import YieldCurve, YieldCurveLoader
+from .scenarios import ScenarioGenerator, generate_deterministic_scenarios
 
 
 class ReserveType(Enum):
@@ -91,7 +91,7 @@ class VM22Result:
     reserve: float
     net_premium_reserve: float
     deterministic_reserve: float
-    stochastic_reserve: Optional[float] = None
+    stochastic_reserve: float | None = None
     reserve_type: ReserveType = ReserveType.DETERMINISTIC
     set_passed: bool = True
     sst_passed: bool = True
@@ -123,7 +123,7 @@ class FixedAnnuityPolicy:
     term_years: int
     current_year: int = 0
     surrender_charge_pct: float = 0.07
-    account_value: Optional[float] = None
+    account_value: float | None = None
 
     @property
     def av(self) -> float:
@@ -184,7 +184,7 @@ class VM22Calculator:
         self,
         n_scenarios: int = 1000,
         projection_years: int = 30,
-        seed: Optional[int] = None,
+        seed: int | None = None,
     ):
         """
         Initialize VM-22 calculator.
@@ -211,8 +211,8 @@ class VM22Calculator:
     def calculate_reserve(
         self,
         policy: FixedAnnuityPolicy,
-        market_rate: Optional[float] = None,
-        yield_curve: Optional[YieldCurve] = None,
+        market_rate: float | None = None,
+        yield_curve: YieldCurve | None = None,
         lapse_rate: float = 0.05,
     ) -> VM22Result:
         """
@@ -596,7 +596,7 @@ def compare_reserve_methods(
     market_rate: float = 0.04,
     lapse_rate: float = 0.05,
     n_scenarios: int = 1000,
-    seed: Optional[int] = None,
+    seed: int | None = None,
 ) -> dict:
     """
     Compare different reserve calculation methods.
@@ -648,7 +648,7 @@ def vm22_sensitivity(
     policy: FixedAnnuityPolicy,
     market_rate: float = 0.04,
     lapse_rate: float = 0.05,
-    seed: Optional[int] = None,
+    seed: int | None = None,
 ) -> dict:
     """
     Perform VM-22 sensitivity analysis.

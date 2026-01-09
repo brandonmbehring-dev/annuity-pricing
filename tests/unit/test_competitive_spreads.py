@@ -5,15 +5,16 @@ Tests SpreadAnalyzer: calculate_spread(), get_spread_distribution(), etc.
 See: CONSTITUTION.md Section 5
 """
 
+from datetime import date
+
 import numpy as np
 import pandas as pd
 import pytest
-from datetime import date
 
 from annuity_pricing.competitive.spreads import (
-    SpreadResult,
-    SpreadDistribution,
     SpreadAnalyzer,
+    SpreadDistribution,
+    SpreadResult,
     build_treasury_curve,
 )
 

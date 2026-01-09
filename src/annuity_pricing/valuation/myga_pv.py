@@ -6,9 +6,6 @@ See: CONSTITUTION.md Section 4.1
 """
 
 from dataclasses import dataclass
-from typing import List, Optional, Tuple
-
-import numpy as np
 
 
 @dataclass(frozen=True)
@@ -48,7 +45,7 @@ class MYGAValuation:
     modified_duration: float
     convexity: float
     dollar_duration: float
-    effective_duration: Optional[float] = None
+    effective_duration: float | None = None
 
 
 def calculate_myga_maturity_value(
@@ -133,7 +130,7 @@ def calculate_present_value(
 
 
 def calculate_macaulay_duration(
-    cash_flows: List[CashFlow],
+    cash_flows: list[CashFlow],
     discount_rate: float,
 ) -> float:
     """
@@ -199,7 +196,7 @@ def calculate_modified_duration(
 
 
 def calculate_convexity(
-    cash_flows: List[CashFlow],
+    cash_flows: list[CashFlow],
     discount_rate: float,
 ) -> float:
     """
@@ -386,8 +383,8 @@ def sensitivity_analysis(
     fixed_rate: float,
     guarantee_duration: int,
     base_discount_rate: float,
-    rate_shifts: Optional[List[float]] = None,
-) -> List[Tuple[float, float, float]]:
+    rate_shifts: list[float] | None = None,
+) -> list[tuple[float, float, float]]:
     """
     Perform sensitivity analysis on discount rate.
 

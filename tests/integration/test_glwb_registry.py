@@ -8,17 +8,15 @@ See: docs/knowledge/domain/glwb_mechanics.md
 See: docs/references/L3/bauer_kling_russ_2008.md
 """
 
+
 import pytest
-from datetime import date
 
-from annuity_pricing import GLWBProduct, GLWBPricer, GLWBPricingResult
+from annuity_pricing import GLWBPricer, GLWBPricingResult, GLWBProduct
 from annuity_pricing.products.registry import (
-    ProductRegistry,
     MarketEnvironment,
+    ProductRegistry,
     create_default_registry,
-    price_product,
 )
-
 
 # =============================================================================
 # GLWBProduct Dataclass Tests
@@ -269,7 +267,7 @@ class TestGLWBImports:
 
     def test_import_from_top_level(self) -> None:
         """GLWB classes should be importable from top-level package."""
-        from annuity_pricing import GLWBProduct, GLWBPricer, GLWBPricingResult
+        from annuity_pricing import GLWBPricer, GLWBPricingResult, GLWBProduct
 
         assert GLWBProduct is not None
         assert GLWBPricer is not None

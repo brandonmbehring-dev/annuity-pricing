@@ -12,10 +12,10 @@ Design Principles:
 See: docs/stress_testing/STRESS_TESTING_GUIDE.md
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple, Callable, Any
-from enum import Enum
 import logging
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -214,23 +214,23 @@ class ReverseStressResult:
 
     target: ReverseStressTarget
     parameter_name: str
-    breaking_point: Optional[float]
+    breaking_point: float | None
     iterations: int
     converged: bool
     breached: bool
     base_value: float
-    search_range: Tuple[float, float]
-    final_metric_value: Optional[float] = None
+    search_range: tuple[float, float]
+    final_metric_value: float | None = None
 
     @property
-    def parameter_delta(self) -> Optional[float]:
+    def parameter_delta(self) -> float | None:
         """Return change from base to breaking point."""
         if self.breaking_point is not None:
             return self.breaking_point - self.base_value
         return None
 
     @property
-    def parameter_delta_pct(self) -> Optional[float]:
+    def parameter_delta_pct(self) -> float | None:
         """Return percentage change from base to breaking point."""
         if self.breaking_point is not None and abs(self.base_value) > 1e-10:
             return (self.breaking_point - self.base_value) / abs(self.base_value)
@@ -254,29 +254,29 @@ class ReverseStressReport:
         Number of parameters tested
     """
 
-    results: Dict[Tuple[str, str], ReverseStressResult]
+    results: dict[tuple[str, str], ReverseStressResult]
     base_reserve: float
     targets_tested: int = field(init=False)
     parameters_tested: int = field(init=False)
 
     def __post_init__(self) -> None:
         """Calculate derived fields."""
-        targets = {k[0] for k in self.results.keys()}
-        params = {k[1] for k in self.results.keys()}
+        targets = {k[0] for k in self.results}
+        params = {k[1] for k in self.results}
         self.targets_tested = len(targets)
         self.parameters_tested = len(params)
 
     def get_result(
         self, target_type: str, parameter_name: str
-    ) -> Optional[ReverseStressResult]:
+    ) -> ReverseStressResult | None:
         """Get result for specific target-parameter pair."""
         return self.results.get((target_type, parameter_name))
 
-    def get_breached_results(self) -> List[ReverseStressResult]:
+    def get_breached_results(self) -> list[ReverseStressResult]:
         """Get all results where target was breached."""
         return [r for r in self.results.values() if r.breached]
 
-    def get_results_for_target(self, target_type: str) -> List[ReverseStressResult]:
+    def get_results_for_target(self, target_type: str) -> list[ReverseStressResult]:
         """Get all results for a specific target."""
         return [r for (t, p), r in self.results.items() if t == target_type]
 
@@ -308,8 +308,8 @@ class ReverseStressTester:
 
     def __init__(
         self,
-        impact_function: Optional[Callable[..., float]] = None,
-        rbc_function: Optional[Callable[..., float]] = None,
+        impact_function: Callable[..., float] | None = None,
+        rbc_function: Callable[..., float] | None = None,
     ):
         """
         Initialize tester.
@@ -378,7 +378,7 @@ class ReverseStressTester:
         self,
         target: ReverseStressTarget,
         base_reserve: float,
-        params: Dict[str, float],
+        params: dict[str, float],
     ) -> float:
         """Calculate the relevant metric for a target."""
         reserve = self._impact_function(base_reserve, **params)
@@ -401,9 +401,9 @@ class ReverseStressTester:
         self,
         target: ReverseStressTarget,
         parameter: str,
-        search_range: Tuple[float, float],
+        search_range: tuple[float, float],
         base_reserve: float,
-        base_params: Optional[Dict[str, float]] = None,
+        base_params: dict[str, float] | None = None,
         tolerance: float = 0.001,
         max_iterations: int = 25,
     ) -> ReverseStressResult:
@@ -524,11 +524,11 @@ class ReverseStressTester:
 
     def find_multiple_breaking_points(
         self,
-        targets: List[ReverseStressTarget],
-        parameters: List[str],
-        search_ranges: Dict[str, Tuple[float, float]],
+        targets: list[ReverseStressTarget],
+        parameters: list[str],
+        search_ranges: dict[str, tuple[float, float]],
         base_reserve: float,
-        base_params: Optional[Dict[str, float]] = None,
+        base_params: dict[str, float] | None = None,
         tolerance: float = 0.001,
         max_iterations: int = 25,
     ) -> ReverseStressReport:
@@ -557,7 +557,7 @@ class ReverseStressTester:
         ReverseStressReport
             Complete report of all searches
         """
-        results: Dict[Tuple[str, str], ReverseStressResult] = {}
+        results: dict[tuple[str, str], ReverseStressResult] = {}
 
         for target in targets:
             for param in parameters:
@@ -586,7 +586,7 @@ class ReverseStressTester:
 # =============================================================================
 
 
-DEFAULT_SEARCH_RANGES: Dict[str, Tuple[float, float]] = {
+DEFAULT_SEARCH_RANGES: dict[str, tuple[float, float]] = {
     "equity_shock": (-1.0, 0.50),  # -100% to +50%
     "rate_shock": (-0.05, 0.05),  # -500 bps to +500 bps
     "vol_shock": (0.1, 10.0),  # 0.1x to 10x
@@ -657,7 +657,7 @@ def format_reverse_stress_table(report: ReverseStressReport) -> str:
         "|---------------------------|----------------------|----------------|--------|",
     ]
 
-    for (target_type, param), result in sorted(report.results.items()):
+    for (_target_type, _param), result in sorted(report.results.items()):
         lines.append(format_reverse_stress_result(result))
 
     breached = report.get_breached_results()
@@ -717,8 +717,8 @@ def format_reverse_stress_summary(report: ReverseStressReport) -> str:
 
 def quick_reverse_stress(
     base_reserve: float,
-    targets: Optional[List[ReverseStressTarget]] = None,
-    parameters: Optional[List[str]] = None,
+    targets: list[ReverseStressTarget] | None = None,
+    parameters: list[str] | None = None,
     verbose: bool = False,
 ) -> ReverseStressReport:
     """
@@ -768,7 +768,7 @@ def quick_reverse_stress(
 def find_reserve_exhaustion_point(
     base_reserve: float,
     parameter: str = "equity_shock",
-    search_range: Optional[Tuple[float, float]] = None,
+    search_range: tuple[float, float] | None = None,
     verbose: bool = False,
 ) -> ReverseStressResult:
     """

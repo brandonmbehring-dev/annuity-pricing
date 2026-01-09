@@ -21,20 +21,21 @@ See: docs/knowledge/domain/glwb_mechanics.md
 See: docs/references/L3/bauer_kling_russ_2008.md
 """
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Optional, Callable, Union
+
 import numpy as np
 
-from .gwb_tracker import GWBTracker, GWBConfig, GWBState
-from ..loaders.mortality import MortalityLoader, MortalityTable
 from ..behavioral import (
     DynamicLapseModel,
-    LapseAssumptions,
-    WithdrawalModel,
-    WithdrawalAssumptions,
-    ExpenseModel,
     ExpenseAssumptions,
+    ExpenseModel,
+    LapseAssumptions,
+    WithdrawalAssumptions,
+    WithdrawalModel,
 )
+from ..loaders.mortality import MortalityLoader, MortalityTable
+from .gwb_tracker import GWBConfig, GWBTracker
 
 
 @dataclass(frozen=True)
@@ -134,10 +135,10 @@ class GLWBPathSimulator:
         self,
         gwb_config: GWBConfig,
         n_paths: int = 10000,
-        seed: Optional[int] = None,
-        lapse_assumptions: Optional[LapseAssumptions] = None,
-        withdrawal_assumptions: Optional[WithdrawalAssumptions] = None,
-        expense_assumptions: Optional[ExpenseAssumptions] = None,
+        seed: int | None = None,
+        lapse_assumptions: LapseAssumptions | None = None,
+        withdrawal_assumptions: WithdrawalAssumptions | None = None,
+        expense_assumptions: ExpenseAssumptions | None = None,
         steps_per_year: int = 1,
     ):
         """
@@ -189,8 +190,8 @@ class GLWBPathSimulator:
         r: float,
         sigma: float,
         max_age: int = 100,
-        mortality_table: Optional[Union[Callable[[int], float], MortalityTable]] = None,
-        utilization_rate: Optional[float] = None,
+        mortality_table: Callable[[int], float] | MortalityTable | None = None,
+        utilization_rate: float | None = None,
         gender: str = "male",
         surrender_period_years: int = 7,
         use_behavioral_models: bool = True,
@@ -310,7 +311,7 @@ class GLWBPathSimulator:
         sigma: float,
         n_years: int,
         mortality_func: Callable[[int], float],
-        utilization_rate: Optional[float] = None,
+        utilization_rate: float | None = None,
         surrender_period_years: int = 7,
         use_behavioral_models: bool = True,
         deferral_years: int = 0,
@@ -524,7 +525,6 @@ class GLWBPathSimulator:
         float
             Fair fee rate
         """
-        from dataclasses import replace as dc_replace
 
         def cost_at_fee(fee: float) -> float:
             """Calculate guarantee cost at given fee."""

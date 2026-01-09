@@ -17,17 +17,16 @@ See: docs/stress_testing/HISTORICAL_SCENARIOS.md
 import pytest
 
 from annuity_pricing.stress_testing.historical import (
-    HistoricalCrisis,
-    CrisisProfile,
-    RecoveryType,
-    CRISIS_2008_GFC,
-    CRISIS_2020_COVID,
+    ALL_HISTORICAL_CRISES,
     CRISIS_2000_DOTCOM,
+    CRISIS_2008_GFC,
     CRISIS_2011_EURO_DEBT,
     CRISIS_2015_CHINA,
     CRISIS_2018_Q4,
+    CRISIS_2020_COVID,
     CRISIS_2022_RATES,
-    ALL_HISTORICAL_CRISES,
+    CrisisProfile,
+    RecoveryType,
     get_crisis_by_name,
     get_crisis_summary,
     get_profile_at_month,

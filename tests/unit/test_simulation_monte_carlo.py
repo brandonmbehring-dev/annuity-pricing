@@ -12,17 +12,12 @@ See: docs/knowledge/domain/option_pricing.md
 import numpy as np
 import pytest
 
+from annuity_pricing.options.payoffs.base import OptionType
 from annuity_pricing.options.simulation.gbm import GBMParams
 from annuity_pricing.options.simulation.monte_carlo import (
     MCResult,
     MonteCarloEngine,
     price_vanilla_mc,
-    convergence_analysis,
-)
-from annuity_pricing.options.payoffs.base import OptionType
-from annuity_pricing.options.pricing.black_scholes import (
-    black_scholes_call,
-    black_scholes_put,
 )
 
 

@@ -10,11 +10,9 @@ References:
 """
 
 import json
-import pytest
 from pathlib import Path
 
-from annuity_pricing.config.tolerances import GOLDEN_RELATIVE_TOLERANCE
-
+import pytest
 
 # =============================================================================
 # Golden File Loading
@@ -209,7 +207,7 @@ class TestActuarialIdentities:
                 # These are placeholder values, so just verify relationship direction
                 # Full validation requires regenerated goldens from Julia
                 assert ax > 0 and expected_ax > 0, (
-                    f"ax and expected_ax should be positive"
+                    "ax and expected_ax should be positive"
                 )
 
 

@@ -11,8 +11,8 @@ FIA/RILA products commonly have 5-7 year terms.
 See: Hull (2021) Ch. 15 - Long-dated options
 """
 
-import pytest
 import numpy as np
+import pytest
 
 from annuity_pricing.options.pricing.black_scholes import (
     black_scholes_call,

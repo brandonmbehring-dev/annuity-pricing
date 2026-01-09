@@ -17,7 +17,6 @@ See: docs/knowledge/derivations/put_spread_buffer.md
 """
 
 import pytest
-import numpy as np
 
 # Skip entire module if QuantLib not available
 pytest.importorskip("QuantLib")
@@ -308,7 +307,7 @@ class TestRILAPricerVsQuantLib:
     @pytest.fixture
     def rila_pricer(self):
         """Create RILAPricer with standard params."""
-        from annuity_pricing.products.rila import RILAPricer, MarketParams
+        from annuity_pricing.products.rila import MarketParams, RILAPricer
 
         market = MarketParams(
             spot=100.0,

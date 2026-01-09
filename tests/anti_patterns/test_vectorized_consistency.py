@@ -21,7 +21,6 @@ from annuity_pricing.options.payoffs.rila import (
     FloorPayoff,
 )
 
-
 # =============================================================================
 # Test Data
 # =============================================================================
@@ -116,7 +115,7 @@ class TestParticipationVectorizedConsistency:
             vectorized_results,
             scalar_results,
             rtol=1e-10,
-            err_msg=f"ParticipationPayoff vectorized != scalar"
+            err_msg="ParticipationPayoff vectorized != scalar"
         )
 
 

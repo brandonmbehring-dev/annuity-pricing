@@ -20,17 +20,16 @@ See: docs/knowledge/derivations/bs_greeks.md
 """
 
 import pytest
-import numpy as np
 
 # Skip entire module if QuantLib not available
 pytest.importorskip("QuantLib")
 
 from annuity_pricing.adapters.quantlib_adapter import QuantLibAdapter
-from annuity_pricing.options.pricing.black_scholes import (
-    black_scholes_greeks,
-    OptionType,
-)
 from annuity_pricing.config.tolerances import GREEKS_VALIDATION_TOLERANCE
+from annuity_pricing.options.pricing.black_scholes import (
+    OptionType,
+    black_scholes_greeks,
+)
 
 
 class TestCallGreeksVsQuantLib:

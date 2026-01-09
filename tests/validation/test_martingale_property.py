@@ -21,15 +21,15 @@ See: docs/knowledge/derivations/monte_carlo.md
 
 import numpy as np
 import pytest
-from hypothesis import given, strategies as st, settings
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
+from annuity_pricing.options.pricing.black_scholes import black_scholes_call, black_scholes_put
 from annuity_pricing.options.simulation.gbm import (
     GBMParams,
     generate_gbm_paths,
     generate_terminal_values,
 )
-from annuity_pricing.options.pricing.black_scholes import black_scholes_call, black_scholes_put
-
 
 # =============================================================================
 # Tolerance Configuration

@@ -12,17 +12,13 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from annuity_pricing.data.schemas import FIAProduct, MYGAProduct, RILAProduct
-from annuity_pricing.products.base import PricingResult
 from annuity_pricing.products.registry import (
     MarketEnvironment,
     ProductRegistry,
-    create_default_registry,
 )
 from annuity_pricing.validation.gates import (
     ValidationEngine,
-    ValidationReport,
 )
-
 
 # =============================================================================
 # Fixtures

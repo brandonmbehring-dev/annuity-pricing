@@ -19,7 +19,6 @@ References
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, Optional
 
 import numpy as np
 
@@ -83,7 +82,7 @@ class RatingPD:
 # [T2] Values extracted from AM Best published data
 # Note: These are impairment rates, which include regulatory intervention,
 # not just missed payments (higher than pure default rates)
-AM_BEST_IMPAIRMENT_RATES: Dict[AMBestRating, RatingPD] = {
+AM_BEST_IMPAIRMENT_RATES: dict[AMBestRating, RatingPD] = {
     # Superior (A++, A+): Very low impairment rates
     # [T2] 10-year cumulative ~2% for combined A++/A+
     AMBestRating.A_PLUS_PLUS: RatingPD(

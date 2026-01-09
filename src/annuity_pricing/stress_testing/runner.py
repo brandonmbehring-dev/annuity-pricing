@@ -13,30 +13,27 @@ Design Principles:
 See: docs/stress_testing/STRESS_TESTING_GUIDE.md
 """
 
-from dataclasses import dataclass, field
-from typing import Callable, Dict, List, Optional, Protocol, Tuple, Any
-from enum import Enum
 import logging
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any, Protocol
 
 logger = logging.getLogger(__name__)
 
-from .historical import HistoricalCrisis, ALL_HISTORICAL_CRISES
-from .scenarios import (
-    StressScenario,
-    crisis_to_scenario,
-    ALL_ORSA_SCENARIOS,
-    get_all_historical_scenarios,
-)
 from .metrics import (
     StressMetrics,
     StressTestSummary,
-    SeverityLevel,
+    check_reserve_increase_limit,
+    check_reserve_positive,
     create_stress_metrics,
     create_summary,
-    check_reserve_positive,
-    check_reserve_increase_limit,
+)
+from .scenarios import (
+    ALL_ORSA_SCENARIOS,
+    StressScenario,
+    get_all_historical_scenarios,
 )
 
 
@@ -82,10 +79,10 @@ class StressTestConfig:
 
     include_historical: bool = True
     include_orsa: bool = True
-    custom_scenarios: Tuple[StressScenario, ...] = ()
+    custom_scenarios: tuple[StressScenario, ...] = ()
     max_reserve_increase: float = 0.50
     parallel: bool = False
-    n_workers: Optional[int] = None
+    n_workers: int | None = None
     verbose: bool = False
 
 
@@ -109,7 +106,7 @@ class StressTestResult:
     """
 
     summary: StressTestSummary
-    metrics: List[StressMetrics]
+    metrics: list[StressMetrics]
     execution_time_sec: float
     calculator_type: str
     config: StressTestConfig
@@ -180,11 +177,11 @@ class StressTestRunner:
             Type of calculator being wrapped
         """
         self.calculator_type = calculator_type
-        self._scenarios: List[StressScenario] = []
+        self._scenarios: list[StressScenario] = []
 
-    def _build_scenario_list(self, config: StressTestConfig) -> List[StressScenario]:
+    def _build_scenario_list(self, config: StressTestConfig) -> list[StressScenario]:
         """Build list of scenarios based on config."""
-        scenarios: List[StressScenario] = []
+        scenarios: list[StressScenario] = []
 
         if config.include_historical:
             scenarios.extend(get_all_historical_scenarios())
@@ -286,8 +283,8 @@ class StressTestRunner:
         self,
         calculator: ReserveCalculator,
         policy_data: Any,
-        config: Optional[StressTestConfig] = None,
-        base_reserve: Optional[float] = None,
+        config: StressTestConfig | None = None,
+        base_reserve: float | None = None,
     ) -> StressTestResult:
         """
         Execute stress tests across all configured scenarios.
@@ -351,7 +348,7 @@ class StressTestRunner:
             logger.info(f"Running {len(scenarios)} scenarios...")
 
         # Run scenarios
-        metrics_list: List[StressMetrics] = []
+        metrics_list: list[StressMetrics] = []
 
         if config.parallel and len(scenarios) > 1:
             # Parallel execution
@@ -388,12 +385,12 @@ class StressTestRunner:
 
     def _run_parallel(
         self,
-        scenarios: List[StressScenario],
+        scenarios: list[StressScenario],
         base_reserve: float,
         config: StressTestConfig,
-    ) -> List[StressMetrics]:
+    ) -> list[StressMetrics]:
         """Run scenarios in parallel using ProcessPoolExecutor."""
-        metrics_list: List[StressMetrics] = []
+        metrics_list: list[StressMetrics] = []
 
         with ProcessPoolExecutor(max_workers=config.n_workers) as executor:
             # Submit all tasks
@@ -434,7 +431,7 @@ class StressTestRunner:
         self,
         calculator: ReserveCalculator,
         policy_data: Any,
-        base_reserve: Optional[float] = None,
+        base_reserve: float | None = None,
         verbose: bool = False,
     ) -> StressTestResult:
         """
@@ -467,7 +464,7 @@ class StressTestRunner:
         self,
         calculator: ReserveCalculator,
         policy_data: Any,
-        base_reserve: Optional[float] = None,
+        base_reserve: float | None = None,
         verbose: bool = False,
     ) -> StressTestResult:
         """
@@ -504,7 +501,7 @@ class StressTestRunner:
 
 def quick_stress_test(
     base_reserve: float,
-    scenarios: Optional[List[StressScenario]] = None,
+    scenarios: list[StressScenario] | None = None,
     verbose: bool = False,
 ) -> StressTestResult:
     """

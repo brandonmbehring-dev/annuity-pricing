@@ -6,8 +6,8 @@ Provides positioning, spread analysis, and rankings.
 
 from annuity_pricing.competitive.positioning import (
     DistributionStats,
-    PositionResult,
     PositioningAnalyzer,
+    PositionResult,
 )
 from annuity_pricing.competitive.rankings import (
     CompanyRanking,
@@ -15,9 +15,9 @@ from annuity_pricing.competitive.rankings import (
     RankingAnalyzer,
 )
 from annuity_pricing.competitive.spreads import (
+    SpreadAnalyzer,
     SpreadDistribution,
     SpreadResult,
-    SpreadAnalyzer,
     build_treasury_curve,
 )
 

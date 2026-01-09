@@ -5,7 +5,6 @@ Tests RankingAnalyzer: rank_companies(), rank_products(), etc.
 See: CONSTITUTION.md Section 5
 """
 
-import numpy as np
 import pandas as pd
 import pytest
 

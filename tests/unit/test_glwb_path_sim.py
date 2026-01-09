@@ -7,14 +7,13 @@ See: docs/knowledge/domain/glwb_mechanics.md
 """
 
 import pytest
-import numpy as np
 
+from annuity_pricing.glwb.gwb_tracker import GWBConfig, RollupType
 from annuity_pricing.glwb.path_sim import (
     GLWBPathSimulator,
     GLWBPricingResult,
     PathResult,
 )
-from annuity_pricing.glwb.gwb_tracker import GWBConfig, RollupType
 
 
 class TestGLWBPricingResult:
@@ -427,9 +426,9 @@ class TestBehavioralIntegration:
     def test_all_behavioral_together(self) -> None:
         """All behavioral models should work together."""
         from annuity_pricing.behavioral import (
+            ExpenseAssumptions,
             LapseAssumptions,
             WithdrawalAssumptions,
-            ExpenseAssumptions,
         )
 
         config = GWBConfig(rollup_rate=0.05, withdrawal_rate=0.05)

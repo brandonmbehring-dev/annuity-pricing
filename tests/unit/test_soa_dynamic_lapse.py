@@ -6,14 +6,13 @@ Tests for SOA-Calibrated Dynamic Lapse Model - Phase H.
 See: docs/assumptions/BEHAVIOR_CALIBRATION.md
 """
 
-import pytest
 import numpy as np
+import pytest
 
 from annuity_pricing.behavioral.dynamic_lapse import (
+    CalibrationSource,
     SOADynamicLapseModel,
     SOALapseAssumptions,
-    SOALapseResult,
-    CalibrationSource,
 )
 
 

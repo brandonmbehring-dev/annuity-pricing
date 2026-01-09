@@ -10,14 +10,14 @@ Tests for Mortality Loader - Phase 10.
 See: SOA 2012 Individual Annuity Mortality Tables
 """
 
-import pytest
 import numpy as np
+import pytest
 
 from annuity_pricing.loaders.mortality import (
-    MortalityTable,
     MortalityLoader,
-    compare_life_expectancy,
+    MortalityTable,
     calculate_annuity_pv,
+    compare_life_expectancy,
 )
 
 

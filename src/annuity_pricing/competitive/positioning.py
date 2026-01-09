@@ -9,13 +9,9 @@ See: docs/knowledge/domain/competitive_analysis.md
 """
 
 from dataclasses import dataclass
-from datetime import date
-from typing import Any, Optional
 
 import numpy as np
 import pandas as pd
-
-from annuity_pricing.config.settings import SETTINGS
 
 
 @dataclass(frozen=True)
@@ -149,11 +145,11 @@ class PositioningAnalyzer:
         self,
         rate: float,
         market_data: pd.DataFrame,
-        product_group: Optional[str] = None,
-        guarantee_duration: Optional[int] = None,
+        product_group: str | None = None,
+        guarantee_duration: int | None = None,
         duration_tolerance: int = 1,
         status: str = "current",
-        exclude_company: Optional[str] = None,
+        exclude_company: str | None = None,
     ) -> PositionResult:
         """
         Analyze competitive position of a rate.
@@ -228,8 +224,8 @@ class PositioningAnalyzer:
     def get_distribution_stats(
         self,
         market_data: pd.DataFrame,
-        product_group: Optional[str] = None,
-        guarantee_duration: Optional[int] = None,
+        product_group: str | None = None,
+        guarantee_duration: int | None = None,
         duration_tolerance: int = 1,
         status: str = "current",
     ) -> DistributionStats:
@@ -283,9 +279,9 @@ class PositioningAnalyzer:
     def get_percentile_thresholds(
         self,
         market_data: pd.DataFrame,
-        percentiles: Optional[list[float]] = None,
-        product_group: Optional[str] = None,
-        guarantee_duration: Optional[int] = None,
+        percentiles: list[float] | None = None,
+        product_group: str | None = None,
+        guarantee_duration: int | None = None,
         duration_tolerance: int = 1,
         status: str = "current",
     ) -> dict[float, float]:
@@ -337,8 +333,8 @@ class PositioningAnalyzer:
         rate: float,
         company: str,
         market_data: pd.DataFrame,
-        product_group: Optional[str] = None,
-        guarantee_duration: Optional[int] = None,
+        product_group: str | None = None,
+        guarantee_duration: int | None = None,
         duration_tolerance: int = 1,
         top_n: int = 10,
     ) -> pd.DataFrame:
@@ -413,11 +409,11 @@ class PositioningAnalyzer:
     def _filter_comparables(
         self,
         market_data: pd.DataFrame,
-        product_group: Optional[str] = None,
-        guarantee_duration: Optional[int] = None,
+        product_group: str | None = None,
+        guarantee_duration: int | None = None,
         duration_tolerance: int = 1,
-        status: Optional[str] = None,
-        exclude_company: Optional[str] = None,
+        status: str | None = None,
+        exclude_company: str | None = None,
     ) -> pd.DataFrame:
         """Filter market data to comparable products."""
         df = market_data.copy()

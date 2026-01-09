@@ -18,14 +18,14 @@ See: docs/CROSS_VALIDATION_MATRIX.md
 """
 
 from dataclasses import dataclass
-from typing import Optional, Literal, Dict
-import numpy as np
+from typing import Literal
 
+import numpy as np
 
 # SOA 2012 IAM Basic Table - Male
 # Source: Society of Actuaries, 2012 Individual Annuity Reserving Table
 # These are representative values; actual table has more decimal precision
-SOA_2012_IAM_MALE_QX: Dict[int, float] = {
+SOA_2012_IAM_MALE_QX: dict[int, float] = {
     0: 0.00066, 1: 0.00044, 2: 0.00029, 3: 0.00023, 4: 0.00018,
     5: 0.00016, 6: 0.00015, 7: 0.00014, 8: 0.00013, 9: 0.00012,
     10: 0.00012, 11: 0.00013, 12: 0.00016, 13: 0.00022, 14: 0.00031,
@@ -55,7 +55,7 @@ SOA_2012_IAM_MALE_QX: Dict[int, float] = {
 
 # SOA 2012 IAM Basic Table - Female
 # Generally lower mortality than male
-SOA_2012_IAM_FEMALE_QX: Dict[int, float] = {
+SOA_2012_IAM_FEMALE_QX: dict[int, float] = {
     0: 0.00055, 1: 0.00037, 2: 0.00024, 3: 0.00019, 4: 0.00015,
     5: 0.00013, 6: 0.00012, 7: 0.00011, 8: 0.00011, 9: 0.00010,
     10: 0.00010, 11: 0.00011, 12: 0.00013, 13: 0.00017, 14: 0.00022,
@@ -330,7 +330,7 @@ class MortalityTable:
         """
         return self.lx(age, radix) * self.get_qx(age)
 
-    def annuity_factor(self, age: int, r: float, n: Optional[int] = None) -> float:
+    def annuity_factor(self, age: int, r: float, n: int | None = None) -> float:
         """
         Calculate present value of life annuity.
 
@@ -475,7 +475,7 @@ class MortalityLoader:
 
     def from_dict(
         self,
-        qx_dict: Dict[int, float],
+        qx_dict: dict[int, float],
         table_name: str = "Custom",
         gender: str = "unisex",
     ) -> MortalityTable:
@@ -675,9 +675,9 @@ class MortalityLoader:
 
 
 def compare_life_expectancy(
-    tables: Dict[str, MortalityTable],
-    ages: Optional[np.ndarray] = None,
-) -> Dict[str, Dict[int, float]]:
+    tables: dict[str, MortalityTable],
+    ages: np.ndarray | None = None,
+) -> dict[str, dict[int, float]]:
     """
     Compare life expectancy across tables.
 
@@ -721,7 +721,7 @@ def calculate_annuity_pv(
     age: int,
     annual_payment: float,
     discount_rate: float,
-    term: Optional[int] = None,
+    term: int | None = None,
     payment_timing: Literal["beginning", "end"] = "beginning",
 ) -> float:
     """

@@ -9,9 +9,12 @@ See: CONSTITUTION.md Section 5
 See: docs/knowledge/domain/mgsv_mva.md for regulatory bounds
 """
 
+import logging
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Callable, Optional, Union
+from typing import Any
+
+logger = logging.getLogger(__name__)
 
 from annuity_pricing.products.base import PricingResult
 from annuity_pricing.products.fia import FIAPricingResult
@@ -47,8 +50,8 @@ class GateResult:
     status: GateStatus
     gate_name: str
     message: str
-    value: Optional[Any] = None
-    threshold: Optional[Any] = None
+    value: Any | None = None
+    threshold: Any | None = None
 
     @property
     def passed(self) -> bool:
@@ -662,7 +665,7 @@ class ValidationEngine:
 
     def __init__(
         self,
-        gates: Optional[list[ValidationGate]] = None,
+        gates: list[ValidationGate] | None = None,
     ):
         if gates is None:
             gates = self._default_gates()
@@ -738,7 +741,7 @@ class ValidationEngine:
         if not report.passed:
             halt_messages = [g.message for g in report.halted_gates]
             raise ValueError(
-                f"CRITICAL: Validation failed. HALTs:\n" +
+                "CRITICAL: Validation failed. HALTs:\n" +
                 "\n".join(f"  - {m}" for m in halt_messages)
             )
 

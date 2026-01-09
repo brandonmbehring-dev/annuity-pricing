@@ -7,38 +7,38 @@ and the tolerance registry.
 See: docs/TOLERANCE_JUSTIFICATION.md
 """
 
-import pytest
-import numpy as np
 import math
+
+import numpy as np
+import pytest
 
 from annuity_pricing.config.tolerances import (
     # Tier 1: Analytical
     ANTI_PATTERN_TOLERANCE,
-    PUT_CALL_PARITY_TOLERANCE,
-    GREEKS_NUMERICAL_TOLERANCE,
+    BS_MC_CONVERGENCE_TOLERANCE,
+    BUFFER_ABSORPTION_TOLERANCE,
+    CAP_ENFORCEMENT_TOLERANCE,
     # Tier 2: Cross-Library
     CROSS_LIBRARY_TOLERANCE,
+    # Domain-Specific
+    FLOOR_ENFORCEMENT_TOLERANCE,
+    GOLDEN_RELATIVE_TOLERANCE,
+    GREEKS_NUMERICAL_TOLERANCE,
     GREEKS_VALIDATION_TOLERANCE,
     HULL_EXAMPLE_TOLERANCE,
+    # Tier 4: Integration
+    INTEGRATION_TOLERANCE,
     # Tier 3: Stochastic
     MC_10K_TOLERANCE,
     MC_100K_TOLERANCE,
     MC_500K_TOLERANCE,
-    BS_MC_CONVERGENCE_TOLERANCE,
-    mc_tolerance,
-    # Tier 4: Integration
-    INTEGRATION_TOLERANCE,
-    GOLDEN_RELATIVE_TOLERANCE,
     PORTFOLIO_TOLERANCE,
-    # Domain-Specific
-    FLOOR_ENFORCEMENT_TOLERANCE,
-    BUFFER_ABSORPTION_TOLERANCE,
-    CAP_ENFORCEMENT_TOLERANCE,
+    PUT_CALL_PARITY_TOLERANCE,
     # Registry
     TOLERANCE_REGISTRY,
     get_tolerance,
+    mc_tolerance,
 )
-
 
 # =============================================================================
 # Tier 1: Analytical Tolerances
@@ -74,8 +74,8 @@ class TestTier1AnalyticalTolerances:
         """Greeks tolerance should be near sqrt(machine_epsilon)."""
         sqrt_eps = math.sqrt(np.finfo(float).eps)  # ~1.5e-8
         # Should be within 2 orders of magnitude of sqrt(eps)
-        assert GREEKS_NUMERICAL_TOLERANCE <= sqrt_eps * 100
-        assert GREEKS_NUMERICAL_TOLERANCE >= sqrt_eps / 100
+        assert sqrt_eps * 100 >= GREEKS_NUMERICAL_TOLERANCE
+        assert sqrt_eps / 100 <= GREEKS_NUMERICAL_TOLERANCE
 
 
 # =============================================================================
@@ -150,7 +150,7 @@ class TestTier3StochasticTolerances:
     def test_mc_10k_tolerance_clt_derived(self) -> None:
         """MC_10K_TOLERANCE should match CLT formula."""
         clt_value = 3 * 0.20 / math.sqrt(10_000)  # 0.006
-        assert MC_10K_TOLERANCE == pytest.approx(clt_value, abs=0.001)
+        assert pytest.approx(clt_value, abs=0.001) == MC_10K_TOLERANCE
 
     def test_mc_tolerances_ordering(self) -> None:
         """Higher path count should have lower or equal tolerance."""

@@ -11,14 +11,12 @@ Validates that:
 See: docs/knowledge/domain/buffer_floor.md
 """
 
-import numpy as np
 import pytest
 
 from annuity_pricing.data.schemas import RILAProduct
 from annuity_pricing.options.pricing.heston import HestonParams
 from annuity_pricing.options.volatility_models import HestonVolatility, VolatilityModelType
-from annuity_pricing.products.rila import RILAPricer, MarketParams
-
+from annuity_pricing.products.rila import MarketParams, RILAPricer
 
 # =============================================================================
 # Test Configuration

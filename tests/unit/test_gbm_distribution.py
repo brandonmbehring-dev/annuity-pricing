@@ -24,7 +24,6 @@ from annuity_pricing.options.simulation.gbm import (
     generate_terminal_values,
 )
 
-
 # =============================================================================
 # Test Configuration
 # =============================================================================

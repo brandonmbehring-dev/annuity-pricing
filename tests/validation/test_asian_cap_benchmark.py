@@ -10,11 +10,10 @@ See: docs/knowledge/derivations/monte_carlo.md (ObservationSchedule design)
 """
 
 import pytest
-import numpy as np
 
+from annuity_pricing.options.payoffs.fia import CappedCallPayoff, MonthlyAveragePayoff
 from annuity_pricing.options.simulation.gbm import GBMParams, generate_gbm_paths
 from annuity_pricing.options.simulation.monte_carlo import MonteCarloEngine
-from annuity_pricing.options.payoffs.fia import MonthlyAveragePayoff, CappedCallPayoff
 
 
 class TestMonthlyAveragingObservations:
@@ -217,8 +216,8 @@ class TestFIAIntegration:
 
         This is the key integration test for the fix in FIAPricer._calculate_expected_credit.
         """
-        from annuity_pricing.products.fia import FIAPricer, MarketParams
         from annuity_pricing.data.schemas import FIAProduct
+        from annuity_pricing.products.fia import FIAPricer, MarketParams
 
         # Create FIA with monthly-average crediting
         # Note: indexing_method containing "monthly" or "average" triggers

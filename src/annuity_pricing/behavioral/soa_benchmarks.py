@@ -25,7 +25,7 @@ See Also
 docs/assumptions/BEHAVIOR_CALIBRATION.md : Full methodology documentation
 """
 
-from typing import Dict, Final
+from typing import Final
 
 # =============================================================================
 # SOA 2006 Deferred Annuity Persistency Study
@@ -33,7 +33,7 @@ from typing import Dict, Final
 
 # Table 6: Surrender Rates by Contract Year (7-Year Surrender Charge Schedule)
 # Key insight: Surrender rate spikes at year 8 (post-SC) then declines
-SOA_2006_SURRENDER_BY_DURATION_7YR_SC: Final[Dict[int, float]] = {
+SOA_2006_SURRENDER_BY_DURATION_7YR_SC: Final[dict[int, float]] = {
     1: 0.014,   # 1.4% - Year 1 (6 years SC remaining)
     2: 0.023,   # 2.3% - Year 2 (5 years SC remaining)
     3: 0.028,   # 2.8% - Year 3 (4 years SC remaining)
@@ -49,7 +49,7 @@ SOA_2006_SURRENDER_BY_DURATION_7YR_SC: Final[Dict[int, float]] = {
 
 # Table 5: Surrender Rates by Position in Surrender Charge Period
 # Used to calculate SC cliff multiplier for different SC lengths
-SOA_2006_SC_CLIFF_EFFECT: Final[Dict[str, float]] = {
+SOA_2006_SC_CLIFF_EFFECT: Final[dict[str, float]] = {
     'years_remaining_3plus': 0.026,  # 2.6% - 3+ years remaining
     'years_remaining_2': 0.049,       # 4.9% - 2 years remaining
     'years_remaining_1': 0.058,       # 5.8% - 1 year remaining
@@ -64,7 +64,7 @@ SOA_2006_SC_CLIFF_MULTIPLIER: Final[float] = 0.144 / 0.058  # ~2.48
 
 # Table 8: Full Surrender Rates by Owner Age
 # Key insight: Full surrender is relatively flat by age (~5%)
-SOA_2006_FULL_SURRENDER_BY_AGE: Final[Dict[int, float]] = {
+SOA_2006_FULL_SURRENDER_BY_AGE: Final[dict[int, float]] = {
     35: 0.053,  # Under 40
     45: 0.052,  # 40-49
     52: 0.052,  # 50-54
@@ -78,7 +78,7 @@ SOA_2006_FULL_SURRENDER_BY_AGE: Final[Dict[int, float]] = {
 
 # Table 8: Partial Withdrawal Rates by Owner Age
 # Key insight: Partial withdrawals increase dramatically with age (RMDs)
-SOA_2006_PARTIAL_WITHDRAWAL_BY_AGE: Final[Dict[int, float]] = {
+SOA_2006_PARTIAL_WITHDRAWAL_BY_AGE: Final[dict[int, float]] = {
     35: 0.037,  # 3.7% - Under 40
     45: 0.039,  # 3.9% - 40-49
     52: 0.053,  # 5.3% - 50-54
@@ -97,7 +97,7 @@ SOA_2006_PARTIAL_WITHDRAWAL_BY_AGE: Final[Dict[int, float]] = {
 
 # Table 1-17: GLWB Utilization by Duration (years since issue)
 # Key insight: Utilization ramps from 11% (year 1) to 54% (year 10)
-SOA_2018_GLWB_UTILIZATION_BY_DURATION: Final[Dict[int, float]] = {
+SOA_2018_GLWB_UTILIZATION_BY_DURATION: Final[dict[int, float]] = {
     1: 0.111,   # 11.1% - First year
     2: 0.177,   # 17.7%
     3: 0.199,   # 19.9%
@@ -113,7 +113,7 @@ SOA_2018_GLWB_UTILIZATION_BY_DURATION: Final[Dict[int, float]] = {
 
 # Table 1-18: GLWB Utilization by Age (2008 cohort data)
 # Uses 2008 cohort as most mature data point
-SOA_2018_GLWB_UTILIZATION_BY_AGE: Final[Dict[int, float]] = {
+SOA_2018_GLWB_UTILIZATION_BY_AGE: Final[dict[int, float]] = {
     55: 0.05,   # 5% - Under 60
     62: 0.16,   # 16% - 60-64
     67: 0.32,   # 32% - 65-69
@@ -125,7 +125,7 @@ SOA_2018_GLWB_UTILIZATION_BY_AGE: Final[Dict[int, float]] = {
 # Figure 1-44: ITM Sensitivity Factors by Degree of Moneyness
 # Multipliers relative to not-ITM baseline (age 70-74 reference)
 # BB/CV > 100% means benefit base exceeds contract value (ITM guarantee)
-SOA_2018_ITM_SENSITIVITY: Final[Dict[str, float]] = {
+SOA_2018_ITM_SENSITIVITY: Final[dict[str, float]] = {
     'not_itm': 1.00,        # Baseline: BB/CV <= 100%
     'itm_100_125': 1.39,    # 100-125% ITM: 53% / 38%
     'itm_125_150': 1.79,    # 125-150% ITM: 68% / 38%
@@ -134,7 +134,7 @@ SOA_2018_ITM_SENSITIVITY: Final[Dict[str, float]] = {
 
 # Figure 1-43: ITM vs Not-ITM Withdrawal Rates by Age
 # Shows that age explains most of the ITM effect
-SOA_2018_ITM_VS_NOT_ITM_BY_AGE: Final[Dict[int, Dict[str, float]]] = {
+SOA_2018_ITM_VS_NOT_ITM_BY_AGE: Final[dict[int, dict[str, float]]] = {
     52: {'itm': 0.04, 'not_itm': 0.03},   # Under 55
     57: {'itm': 0.03, 'not_itm': 0.05},   # 55-59 (anomaly: ITM < not-ITM)
     62: {'itm': 0.12, 'not_itm': 0.09},   # 60-64
@@ -151,7 +151,7 @@ SOA_2018_ITM_VS_NOT_ITM_BY_AGE: Final[Dict[int, Dict[str, float]]] = {
 
 # Post-SC decay factors (relative to cliff year)
 # Year 0 (cliff) = 100%, Year 1 = 77%, Year 2 = 68%, Year 3+ = 60%
-SOA_2006_POST_SC_DECAY: Final[Dict[int, float]] = {
+SOA_2006_POST_SC_DECAY: Final[dict[int, float]] = {
     0: 1.00,    # At SC expiration: 14.4%
     1: 0.77,    # Year 1 after: 11.1% / 14.4% = 0.77
     2: 0.68,    # Year 2 after: 9.8% / 14.4% = 0.68
@@ -159,7 +159,7 @@ SOA_2006_POST_SC_DECAY: Final[Dict[int, float]] = {
 }
 
 # Key insights documented for reference
-SOA_KEY_INSIGHTS: Final[Dict[str, str]] = {
+SOA_KEY_INSIGHTS: Final[dict[str, str]] = {
     'sc_cliff': 'Surrender rate jumps 2.5x at SC expiration (5.8% -> 14.4%)',
     'age_paradox': 'Full surrender flat by age (~5%), partial withdrawal increases 3.7% -> 31.5%',
     'duration_effect': 'GLWB utilization ramps from 11% (year 1) to 54% (year 10)',
@@ -172,7 +172,7 @@ SOA_KEY_INSIGHTS: Final[Dict[str, str]] = {
 # Data Quality Notes
 # =============================================================================
 
-DATA_QUALITY_NOTES: Final[Dict[str, str]] = {
+DATA_QUALITY_NOTES: Final[dict[str, str]] = {
     'soa_2006': 'Deferred annuity data, may differ from VA behavior',
     'soa_2018': 'VA GLWB data, most relevant for GLWB products',
     'age_midpoints': 'Age keys represent midpoints of age bands',

@@ -10,7 +10,6 @@ Tests cover:
 Uses real WINK sample fixture for realistic testing.
 """
 
-import hashlib
 from pathlib import Path
 from unittest.mock import patch
 
@@ -25,7 +24,6 @@ from annuity_pricing.data.loader import (
     load_wink_data,
     verify_checksum,
 )
-
 
 # =============================================================================
 # Fixtures

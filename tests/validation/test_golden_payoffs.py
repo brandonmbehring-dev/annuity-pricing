@@ -22,11 +22,10 @@ from annuity_pricing.options.payoffs.fia import (
 )
 from annuity_pricing.options.payoffs.rila import (
     BufferPayoff,
-    FloorPayoff,
     BufferWithFloorPayoff,
+    FloorPayoff,
     StepRateBufferPayoff,
 )
-
 
 TRUTH_TABLE_PATH = Path(__file__).parent.parent / "references" / "payoff_truth_tables.csv"
 

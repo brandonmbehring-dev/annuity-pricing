@@ -13,36 +13,35 @@ See: CONSTITUTION.md Section 3.2
 See: docs/knowledge/domain/crediting_methods.md
 """
 
-from dataclasses import dataclass, field
+import logging
+from dataclasses import dataclass
 from datetime import date
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 import pandas as pd
 
+logger = logging.getLogger(__name__)
+
+from scipy.stats import norm
+
 from annuity_pricing.data.schemas import FIAProduct
 from annuity_pricing.options.payoffs.fia import (
-    CappedCallPayoff,
     MonthlyAveragePayoff,
-    ParticipationPayoff,
-    SpreadPayoff,
-    TriggerPayoff,
     create_fia_payoff,
 )
 from annuity_pricing.options.pricing.black_scholes import (
-    black_scholes_call,
-    price_capped_call,
     _calculate_d1_d2,
+    black_scholes_call,
 )
-from annuity_pricing.options.volatility_models import (
-    VolatilityModel,
-    VolatilityModelType,
-    HestonVolatility,
-    SABRVolatility,
-)
-from scipy.stats import norm
 from annuity_pricing.options.simulation.gbm import GBMParams
 from annuity_pricing.options.simulation.monte_carlo import MonteCarloEngine
+from annuity_pricing.options.volatility_models import (
+    HestonVolatility,
+    SABRVolatility,
+    VolatilityModel,
+    VolatilityModelType,
+)
 from annuity_pricing.products.base import BasePricer, CompetitivePosition, PricingResult
 
 
@@ -67,8 +66,8 @@ class FIAPricingResult(PricingResult):
 
     embedded_option_value: float = 0.0
     option_budget: float = 0.0
-    fair_cap: Optional[float] = None
-    fair_participation: Optional[float] = None
+    fair_cap: float | None = None
+    fair_participation: float | None = None
     expected_credit: float = 0.0
 
 
@@ -115,7 +114,7 @@ class MarketParams:
     risk_free_rate: float
     dividend_yield: float
     volatility: float
-    vol_model: Optional[VolatilityModel] = None
+    vol_model: VolatilityModel | None = None
 
     def __post_init__(self) -> None:
         """Validate market params."""
@@ -174,7 +173,7 @@ class FIAPricer(BasePricer):
         market_params: MarketParams,
         option_budget_pct: float = 0.03,
         n_mc_paths: int = 100000,
-        seed: Optional[int] = None,
+        seed: int | None = None,
     ):
         if option_budget_pct < 0:
             raise ValueError(
@@ -194,8 +193,8 @@ class FIAPricer(BasePricer):
     def price(  # type: ignore[override]  # Subclass has specific params
         self,
         product: FIAProduct,
-        as_of_date: Optional[date] = None,
-        term_years: Optional[float] = None,
+        as_of_date: date | None = None,
+        term_years: float | None = None,
         premium: float = 100.0,
     ) -> FIAPricingResult:
         """
@@ -464,8 +463,8 @@ class FIAPricer(BasePricer):
 
         elif model_type == VolatilityModelType.HESTON:
             # Heston stochastic volatility via COS method
-            from annuity_pricing.options.pricing.heston import heston_price
             from annuity_pricing.options.payoffs.base import OptionType
+            from annuity_pricing.options.pricing.heston import heston_price
 
             heston_vol = m.vol_model
             if not isinstance(heston_vol, HestonVolatility):
@@ -795,7 +794,7 @@ class FIAPricer(BasePricer):
     def price_multiple(
         self,
         products: list[FIAProduct],
-        term_years: Optional[float] = None,
+        term_years: float | None = None,
         premium: float = 100.0,
     ) -> pd.DataFrame:
         """

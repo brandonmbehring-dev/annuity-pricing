@@ -14,20 +14,17 @@ References:
 
 import pytest
 
-from annuity_pricing.config.tolerances import INTEGRATION_TOLERANCE, ANTI_PATTERN_TOLERANCE
 from annuity_pricing.data.schemas import (
     FIAProduct,
     MYGAProduct,
     RILAProduct,
 )
-from annuity_pricing.products.registry import (
-    ProductRegistry,
-    MarketEnvironment,
-    create_default_registry,
-)
 from annuity_pricing.products.fia import FIAPricingResult
+from annuity_pricing.products.registry import (
+    MarketEnvironment,
+    ProductRegistry,
+)
 from annuity_pricing.products.rila import RILAPricingResult
-
 
 # =============================================================================
 # Fixtures

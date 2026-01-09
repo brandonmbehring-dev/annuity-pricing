@@ -12,10 +12,10 @@ Design Principles:
 See: docs/stress_testing/STRESS_TESTING_GUIDE.md
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple, Callable
-from enum import Enum
 import logging
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 
@@ -140,7 +140,7 @@ class TornadoData:
         Number of parameters analyzed
     """
 
-    results: List[SensitivityResult]
+    results: list[SensitivityResult]
     base_reserve: float
     scenario_name: str
     n_parameters: int = field(init=False)
@@ -154,14 +154,14 @@ class TornadoData:
         )
 
     @property
-    def most_sensitive_parameter(self) -> Optional[str]:
+    def most_sensitive_parameter(self) -> str | None:
         """Return name of most sensitive parameter."""
         if self.results:
             return self.results[0].parameter
         return None
 
     @property
-    def least_sensitive_parameter(self) -> Optional[str]:
+    def least_sensitive_parameter(self) -> str | None:
         """Return name of least sensitive parameter."""
         if self.results:
             return self.results[-1].parameter
@@ -179,7 +179,7 @@ def get_default_sensitivity_parameters(
     base_vol_shock: float = 2.0,
     base_lapse_mult: float = 1.0,
     base_withdrawal_mult: float = 1.0,
-) -> List[SensitivityParameter]:
+) -> list[SensitivityParameter]:
     """
     Get default parameters for sensitivity analysis.
 
@@ -274,7 +274,7 @@ class SensitivityAnalyzer:
 
     def __init__(
         self,
-        impact_function: Optional[Callable[..., float]] = None,
+        impact_function: Callable[..., float] | None = None,
     ):
         """
         Initialize analyzer.
@@ -330,7 +330,7 @@ class SensitivityAnalyzer:
     def _calculate_reserve(
         self,
         base_reserve: float,
-        params: Dict[str, float],
+        params: dict[str, float],
     ) -> float:
         """Calculate reserve with given parameters."""
         return self._impact_function(
@@ -345,7 +345,7 @@ class SensitivityAnalyzer:
     def run_single_parameter(
         self,
         parameter: SensitivityParameter,
-        base_params: Dict[str, float],
+        base_params: dict[str, float],
         base_reserve: float,
     ) -> SensitivityResult:
         """
@@ -405,7 +405,7 @@ class SensitivityAnalyzer:
     def run_oat(
         self,
         base_reserve: float,
-        parameters: Optional[List[SensitivityParameter]] = None,
+        parameters: list[SensitivityParameter] | None = None,
         base_equity_shock: float = -0.30,
         base_rate_shock: float = -0.0100,
         base_vol_shock: float = 2.0,
@@ -450,11 +450,11 @@ class SensitivityAnalyzer:
             )
 
         # Build base params dict from parameter list
-        base_params: Dict[str, float] = {}
+        base_params: dict[str, float] = {}
         for p in parameters:
             base_params[p.name] = p.base_value
 
-        results: List[SensitivityResult] = []
+        results: list[SensitivityResult] = []
         for param in parameters:
             result = self.run_single_parameter(param, base_params, base_reserve)
             results.append(result)
@@ -469,7 +469,7 @@ class SensitivityAnalyzer:
         self,
         scenario: "StressScenario",  # Forward reference
         base_reserve: float,
-        parameters: Optional[List[SensitivityParameter]] = None,
+        parameters: list[SensitivityParameter] | None = None,
     ) -> TornadoData:
         """
         Run OAT analysis from a StressScenario object.

@@ -13,24 +13,20 @@ Key validation points:
 """
 
 import numpy as np
-import pytest
 
 from annuity_pricing.credit import (
     AMBestRating,
+    calculate_cva,
     get_annual_pd,
     get_cumulative_pd,
-    calculate_cva,
-    calculate_credit_adjusted_price,
-)
-from annuity_pricing.credit.default_prob import (
-    get_hazard_rate,
-    AM_BEST_IMPAIRMENT_RATES,
 )
 from annuity_pricing.credit.cva import (
     DEFAULT_INSURANCE_LGD,
     calculate_credit_spread,
 )
-
+from annuity_pricing.credit.default_prob import (
+    get_hazard_rate,
+)
 
 # =============================================================================
 # AM Best Impairment Rate Validation [T2]

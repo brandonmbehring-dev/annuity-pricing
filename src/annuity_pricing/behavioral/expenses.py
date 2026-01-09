@@ -18,7 +18,7 @@ See: docs/knowledge/domain/expense_assumptions.md
 """
 
 from dataclasses import dataclass
-from typing import Optional
+
 import numpy as np
 
 
@@ -203,7 +203,7 @@ class ExpenseModel:
         discount_rate: float,
         dt: float = 1.0,
         include_acquisition: bool = False,
-        premium: Optional[float] = None,
+        premium: float | None = None,
     ) -> float:
         """
         Calculate present value of expenses along a path.

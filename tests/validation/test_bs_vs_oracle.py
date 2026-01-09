@@ -15,13 +15,12 @@ from typing import Any
 
 import pytest
 
+from annuity_pricing.options.payoffs.base import OptionType
 from annuity_pricing.options.pricing.black_scholes import (
     black_scholes_call,
-    black_scholes_put,
     black_scholes_greeks,
+    black_scholes_put,
 )
-from annuity_pricing.options.payoffs.base import OptionType
-
 
 # Cross-library tolerance - allow small differences between implementations
 ORACLE_TOLERANCE = 0.01  # 1 cent on $10 option

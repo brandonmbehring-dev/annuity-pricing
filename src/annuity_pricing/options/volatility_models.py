@@ -14,7 +14,7 @@ See: docs/knowledge/domain/option_pricing.md
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from annuity_pricing.options.pricing.heston import HestonParams
@@ -135,4 +135,4 @@ class SABRVolatility(VolatilityModel):
 
 
 # Type alias for any volatility model
-VolModelType = Union[HestonVolatility, SABRVolatility, None]
+VolModelType = HestonVolatility | SABRVolatility | None

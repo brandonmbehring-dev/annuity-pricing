@@ -18,29 +18,27 @@ See: scripts/regenerate_goldens.py for regeneration
 
 import json
 from pathlib import Path
-from typing import Any
 
-import numpy as np
 import pytest
 
 from annuity_pricing.config.tolerances import (
-    HULL_EXAMPLE_TOLERANCE,
     GOLDEN_RELATIVE_TOLERANCE,
-    INTEGRATION_TOLERANCE,
+    HULL_EXAMPLE_TOLERANCE,
 )
+from annuity_pricing.data.schemas import FIAProduct, MYGAProduct, RILAProduct
 from annuity_pricing.options.payoffs.base import OptionType
+from annuity_pricing.options.payoffs.fia import CappedCallPayoff
+from annuity_pricing.options.payoffs.rila import BufferPayoff, FloorPayoff
 from annuity_pricing.options.pricing.black_scholes import (
     black_scholes_call,
-    black_scholes_put,
     black_scholes_greeks,
+    black_scholes_put,
 )
-from annuity_pricing.options.payoffs.rila import BufferPayoff, FloorPayoff
-from annuity_pricing.options.payoffs.fia import CappedCallPayoff
+from annuity_pricing.products.fia import FIAPricer
+from annuity_pricing.products.fia import MarketParams as FIAMarketParams
 from annuity_pricing.products.myga import MYGAPricer
-from annuity_pricing.products.fia import FIAPricer, MarketParams as FIAMarketParams
-from annuity_pricing.products.rila import RILAPricer, MarketParams as RILAMarketParams
-from annuity_pricing.data.schemas import MYGAProduct, FIAProduct, RILAProduct
-
+from annuity_pricing.products.rila import MarketParams as RILAMarketParams
+from annuity_pricing.products.rila import RILAPricer
 
 # =============================================================================
 # Golden File Loading

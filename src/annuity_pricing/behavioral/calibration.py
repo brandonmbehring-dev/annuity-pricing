@@ -15,20 +15,17 @@ annuity_pricing.behavioral.soa_benchmarks : Source data tables
 docs/assumptions/BEHAVIOR_CALIBRATION.md : Full methodology documentation
 """
 
-import numpy as np
-from typing import Dict, Optional, Tuple
 
 from annuity_pricing.behavioral.soa_benchmarks import (
-    SOA_2006_SURRENDER_BY_DURATION_7YR_SC,
+    SOA_2006_FULL_SURRENDER_BY_AGE,
+    SOA_2006_POST_SC_DECAY,
     SOA_2006_SC_CLIFF_EFFECT,
     SOA_2006_SC_CLIFF_MULTIPLIER,
-    SOA_2006_POST_SC_DECAY,
-    SOA_2006_FULL_SURRENDER_BY_AGE,
-    SOA_2018_GLWB_UTILIZATION_BY_DURATION,
+    SOA_2006_SURRENDER_BY_DURATION_7YR_SC,
     SOA_2018_GLWB_UTILIZATION_BY_AGE,
+    SOA_2018_GLWB_UTILIZATION_BY_DURATION,
     SOA_2018_ITM_SENSITIVITY,
 )
-
 
 # =============================================================================
 # Generic Interpolation Utilities
@@ -37,7 +34,7 @@ from annuity_pricing.behavioral.soa_benchmarks import (
 
 def _linear_interpolate(
     x: float,
-    x_points: Dict[int, float],
+    x_points: dict[int, float],
     extrapolate: bool = True,
 ) -> float:
     """
@@ -269,7 +266,6 @@ def interpolate_surrender_by_age(
     0.315  # Peak at RMD age
     """
     from annuity_pricing.behavioral.soa_benchmarks import (
-        SOA_2006_FULL_SURRENDER_BY_AGE,
         SOA_2006_PARTIAL_WITHDRAWAL_BY_AGE,
     )
 
@@ -495,7 +491,7 @@ def combined_utilization(
         combined = ((util_duration + util_age) / 2) * itm_factor
 
     else:
-        raise ValueError(f"combination_method must be 'multiplicative' or 'additive'")
+        raise ValueError("combination_method must be 'multiplicative' or 'additive'")
 
     # Cap at 100%
     return min(combined, 1.0)
@@ -509,7 +505,7 @@ def combined_utilization(
 def get_surrender_curve(
     sc_length: int = 7,
     max_duration: int = 15,
-) -> Dict[int, float]:
+) -> dict[int, float]:
     """
     Generate full surrender rate curve for given SC length.
 
@@ -534,7 +530,7 @@ def get_surrender_curve(
 def get_utilization_curve(
     age: int = 70,
     max_duration: int = 15,
-) -> Dict[int, float]:
+) -> dict[int, float]:
     """
     Generate GLWB utilization curve by duration for fixed age.
 

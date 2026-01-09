@@ -15,11 +15,10 @@ See: src/annuity_pricing/validation/gates.py ProductParameterSanityGate
 import pytest
 
 from annuity_pricing.data.schemas import FIAProduct
-from annuity_pricing.products.registry import ProductRegistry, create_default_registry
+from annuity_pricing.products.registry import ProductRegistry
 from annuity_pricing.validation.gates import (
     GateStatus,
     ProductParameterSanityGate,
-    GateResult,
 )
 
 
@@ -39,8 +38,9 @@ class TestSpreadRateHALT:
     @pytest.fixture
     def mock_result(self):
         """Create a minimal pricing result for gate testing."""
-        from annuity_pricing.products.base import PricingResult
         from datetime import date
+
+        from annuity_pricing.products.base import PricingResult
 
         return PricingResult(
             present_value=100000.0,
@@ -133,7 +133,7 @@ class TestSpreadRateInValidationContext:
         Previously (codex-audit Finding 2), spread_rate was omitted from
         the validation context, allowing invalid spreads to bypass gates.
         """
-        from annuity_pricing.products.registry import ProductRegistry, MarketEnvironment
+        from annuity_pricing.products.registry import MarketEnvironment
 
         # Create FIA with spread crediting
         product = FIAProduct(
@@ -176,9 +176,9 @@ class TestSpreadRateIntegration:
 
         This test directly validates the gate with excessive spread_rate.
         """
-        from annuity_pricing.products.fia import FIAPricer, MarketParams
-        from annuity_pricing.products.base import PricingResult
         from datetime import date
+
+        from annuity_pricing.products.base import PricingResult
 
         # Create FIA with excessive spread
         product = FIAProduct(

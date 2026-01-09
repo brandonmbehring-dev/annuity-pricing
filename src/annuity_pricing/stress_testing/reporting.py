@@ -13,15 +13,14 @@ Design Principles:
 See: docs/stress_testing/STRESS_TESTING_GUIDE.md
 """
 
-from dataclasses import asdict, dataclass
-from datetime import datetime
-from typing import Any, Dict, List, Optional, Union
 import json
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any
 
-from .metrics import StressMetrics, StressTestSummary, SeverityLevel
-from .sensitivity import TornadoData, SensitivityResult
-from .reverse import ReverseStressReport, ReverseStressResult
-
+from .metrics import SeverityLevel, StressMetrics, StressTestSummary
+from .reverse import ReverseStressReport
+from .sensitivity import TornadoData
 
 # =============================================================================
 # Report Configuration
@@ -80,7 +79,7 @@ class StressTestReporter:
     >>> print(markdown)
     """
 
-    def __init__(self, config: Optional[ReportConfig] = None):
+    def __init__(self, config: ReportConfig | None = None):
         """
         Initialize reporter.
 
@@ -94,8 +93,8 @@ class StressTestReporter:
     def generate_executive_summary(
         self,
         summary: StressTestSummary,
-        sensitivity: Optional[TornadoData] = None,
-        reverse_stress: Optional[ReverseStressReport] = None,
+        sensitivity: TornadoData | None = None,
+        reverse_stress: ReverseStressReport | None = None,
     ) -> str:
         """
         Generate 1-2 paragraph executive summary.
@@ -165,7 +164,7 @@ class StressTestReporter:
 
     def _format_scenario_table(
         self,
-        metrics: List[StressMetrics],
+        metrics: list[StressMetrics],
         max_rows: int = 0,
     ) -> str:
         """Format scenarios as Markdown table."""
@@ -223,7 +222,7 @@ class StressTestReporter:
 
     def _format_worst_scenarios(
         self,
-        metrics: List[StressMetrics],
+        metrics: list[StressMetrics],
         top_n: int = 5,
     ) -> str:
         """Format worst scenarios in detail."""
@@ -313,7 +312,7 @@ class StressTestReporter:
 
         return "\n".join(lines)
 
-    def _format_validation_failures(self, metrics: List[StressMetrics]) -> str:
+    def _format_validation_failures(self, metrics: list[StressMetrics]) -> str:
         """Format validation gate failures."""
         failed = [m for m in metrics if not m.passed_gates]
 
@@ -335,9 +334,9 @@ class StressTestReporter:
     def to_markdown(
         self,
         result: "StressTestResult",
-        sensitivity: Optional[TornadoData] = None,
-        reverse_stress: Optional[ReverseStressReport] = None,
-        title: Optional[str] = None,
+        sensitivity: TornadoData | None = None,
+        reverse_stress: ReverseStressReport | None = None,
+        title: str | None = None,
     ) -> str:
         """
         Generate complete Markdown report.
@@ -431,7 +430,7 @@ class StressTestReporter:
 
         return "\n".join(sections)
 
-    def _metrics_to_dict(self, m: StressMetrics) -> Dict[str, Any]:
+    def _metrics_to_dict(self, m: StressMetrics) -> dict[str, Any]:
         """Convert StressMetrics to JSON-serializable dict."""
         return {
             "scenario_name": m.scenario_name,
@@ -445,7 +444,7 @@ class StressTestReporter:
             "additional_metrics": dict(m.additional_metrics),
         }
 
-    def _summary_to_dict(self, s: StressTestSummary) -> Dict[str, Any]:
+    def _summary_to_dict(self, s: StressTestSummary) -> dict[str, Any]:
         """Convert StressTestSummary to JSON-serializable dict."""
         return {
             "n_scenarios": s.n_scenarios,
@@ -460,7 +459,7 @@ class StressTestReporter:
             "base_reserve": s.base_reserve,
         }
 
-    def _sensitivity_to_dict(self, t: TornadoData) -> Dict[str, Any]:
+    def _sensitivity_to_dict(self, t: TornadoData) -> dict[str, Any]:
         """Convert TornadoData to JSON-serializable dict."""
         results = []
         for r in t.results:
@@ -487,7 +486,7 @@ class StressTestReporter:
             "results": results,
         }
 
-    def _reverse_stress_to_dict(self, r: ReverseStressReport) -> Dict[str, Any]:
+    def _reverse_stress_to_dict(self, r: ReverseStressReport) -> dict[str, Any]:
         """Convert ReverseStressReport to JSON-serializable dict."""
         results = []
         for (target_type, param), res in r.results.items():
@@ -515,8 +514,8 @@ class StressTestReporter:
     def to_json(
         self,
         result: "StressTestResult",
-        sensitivity: Optional[TornadoData] = None,
-        reverse_stress: Optional[ReverseStressReport] = None,
+        sensitivity: TornadoData | None = None,
+        reverse_stress: ReverseStressReport | None = None,
         indent: int = 2,
     ) -> str:
         """
@@ -567,9 +566,9 @@ class StressTestReporter:
     def to_dict(
         self,
         result: "StressTestResult",
-        sensitivity: Optional[TornadoData] = None,
-        reverse_stress: Optional[ReverseStressReport] = None,
-    ) -> Dict[str, Any]:
+        sensitivity: TornadoData | None = None,
+        reverse_stress: ReverseStressReport | None = None,
+    ) -> dict[str, Any]:
         """
         Generate report as Python dict.
 
@@ -594,8 +593,8 @@ class StressTestReporter:
         result: "StressTestResult",
         filepath: str,
         format: str = "markdown",
-        sensitivity: Optional[TornadoData] = None,
-        reverse_stress: Optional[ReverseStressReport] = None,
+        sensitivity: TornadoData | None = None,
+        reverse_stress: ReverseStressReport | None = None,
     ) -> None:
         """
         Save report to file.
@@ -638,8 +637,8 @@ class StressTestReporter:
 
 def generate_stress_report(
     result: "StressTestResult",
-    sensitivity: Optional[TornadoData] = None,
-    reverse_stress: Optional[ReverseStressReport] = None,
+    sensitivity: TornadoData | None = None,
+    reverse_stress: ReverseStressReport | None = None,
     format: str = "markdown",
     title: str = "Stress Test Report",
 ) -> str:

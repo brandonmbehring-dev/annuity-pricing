@@ -11,13 +11,15 @@ SyntheticProvider (Phase 0 of Julia port plan):
 """
 
 import hashlib
+import logging
 import os
 from datetime import date
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 from annuity_pricing.config.settings import SETTINGS
 
@@ -122,7 +124,7 @@ class SyntheticProvider:
     def generate_products(
         self,
         n_products: int = 100,
-        product_groups: Optional[list[str]] = None,
+        product_groups: list[str] | None = None,
     ) -> pd.DataFrame:
         """
         Generate synthetic annuity product data.
@@ -305,7 +307,7 @@ class SyntheticProvider:
 
 
 # Global synthetic provider instance (lazy initialization)
-_SYNTHETIC_PROVIDER: Optional[SyntheticProvider] = None
+_SYNTHETIC_PROVIDER: SyntheticProvider | None = None
 
 
 def get_synthetic_provider(seed: int = 42) -> SyntheticProvider:
@@ -382,10 +384,10 @@ def verify_checksum(file_path: Path, expected_checksum: str) -> None:
 
 
 def load_wink_data(
-    path: Optional[Path] = None,
+    path: Path | None = None,
     verify: bool = True,
-    columns: Optional[list[str]] = None,
-    use_synthetic: Optional[bool] = None,
+    columns: list[str] | None = None,
+    use_synthetic: bool | None = None,
     n_synthetic: int = 1000,
 ) -> pd.DataFrame:
     """
@@ -503,7 +505,7 @@ def load_wink_by_product(
     product_group: str,
     status: str = "current",
     verify: bool = True,
-    use_synthetic: Optional[bool] = None,
+    use_synthetic: bool | None = None,
 ) -> pd.DataFrame:
     """
     Load WINK data filtered by product group and status.

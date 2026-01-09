@@ -19,19 +19,16 @@ inversion, which is considered the gold standard for Heston pricing.
 import numpy as np
 import pytest
 
+from annuity_pricing.options.payoffs.base import OptionType
 from annuity_pricing.options.pricing.heston import HestonParams, heston_price
 from annuity_pricing.options.pricing.heston_cos import (
     COSParams,
     heston_price_cos,
-    heston_cumulants,
-    cos_truncation_range,
 )
-from annuity_pricing.options.payoffs.base import OptionType
 
 # Skip all tests if QuantLib not available
 pytest.importorskip("QuantLib")
 import QuantLib as ql
-
 
 # =============================================================================
 # Test Fixtures

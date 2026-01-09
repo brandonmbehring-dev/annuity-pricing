@@ -9,15 +9,15 @@ See: docs/stress_testing/STRESS_TESTING_GUIDE.md
 import pytest
 
 from annuity_pricing.stress_testing.sensitivity import (
+    SensitivityAnalyzer,
+    SensitivityDirection,
     SensitivityParameter,
     SensitivityResult,
-    SensitivityDirection,
     TornadoData,
-    SensitivityAnalyzer,
-    get_default_sensitivity_parameters,
     format_sensitivity_result,
-    format_tornado_table,
     format_tornado_summary,
+    format_tornado_table,
+    get_default_sensitivity_parameters,
     quick_sensitivity_analysis,
 )
 

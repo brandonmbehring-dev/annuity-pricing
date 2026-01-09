@@ -5,10 +5,9 @@ Ensures all regulatory modules have proper [PROTOTYPE] disclaimers
 to prevent accidental use for production regulatory filings.
 """
 
-import pytest
 
 from annuity_pricing import regulatory
-from annuity_pricing.regulatory import vm21, vm22, scenarios
+from annuity_pricing.regulatory import scenarios, vm21, vm22
 
 
 class TestModuleDisclaimers:
@@ -158,7 +157,7 @@ class TestComplianceGapDocExists:
         )
         gap_doc_path = os.path.normpath(gap_doc_path)
 
-        with open(gap_doc_path, "r") as f:
+        with open(gap_doc_path) as f:
             content = f.read()
 
         # Check for key sections
@@ -177,7 +176,7 @@ class TestRuntimeWarnings:
 
     def test_vm21_result_is_educational(self):
         """VM21Calculator produces results but is clearly educational."""
-        from annuity_pricing.regulatory.vm21 import VM21Calculator, PolicyData
+        from annuity_pricing.regulatory.vm21 import PolicyData, VM21Calculator
 
         calc = VM21Calculator(n_scenarios=10, seed=42)
         policy = PolicyData(av=100_000, gwb=110_000, age=70)
@@ -191,7 +190,7 @@ class TestRuntimeWarnings:
 
     def test_vm22_result_is_educational(self):
         """VM22Calculator produces results but is clearly educational."""
-        from annuity_pricing.regulatory.vm22 import VM22Calculator, FixedAnnuityPolicy
+        from annuity_pricing.regulatory.vm22 import FixedAnnuityPolicy, VM22Calculator
 
         calc = VM22Calculator(n_scenarios=10, seed=42)
         policy = FixedAnnuityPolicy(premium=100_000, guaranteed_rate=0.04, term_years=5)

@@ -8,21 +8,17 @@ References:
     [T1] Vega hedging: dP/dσ ≈ 0 for vega-neutral position
 """
 
-import pytest
 import numpy as np
+import pytest
 
-from annuity_pricing.config.tolerances import GREEKS_VALIDATION_TOLERANCE
 from annuity_pricing.data.schemas import (
     FIAProduct,
     RILAProduct,
 )
 from annuity_pricing.products.registry import (
-    ProductRegistry,
     MarketEnvironment,
+    ProductRegistry,
 )
-from annuity_pricing.products.fia import FIAPricingResult
-from annuity_pricing.products.rila import RILAPricingResult
-
 
 # =============================================================================
 # Fixtures

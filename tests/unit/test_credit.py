@@ -12,16 +12,21 @@ import pytest
 
 from annuity_pricing.credit import (
     AMBestRating,
+    CVAResult,
     RatingPD,
+    calculate_covered_amount,
+    calculate_credit_adjusted_price,
+    calculate_cva,
     get_annual_pd,
     get_cumulative_pd,
-    rating_from_string,
-    GuarantyFundCoverage,
     get_state_coverage,
-    calculate_covered_amount,
-    CVAResult,
-    calculate_cva,
-    calculate_credit_adjusted_price,
+    rating_from_string,
+)
+from annuity_pricing.credit.cva import (
+    DEFAULT_INSURANCE_LGD,
+    calculate_credit_spread,
+    calculate_cva_term_structure,
+    calculate_exposure_profile,
 )
 from annuity_pricing.credit.default_prob import (
     AM_BEST_IMPAIRMENT_RATES,
@@ -30,17 +35,9 @@ from annuity_pricing.credit.default_prob import (
 )
 from annuity_pricing.credit.guaranty_funds import (
     CoverageType,
-    STATE_GUARANTY_LIMITS,
     calculate_uncovered_amount,
     get_coverage_ratio,
 )
-from annuity_pricing.credit.cva import (
-    DEFAULT_INSURANCE_LGD,
-    calculate_exposure_profile,
-    calculate_cva_term_structure,
-    calculate_credit_spread,
-)
-
 
 # =============================================================================
 # Tests for default_prob.py

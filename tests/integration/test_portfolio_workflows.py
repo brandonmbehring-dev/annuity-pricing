@@ -12,8 +12,8 @@ References:
     [T1] Portfolio diversification should reduce risk vs concentrated positions
 """
 
-import pytest
 import numpy as np
+import pytest
 
 from annuity_pricing.config.tolerances import INTEGRATION_TOLERANCE
 from annuity_pricing.data.schemas import (
@@ -22,10 +22,9 @@ from annuity_pricing.data.schemas import (
     RILAProduct,
 )
 from annuity_pricing.products.registry import (
-    ProductRegistry,
     MarketEnvironment,
+    ProductRegistry,
 )
-
 
 # =============================================================================
 # Fixtures

@@ -22,6 +22,7 @@ See: docs/knowledge/domain/glwb_mechanics.md
 
 from dataclasses import dataclass
 from typing import Protocol
+
 import numpy as np
 
 

@@ -6,12 +6,15 @@ See: docs/knowledge/domain/mgsv_mva.md
 See: wink-research-archive/product-guides/ANNUITY_PRODUCT_GUIDE.md
 """
 
-from datetime import date
-from typing import Any, Optional
+import logging
 import warnings
+from datetime import date
+from typing import Any
 
 import numpy as np
 import pandas as pd
+
+logger = logging.getLogger(__name__)
 
 from annuity_pricing.config.settings import SETTINGS
 from annuity_pricing.data.schemas import MYGAProduct
@@ -50,11 +53,11 @@ class MYGAPricer(BasePricer):
     def price(  # type: ignore[override]  # Subclass has specific params
         self,
         product: MYGAProduct,
-        as_of_date: Optional[date] = None,
+        as_of_date: date | None = None,
         principal: float = 100_000.0,
-        discount_rate: Optional[float] = None,
+        discount_rate: float | None = None,
         include_mgsv: bool = True,
-        premium: Optional[float] = None,  # DEPRECATED: use principal
+        premium: float | None = None,  # DEPRECATED: use principal
     ) -> PricingResult:
         """
         Price MYGA product.

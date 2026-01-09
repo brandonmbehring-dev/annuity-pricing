@@ -11,8 +11,8 @@ Spread Crediting Mechanics:
 See: docs/knowledge/domain/crediting_methods.md
 """
 
-import pytest
 import numpy as np
+import pytest
 
 # Skip entire module if financepy not available
 pytest.importorskip("financepy")
@@ -293,8 +293,8 @@ class TestSpreadPricerIntegration:
         The embedded_option_value for spread crediting should equal:
         Call(K = S × (1 + spread)) / S × premium
         """
-        from annuity_pricing.products.fia import FIAPricer, MarketParams
         from annuity_pricing.data.schemas import FIAProduct
+        from annuity_pricing.products.fia import FIAPricer, MarketParams
 
         market = MarketParams(
             spot=100.0,

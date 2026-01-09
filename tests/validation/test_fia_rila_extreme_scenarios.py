@@ -12,19 +12,17 @@ These tests verify numerical stability, not external validation.
 See: docs/TOLERANCE_JUSTIFICATION.md for anti-pattern tolerances
 """
 
-import pytest
 import numpy as np
+import pytest
 
-from annuity_pricing.options.pricing.black_scholes import (
-    black_scholes_call,
-    black_scholes_put,
-    black_scholes_greeks,
-    OptionType,
-)
 from annuity_pricing.config.tolerances import (
     ANTI_PATTERN_TOLERANCE,
-    CAP_ENFORCEMENT_TOLERANCE,
-    FLOOR_ENFORCEMENT_TOLERANCE,
+)
+from annuity_pricing.options.pricing.black_scholes import (
+    OptionType,
+    black_scholes_call,
+    black_scholes_greeks,
+    black_scholes_put,
 )
 
 

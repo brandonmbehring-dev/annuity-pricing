@@ -1,5 +1,10 @@
 # Annuity Pricing
 
+[![CI](https://github.com/brandonmbehring-dev/annuity-pricing/workflows/CI/badge.svg)](https://github.com/brandonmbehring-dev/annuity-pricing/actions)
+[![Python versions](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://pypi.org/project/annuity-pricing/)
+[![Coverage](https://codecov.io/gh/brandonmbehring-dev/annuity-pricing/branch/main/graph/badge.svg)](https://codecov.io/gh/brandonmbehring-dev/annuity-pricing)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Actuarial pricing calculations for MYGA, FIA, and RILA annuity products using WINK competitive rate data.
 
 ## Overview
