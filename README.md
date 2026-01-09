@@ -67,16 +67,26 @@ This library uses the following key assumptions for pricing. Users should unders
 ## Installation
 
 ```bash
-# Clone the repository
-git clone <repo-url>
+pip install annuity-pricing
+```
+
+### Optional Dependencies
+
+```bash
+pip install annuity-pricing[validation]  # financepy, QuantLib, pyfeng cross-validation
+pip install annuity-pricing[viz]         # matplotlib, plotly, jupyter
+pip install annuity-pricing[dev]         # pytest, ruff, mypy, pre-commit
+pip install annuity-pricing[docs]        # Sphinx, furo theme
+pip install annuity-pricing[all]         # Everything
+```
+
+> **Note**: Package name is `annuity-pricing` (PyPI), import as `annuity_pricing` (Python).
+
+### Development Install
+
+```bash
+git clone https://github.com/bbehring/annuity-pricing.git
 cd annuity-pricing
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# or: venv\Scripts\activate  # Windows
-
-# Install in development mode
 pip install -e ".[dev]"
 ```
 

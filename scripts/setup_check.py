@@ -81,7 +81,7 @@ def check_core_dependencies() -> list[CheckResult]:
 def check_optional_dependencies() -> list[CheckResult]:
     """Check optional dependencies (non-critical)."""
     optional_groups = {
-        "dev": [("pytest", "7.0"), ("black", "23.0"), ("mypy", "1.0"), ("ruff", "0.1")],
+        "dev": [("pytest", "7.0"), ("mypy", "1.0"), ("ruff", "0.1")],
         "viz": [("matplotlib", "3.5"), ("seaborn", "0.12"), ("plotly", "5.0"), ("jupyter", "1.0")],
         "vol": [("pysabr", "0.3")],
         "validation": [("financepy", "0.350"), ("QuantLib", "1.31")],

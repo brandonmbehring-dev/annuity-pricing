@@ -13,7 +13,7 @@ help:
 	@echo ""
 	@echo "Development targets:"
 	@echo "  make lint           Run linters (ruff, mypy)"
-	@echo "  make format         Format code (black)"
+	@echo "  make format         Format code (ruff format)"
 	@echo "  make test           Run unit tests"
 
 # ============================================================================
@@ -80,7 +80,7 @@ lint:
 
 format:
 	@echo "Formatting code..."
-	black src/ tests/ scripts/
+	ruff format src/ tests/ scripts/
 	@echo "✓ Formatting complete"
 
 test:

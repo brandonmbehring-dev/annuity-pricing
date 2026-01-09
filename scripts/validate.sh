@@ -111,11 +111,11 @@ case "$MODE" in
         echo ""
 
         # 7. Formatting check
-        echo -e "${YELLOW}Running: Format check (black)${NC}"
-        if black --check src/ 2>/dev/null; then
+        echo -e "${YELLOW}Running: Format check (ruff format)${NC}"
+        if ruff format --check src/ 2>/dev/null; then
             echo -e "${GREEN}✓ Formatting OK${NC}"
         else
-            echo -e "${YELLOW}⚠ Formatting issues (run: black src/)${NC}"
+            echo -e "${YELLOW}⚠ Formatting issues (run: ruff format src/)${NC}"
         fi
         echo ""
 

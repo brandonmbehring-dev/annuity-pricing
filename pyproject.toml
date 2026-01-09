@@ -64,7 +64,6 @@ Changelog = "https://github.com/bbehring/annuity-pricing/blob/main/CHANGELOG.md"
 dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
-    "black>=23.0",
     "mypy>=1.0",
     "ruff>=0.1.0",
     "nbval>=0.11.0",
@@ -109,10 +108,6 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
-[tool.black]
-line-length = 100
-target-version = ['py310', 'py311', 'py312']
 
 [tool.mypy]
 python_version = "3.10"
