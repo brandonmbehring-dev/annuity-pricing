@@ -1,0 +1,72 @@
+name: Notebook Validation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'notebooks/**/*.ipynb'
+      - 'examples/**/*.ipynb'
+  pull_request:
+    paths:
+      - 'notebooks/**/*.ipynb'
+      - 'examples/**/*.ipynb'
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -e ".[dev,viz]"
+          pip install jupyter nbconvert
+
+      - name: Check for notebooks
+        id: check-notebooks
+        run: |
+          shopt -s nullglob
+          notebooks=(notebooks/**/*.ipynb examples/**/*.ipynb)
+          if [ ${#notebooks[@]} -eq 0 ]; then
+            echo "No notebooks found, skipping execution"
+            echo "has_notebooks=false" >> $GITHUB_OUTPUT
+          else
+            echo "Found ${#notebooks[@]} notebooks"
+            echo "has_notebooks=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Execute notebooks
+        if: steps.check-notebooks.outputs.has_notebooks == 'true'
+        run: |
+          shopt -s nullglob
+          failed=0
+          for nb in notebooks/**/*.ipynb examples/**/*.ipynb; do
+            echo "=========================================="
+            echo "Executing: $nb"
+            echo "=========================================="
+            if jupyter nbconvert --to notebook --execute "$nb" \
+              --ExecutePreprocessor.timeout=300 \
+              --output /tmp/executed_$(basename "$nb"); then
+              echo "✓ $nb passed"
+            else
+              echo "✗ $nb failed"
+              failed=$((failed + 1))
+            fi
+          done
+          if [ $failed -gt 0 ]; then
+            echo "=========================================="
+            echo "FAILED: $failed notebook(s) had errors"
+            echo "=========================================="
+            exit 1
+          fi
+          echo "=========================================="
+          echo "SUCCESS: All notebooks executed successfully"
+          echo "=========================================="

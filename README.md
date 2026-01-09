@@ -22,6 +22,27 @@ This library provides research and pricing tooling for fixed annuity products:
 - **Rate setting**: Recommendations given market conditions
 - **Option modeling**: Black-Scholes closed-form and Monte Carlo simulation
 
+### Feature Comparison
+
+| Feature | annuity-pricing | QuantLib | financepy | lifelib |
+|---------|:---------------:|:--------:|:---------:|:-------:|
+| **Products** | | | | |
+| RILA buffer/floor pricing | ✓ | ✗ | ✗ | ✗ |
+| FIA crediting methods | ✓ | ✗ | Partial | ✗ |
+| GLWB valuation | ✓ | ✗ | ✗ | Partial |
+| MYGA present value | ✓ | ✓ | ✓ | ✓ |
+| **Pricing Engines** | | | | |
+| Black-Scholes | ✓ | ✓ | ✓ | ✗ |
+| Heston stochastic vol | ✓ | ✓ | ✓ | ✗ |
+| Monte Carlo (GBM) | ✓ | ✓ | ✓ | ✓ |
+| **Validation** | | | | |
+| Anti-pattern tests (HALT) | ✓ | ✗ | ✗ | ✗ |
+| Cross-library validation | ✓ | N/A | N/A | ✗ |
+| Put-call parity checks | ✓ | ✗ | ✗ | ✗ |
+| **Ease of Use** | | | | |
+| Python-native | ✓ | SWIG | ✓ | ✓ |
+| Type hints | ✓ | ✗ | Partial | ✓ |
+
 ### Modeling Assumptions
 
 This library uses the following key assumptions for pricing. Users should understand these limitations:
