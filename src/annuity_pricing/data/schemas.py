@@ -93,6 +93,28 @@ class MYGAProduct(BaseProduct):
                 f"got {self.guarantee_duration}"
             )
 
+    @classmethod
+    def demo(cls) -> "MYGAProduct":
+        """
+        Create example MYGA for quick testing.
+
+        Returns a 5-year MYGA at 4.5% — a typical product structure.
+
+        Example
+        -------
+        >>> myga = MYGAProduct.demo()
+        >>> print(f"Rate: {myga.fixed_rate:.1%}, Term: {myga.guarantee_duration}yr")
+        Rate: 4.5%, Term: 5yr
+        """
+        return cls(
+            company_name="Example Life",
+            product_name="5-Year MYGA Demo",
+            product_group="MYGA",
+            status="current",
+            fixed_rate=0.045,
+            guarantee_duration=5,
+        )
+
 
 # =============================================================================
 # FIA Product
@@ -164,6 +186,30 @@ class FIAProduct(BaseProduct):
                 f"CRITICAL: participation_rate must be >= 0, "
                 f"got {self.participation_rate}"
             )
+
+    @classmethod
+    def demo(cls) -> "FIAProduct":
+        """
+        Create example FIA for quick testing.
+
+        Returns an S&P 500 point-to-point FIA with 10% cap — a typical structure.
+
+        Example
+        -------
+        >>> fia = FIAProduct.demo()
+        >>> print(f"Cap: {fia.cap_rate:.1%}, Index: {fia.index_used}")
+        Cap: 10.0%, Index: S&P 500
+        """
+        return cls(
+            company_name="Example Life",
+            product_name="S&P 500 Cap Demo",
+            product_group="FIA",
+            status="current",
+            index_used="S&P 500",
+            indexing_method="Annual Point to Point",
+            cap_rate=0.10,
+            term_years=6,
+        )
 
 
 # =============================================================================
@@ -272,6 +318,34 @@ class RILAProduct(BaseProduct):
         if self.buffer_modifier is None:
             return False
         return "after" in self.buffer_modifier.lower()
+
+    @classmethod
+    def demo(cls) -> "RILAProduct":
+        """
+        Create example RILA for quick testing.
+
+        Returns an S&P 500 RILA with 10% buffer and 15% cap — a typical structure.
+
+        Example
+        -------
+        >>> rila = RILAProduct.demo()
+        >>> print(f"Buffer: {rila.buffer_rate:.0%}, Cap: {rila.cap_rate:.0%}")
+        Buffer: 10%, Cap: 15%
+        >>> rila.is_buffer()
+        True
+        """
+        return cls(
+            company_name="Example Life",
+            product_name="10% Buffer S&P Demo",
+            product_group="RILA",
+            status="current",
+            index_used="S&P 500",
+            indexing_method="Annual Point to Point",
+            buffer_rate=0.10,
+            buffer_modifier="Losses Covered Up To",
+            cap_rate=0.15,
+            term_years=6,
+        )
 
 
 # =============================================================================
@@ -464,3 +538,28 @@ class GLWBProduct(BaseProduct):
             )
         if self.fee_rate < 0:
             raise ValueError(f"CRITICAL: fee_rate must be >= 0, got {self.fee_rate}")
+
+    @classmethod
+    def demo(cls) -> "GLWBProduct":
+        """
+        Create example GLWB for quick testing.
+
+        Returns a 5% withdrawal / 6% compound rollup GLWB — a typical structure.
+
+        Example
+        -------
+        >>> glwb = GLWBProduct.demo()
+        >>> print(f"Withdrawal: {glwb.withdrawal_rate:.0%}, Rollup: {glwb.rollup_rate:.0%}")
+        Withdrawal: 5%, Rollup: 6%
+        """
+        return cls(
+            company_name="Example Life",
+            product_name="GLWB Demo",
+            product_group="GLWB",
+            status="current",
+            withdrawal_rate=0.05,
+            rollup_rate=0.06,
+            rollup_type="compound",
+            rollup_cap_years=10,
+            fee_rate=0.01,
+        )
